@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">admobadapter</string>
+    <string name="test_admob_unit_id">ca-app-pub-3940256099942544/2247696110</string>
+</resources>

@@ -60,8 +60,7 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcher.Adm
     AdmobFetcher adFetcher;
     Context mContext;
 
-    private static final int VIEW_TYPE_COUNT = 3;
-    private static final int VIEW_TYPE_NORMAL = 0;
+    private static final int VIEW_TYPE_COUNT = 2;
     private static final int VIEW_TYPE_AD_CONTENT = 1;
     private static final int VIEW_TYPE_AD_INSTALL = 2;
 
@@ -191,12 +190,10 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcher.Adm
                     bindContentAdView(lvi2, ad2);
                 }
                 return lvi2;
-            case VIEW_TYPE_NORMAL:
+            default:
                 int origPos = getOriginalContentPosition(position);
                 return mAdapter.getView(origPos, convertView, parent);
         }
-
-        return convertView;
     }
 
     private NativeContentAdView getContentAdView(ViewGroup parent, NativeContentAd ad) {
@@ -355,7 +352,7 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcher.Adm
 
     @Override
     public int getViewTypeCount() {
-        return VIEW_TYPE_COUNT;
+        return VIEW_TYPE_COUNT + getAdapter().getViewTypeCount();
     }
 
     @Override
@@ -364,8 +361,10 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcher.Adm
             int adPos = getAdIndex(position);
             NativeAd ad = adFetcher.getAdForIndex(adPos);
             return ad instanceof NativeAppInstallAd ? VIEW_TYPE_AD_INSTALL : VIEW_TYPE_AD_CONTENT;
-        } else
-            return VIEW_TYPE_NORMAL;
+        } else {
+            int origPos = getOriginalContentPosition(position);
+            return mAdapter.getItemViewType(origPos);
+        }
     }
 
     /**

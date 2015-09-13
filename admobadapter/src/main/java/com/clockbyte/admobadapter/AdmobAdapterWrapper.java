@@ -320,6 +320,7 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcher.Adm
              */
             int noOfAds = Math.min(adFetcher.getFetchedAdsCount(),
                     mAdapter.getCount() / getNoOfDataBetweenAds());
+            noOfAds = Math.min(noOfAds, getLimitOfAds());
             return mAdapter.getCount() > 0 ? mAdapter.getCount() + noOfAds : 0;
         } else {
             return 0;

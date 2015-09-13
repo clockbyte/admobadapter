@@ -318,13 +318,17 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcher.Adm
             No of currently fetched ads, as long as it isn't more than no of max ads that can
             fit dataset.
              */
-            int noOfAds = Math.min(adFetcher.getFetchedAdsCount(),
-                    mAdapter.getCount() / getNoOfDataBetweenAds());
-            noOfAds = Math.min(noOfAds, getLimitOfAds());
+            int noOfAds = getAdsCountToPublish();
             return mAdapter.getCount() > 0 ? mAdapter.getCount() + noOfAds : 0;
         } else {
             return 0;
         }
+    }
+
+    public int getAdsCountToPublish(){
+        int noOfAds = Math.min(adFetcher.getFetchedAdsCount(),
+                mAdapter.getCount() / getNoOfDataBetweenAds());
+        return Math.min(noOfAds, getLimitOfAds());
     }
 
     /**
@@ -375,10 +379,10 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcher.Adm
      * @return the original position that the adapter position would have been without ads
      */
     protected int getOriginalContentPosition(int position) {
-        int noOfFetchedAds = adFetcher.getFetchedAdsCount();
+        int noOfAds = getAdsCountToPublish();
         // No of spaces for ads in the dataset, according to ad placement rules
         int adSpacesCount = position / (getNoOfDataBetweenAds() + 1);
-        return position - Math.min(adSpacesCount, noOfFetchedAds);
+        return position - Math.min(adSpacesCount, noOfAds);
     }
 
     /**

@@ -1,6 +1,8 @@
 Admob Adapter
 ======================
 
+[![Build Status](https://travis-ci.org/clockbyte/admobadapter.svg?branch=master)](https://travis-ci.org/clockbyte/admobadapter)
+
 Admob Adapter is an Android library that makes it easy to integrate ![Admob native ads](https://support.google.com/admob/answer/6240809 "Admob native ads") into ```ListView``` in the way that is shown in the following image/animation.
 
 ![](https://raw.githubusercontent.com/clockbyte/admobadapter/master/screenshots/device-2015-08-28-012121.png)

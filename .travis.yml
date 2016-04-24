@@ -3,3 +3,8 @@ android:
   components:
     - build-tools-22.0.1
     - android-22
+# Additional components
+    - extra-com_android_support_appcompat-v7:22.2.1
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - addon-google_apis-google-19

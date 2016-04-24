@@ -2,41 +2,43 @@ package com.clockbyte.admobadapter.sampleapp;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import com.clockbyte.admobadapter.AdmobAdapterWrapper;
+
+import com.clockbyte.admobadapter.AdmobRecyclerAdapterWrapper;
 
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends Activity {
+public class MainActivity_RecyclerView extends Activity {
 
-    ListView lvMessages;
-    AdmobAdapterWrapper adapterWrapper;
+    RecyclerView rvMessages;
+    AdmobRecyclerAdapterWrapper adapterWrapper;
     Timer updateAdsTimer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_recycleview);
 
-        initListViewItems();
+        initRecyclerViewItems();
         initUpdateAdsTimer();
     }
 
     /**
-     * Inits an adapter with items, wrapping your adapter with a {@link AdmobAdapterWrapper} and setting the listview to this wrapper
+     * Inits an adapter with items, wrapping your adapter with a {@link AdmobRecyclerAdapterWrapper} and setting the recyclerview to this wrapper
      * FIRST OF ALL Please notice that the following code will work on a real devices but emulator!
      */
-    private void initListViewItems() {
-        lvMessages = (ListView) findViewById(R.id.lvMessages);
+    private void initRecyclerViewItems() {
+        rvMessages = (RecyclerView) findViewById(R.id.rvMessages);
+        rvMessages.setLayoutManager(new LinearLayoutManager(this));
 
         //creating your adapter, it could be a custom adapter as well
-        ArrayAdapter<String> adapter  = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1);
+        RecyclerExampleAdapter adapter  = new RecyclerExampleAdapter(this);
 
-        adapterWrapper = new AdmobAdapterWrapper(this);
+        adapterWrapper = new AdmobRecyclerAdapterWrapper(this);
         adapterWrapper.setAdapter(adapter); //wrapping your adapter with a AdmobAdapterWrapper.
         //here you can use the following string to set your custom layouts for a different types of native ads
         //adapterWrapper.setInstallAdsLayoutId(R.layout.your_installad_layout);
@@ -56,7 +58,7 @@ public class MainActivity extends Activity {
         //String admobUnitId = getResources().getString(R.string.banner_admob_unit_id);
         //adapterWrapper.setAdmobReleaseUnitId(admobUnitId);
 
-        lvMessages.setAdapter(adapterWrapper); // setting an AdmobAdapterWrapper to a ListView
+        rvMessages.setAdapter(adapterWrapper); // setting an AdmobRecyclerAdapterWrapper to a ListView
 
         //preparing the collection of data
         final String sItem = "item #";

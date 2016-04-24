@@ -47,8 +47,11 @@ When you'll be ready to deploy your app to Release you'll have to register in th
 
 #Base usage
 The quick and dirty start is shown in the sampleapp of the project
+
 The Developer's guide on native ads could be found ![here](https://developers.google.com/admob/android/native "here").
+
 The cook recipes could be found in the [Wiki](https://github.com/clockbyte/admobadapter/wiki/Cookbook)
+
 Also feel free to ask me.
 
 #Contributions

@@ -1,7 +1,7 @@
 Admob Adapter
 ======================
 
-Admob Adapter is an Android library that makes it easy to integrate ![Admob native ads](https://support.google.com/admob/answer/6240809 "Admob native ads") into ```ListView/RecyclerView``` in the way that is shown in the following image/animation.
+Admob Adapter is an Android library that makes it easy to integrate [Admob native ads](https://support.google.com/admob/answer/6240809) into ```ListView/RecyclerView``` in the way that is shown in the following image/animation.
 
 ![](https://raw.githubusercontent.com/clockbyte/admobadapter/master/screenshots/device-2015-08-28-012121.png)
 
@@ -46,9 +46,9 @@ Also please don't forget to copy the string resource ```test_admob_unit_id``` fr
 When you'll be ready to deploy your app to Release you'll have to register in the Admob and create Ad unit ID there. Then you'd kindly replace the ```test_admob_unit_id``` with your real Ad unit ID. And please don't forget to use the test ID instead of real one when you're debugging/testing your app otherwise Admob can ban your account (artificial inflating of impressions and so on).
 
 #Base usage
-The quick and dirty start is shown in the sampleapp of the project
+The quick and dirty start is shown in the sampleapp of the project (to switch the sample between the RecyclerView and ListView examples kindly edit the ```AndroidManifest.xml```)
 
-The Developer's guide on native ads could be found ![here](https://developers.google.com/admob/android/native "here").
+The Developer's guide on native ads could be found [here](https://developers.google.com/admob/android/native).
 
 The cook recipes could be found in the [Wiki](https://github.com/clockbyte/admobadapter/wiki/Cookbook)
 

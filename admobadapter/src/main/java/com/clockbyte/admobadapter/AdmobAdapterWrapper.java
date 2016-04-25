@@ -177,7 +177,7 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcher.Adm
                     lvi1 = getInstallAdView(parent, ad1);
                 } else {
                     lvi1 = (NativeAppInstallAdView) convertView;
-                    bindInstallAdView(lvi1, ad1);
+                    AdViewHelper.bindInstallAdView(lvi1, ad1);
                 }
                 return lvi1;
             case VIEW_TYPE_AD_CONTENT:
@@ -187,7 +187,7 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcher.Adm
                     lvi2 = getContentAdView(parent, ad2);
                 } else {
                     lvi2 = (NativeContentAdView) convertView;
-                    bindContentAdView(lvi2, ad2);
+                    AdViewHelper.bindContentAdView(lvi2, ad2);
                 }
                 return lvi2;
             default:
@@ -203,47 +203,9 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcher.Adm
         NativeContentAdView adView = (NativeContentAdView) inflater
                 .inflate(getContentAdsLayoutId(), parent, false);
 
-        bindContentAdView(adView, ad);
+        AdViewHelper.bindContentAdView(adView, ad);
 
         return adView;
-    }
-
-    private void bindContentAdView(NativeContentAdView adView, NativeContentAd ad) {
-        if (adView == null || ad == null) return;
-
-        // Locate the view that will hold the headline, set its text, and call the
-        // NativeContentAdView's setHeadlineView method to register it.
-        TextView tvHeader = (TextView) adView.findViewById(R.id.tvHeader);
-        tvHeader.setText(ad.getHeadline());
-        adView.setHeadlineView(tvHeader);
-
-        TextView tvDescription = (TextView) adView.findViewById(R.id.tvDescription);
-        tvDescription.setText(ad.getBody());
-        adView.setBodyView(tvDescription);
-
-        ImageView ivLogo = (ImageView) adView.findViewById(R.id.ivLogo);
-        if(ad.getLogo()!=null)
-            ivLogo.setImageDrawable(ad.getLogo().getDrawable());
-        adView.setLogoView(ivLogo);
-
-        Button btnAction = (Button) adView.findViewById(R.id.btnAction);
-        btnAction.setText(ad.getCallToAction());
-        adView.setCallToActionView(btnAction);
-
-        TextView tvAdvertiser = (TextView) adView.findViewById(R.id.tvAdvertiser);
-        tvAdvertiser.setText(ad.getAdvertiser());
-        adView.setAdvertiserView(tvAdvertiser);
-
-        ImageView ivImage = (ImageView) adView.findViewById(R.id.ivImage);
-        if (ad.getImages() != null && ad.getImages().size() > 0) {
-            ivImage.setImageDrawable(ad.getImages().get(0).getDrawable());
-            ivImage.setVisibility(View.VISIBLE);
-        } else ivImage.setVisibility(View.GONE);
-        adView.setImageView(ivImage);
-
-        // Call the NativeContentAdView's setNativeAd method to register the
-        // NativeAdObject.
-        adView.setNativeAd(ad);
     }
 
     private NativeAppInstallAdView getInstallAdView(ViewGroup parent, NativeAppInstallAd ad) {
@@ -253,51 +215,9 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcher.Adm
         NativeAppInstallAdView adView = (NativeAppInstallAdView) inflater
                 .inflate(getInstallAdsLayoutId(), parent, false);
 
-        bindInstallAdView(adView, ad);
+        AdViewHelper.bindInstallAdView(adView, ad);
 
         return adView;
-    }
-
-    private void bindInstallAdView(NativeAppInstallAdView adView, NativeAppInstallAd ad) {
-        if (adView == null || ad == null) return;
-
-        // Locate the view that will hold the headline, set its text, and call the
-        // NativeContentAdView's setHeadlineView method to register it.
-        TextView tvHeader = (TextView) adView.findViewById(R.id.tvHeader);
-        tvHeader.setText(ad.getHeadline());
-        adView.setHeadlineView(tvHeader);
-
-        TextView tvDescription = (TextView) adView.findViewById(R.id.tvDescription);
-        tvDescription.setText(ad.getBody());
-        adView.setBodyView(tvDescription);
-
-        ImageView ivLogo = (ImageView) adView.findViewById(R.id.ivLogo);
-        if(ad.getIcon()!=null)
-            ivLogo.setImageDrawable(ad.getIcon().getDrawable());
-        adView.setIconView(ivLogo);
-
-        Button btnAction = (Button) adView.findViewById(R.id.btnAction);
-        btnAction.setText(ad.getCallToAction());
-        adView.setCallToActionView(btnAction);
-
-        TextView tvStore = (TextView) adView.findViewById(R.id.tvStore);
-        tvStore.setText(ad.getStore());
-        adView.setStoreView(tvStore);
-
-        TextView tvPrice = (TextView) adView.findViewById(R.id.tvPrice);
-        tvPrice.setText(ad.getPrice());
-        adView.setPriceView(tvPrice);
-
-        ImageView ivImage = (ImageView) adView.findViewById(R.id.ivImage);
-        if (ad.getImages() != null && ad.getImages().size() > 0) {
-            ivImage.setImageDrawable(ad.getImages().get(0).getDrawable());
-            ivImage.setVisibility(View.VISIBLE);
-        } else ivImage.setVisibility(View.GONE);
-        adView.setImageView(ivImage);
-
-        // Call the NativeContentAdView's setNativeAd method to register the
-        // NativeAdObject.
-        adView.setNativeAd(ad);
     }
 
     /**

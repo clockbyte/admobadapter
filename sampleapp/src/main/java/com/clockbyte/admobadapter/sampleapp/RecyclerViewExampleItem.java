@@ -1,7 +1,6 @@
 package com.clockbyte.admobadapter.sampleapp;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 

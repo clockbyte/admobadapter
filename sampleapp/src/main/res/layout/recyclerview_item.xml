@@ -3,7 +3,6 @@
     android:layout_height="50dp">
 
     <TextView android:id="@+id/tvText" android:layout_width="match_parent"
-        android:textAlignment="center"
         android:layout_gravity="center"
         android:gravity="center"
         android:layout_height="wrap_content"

@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class AdmobFetcher {
+public class AdmobFetcher extends AdmobFetcherBase{
 
     private final String TAG = AdmobFetcher.class.getCanonicalName();
 
@@ -49,55 +49,9 @@ public class AdmobFetcher {
     private static final int MAX_FETCH_ATTEMPT = 4;
 
     private AdLoader adLoader;
-    private List<AdmobListener> mAdNativeListeners = new ArrayList<AdmobListener>();
     private List<NativeAd> mPrefetchedAdList = new ArrayList<NativeAd>();
     private Map<Integer, NativeAd> adMapAtIndex = new HashMap<Integer, NativeAd>();
-    private int mNoOfFetchedAds;
-    private int mFetchFailCount;
-    private WeakReference<Context> mContext = new WeakReference<Context>(null);
     AtomicBoolean lockFetch = new AtomicBoolean();
-
-    private String admobReleaseUnitId;
-    /*
-    *Gets a release unit ID for admob banners. ID should be active, please check it in your Admob's account.
-    * Be careful: don't set it or set to null if you still haven't deployed a Release.
-    * Otherwise your Admob account could be banned
-     */
-    public String getAdmobReleaseUnitId() {
-        return admobReleaseUnitId;
-    }
-    /*
-   *Sets a release unit ID for admob banners. ID should be active, please check it in your Admob's account.
-   * Be careful: don't set it or set to null if you still haven't deployed a Release.
-   * Otherwise your Admob account could be banned
-    */
-    public void setAdmobReleaseUnitId(String admobReleaseUnitId) {
-        this.admobReleaseUnitId = admobReleaseUnitId;
-    }
-
-    private String testDeviceId;
-    /*
-    *Gets a test device ID. Normally you don't have to set it
-     */
-    public String getTestDeviceId() {
-        return testDeviceId;
-    }
-    /*
-    *Sets a test device ID. Normally you don't have to set it
-     */
-    public void setTestDeviceId(String testDeviceId) {
-        this.testDeviceId = testDeviceId;
-    }
-
-    /**
-     * Adds an {@link AdmobListener} that would be notified for any changes to the native ads
-     * list.
-     *
-     * @param listener the listener to be notified
-     */
-    public synchronized void addListener(AdmobListener listener) {
-        mAdNativeListeners.add(listener);
-    }
 
     /**
      * Gets native ad at a particular index in the fetched ads list.
@@ -122,23 +76,13 @@ public class AdmobFetcher {
     }
 
     /**
-     * Gets the number of ads that have been fetched so far.
-     *
-     * @return the number of ads that have been fetched
-     */
-    public synchronized int getFetchedAdsCount() {
-        return mNoOfFetchedAds;
-    }
-
-
-    /**
      * Fetches a new native ad.
      *
      * @param context the current context.
      * @see #destroyAllAds()
      */
     public synchronized void prefetchAds(Context context) {
-        mContext = new WeakReference<Context>(context);
+        super.prefetchAds(context);
         setupAds();
         fetchAd();
     }
@@ -151,16 +95,13 @@ public class AdmobFetcher {
      * The converse of this call is {@link #prefetchAds(Context)}.
      */
     public synchronized void destroyAllAds() {
-        mFetchFailCount = 0;
         adMapAtIndex.clear();
-
         mPrefetchedAdList.clear();
-        mNoOfFetchedAds = 0;
 
         Log.i(TAG, "destroyAllAds adList " + adMapAtIndex.size() + " prefetched " +
                 mPrefetchedAdList.size());
-        mContext.clear();
-        notifyObserversOfAdSizeChange();
+
+        super.destroyAllAds();
     }
 
     /**
@@ -171,18 +112,9 @@ public class AdmobFetcher {
     }
 
     /**
-     * Notifies all registered {@link AdmobListener} of a change in ad data count.
-     */
-    private void notifyObserversOfAdSizeChange() {
-        for (AdmobListener listener : mAdNativeListeners) {
-            listener.onAdCountChanged();
-        }
-    }
-
-    /**
      * Fetches a new native ad.
      */
-    private synchronized void fetchAd() {
+    protected synchronized void fetchAd() {
         Context context = mContext.get();
 
         if (context != null) {
@@ -199,7 +131,7 @@ public class AdmobFetcher {
     /**
      * Ensures that the necessary amount of prefetched native ads are available.
      */
-    private synchronized void ensurePrefetchAmount() {
+    protected synchronized void ensurePrefetchAmount() {
         if (mPrefetchedAdList.size() < PREFETCHED_ADS_SIZE &&
                 (mFetchFailCount < MAX_FETCH_ATTEMPT)) {
             fetchAd();
@@ -239,7 +171,7 @@ public class AdmobFetcher {
     /**
      * Subscribing to the native ads events
      */
-    private synchronized void setupAds() {
+    protected synchronized void setupAds() {
         String admobUnitId = TextUtils.isEmpty(getAdmobReleaseUnitId()) ?
                 mContext.get().getResources().getString(R.string.test_admob_unit_id)
                 : getAdmobReleaseUnitId();
@@ -288,26 +220,4 @@ public class AdmobFetcher {
         notifyObserversOfAdSizeChange();
     }
 
-    /**
-     * Setup and get an ads request
-     */
-    private synchronized AdRequest getAdRequest() {
-        AdRequest.Builder adBldr = new AdRequest.Builder();
-        if(!TextUtils.isEmpty(getTestDeviceId()))
-            adBldr.addTestDevice(getTestDeviceId());
-        return adBldr.build();
-                //.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-                // All emulators are added by default as test devices
-    }
-
-    /**
-     * Listener that is notified when changes to the list of fetched native ads are made.
-     */
-    public interface AdmobListener {
-        /**
-         * Raised when the number of ads have changed. Adapters that implement this class
-         * should notify their data views that the dataset has changed.
-         */
-        void onAdCountChanged();
-    }
 }

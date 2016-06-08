@@ -15,54 +15,52 @@
  * limitations under the License.
  */
 
-package com.clockbyte.admobadapter;
+package com.clockbyte.admobadapter.expressads;
 
 import android.content.Context;
-import android.database.DataSetObserver;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import com.google.android.gms.ads.formats.*;
+
+import com.clockbyte.admobadapter.AdmobFetcherBase;
+import com.clockbyte.admobadapter.R;
+import com.clockbyte.admobadapter.RecyclerViewAdapterBase;
+import com.clockbyte.admobadapter.ViewWrapper;
+import com.google.android.gms.ads.NativeExpressAdView;
 
 /**
  * Adapter that has common functionality for any adapters that need to show ads in-between
  * other data.
  */
-public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase.AdmobListener {
+public class AdmobExpressRecyclerAdapterWrapper<T, V extends View>
+        extends RecyclerView.Adapter<ViewWrapper<V>>
+        implements AdmobFetcherBase.AdmobListener {
 
-    private final String TAG = AdmobAdapterWrapper.class.getCanonicalName();
+    private final String TAG = AdmobExpressRecyclerAdapterWrapper.class.getCanonicalName();
 
-    private BaseAdapter mAdapter;
+    private RecyclerViewAdapterBase<T,V> mAdapter;
 
-    public BaseAdapter getAdapter() {
+    public RecyclerViewAdapterBase<T,V> getAdapter() {
         return mAdapter;
     }
 
-    public void setAdapter(BaseAdapter adapter) {
+    public void setAdapter(RecyclerViewAdapterBase<T,V> adapter) {
         mAdapter = adapter;
-        mAdapter.registerDataSetObserver(new DataSetObserver() {
+        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
                 notifyDataSetChanged();
             }
 
-            @Override
-            public void onInvalidated() {
-                notifyDataSetInvalidated();
-            }
         });
     }
 
-    AdmobFetcher adFetcher;
+    AdmobFetcherExpress adFetcher;
     Context mContext;
 
-    private static final int VIEW_TYPE_COUNT = 2;
-    private static final int VIEW_TYPE_AD_CONTENT = 1;
-    private static final int VIEW_TYPE_AD_INSTALL = 2;
+    private static final int VIEW_TYPE_COUNT = 1;
+    private static final int VIEW_TYPE_AD_EXPRESS = 1;
 
     private final static int DEFAULT_NO_OF_DATA_BETWEEN_ADS = 10;
     private final static int DEFAULT_LIMIT_OF_ADS = 3;
@@ -153,70 +151,51 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         adFetcher.setAdmobReleaseUnitId(admobReleaseUnitId);
     }
 
-    public AdmobAdapterWrapper(Context context) {
+    public AdmobExpressRecyclerAdapterWrapper(Context context) {
         setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
         setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
         setContentAdsLayoutId(R.layout.adcontentlistview_item);
         setInstallAdsLayoutId(R.layout.adinstalllistview_item);
         mContext = context;
 
-        adFetcher = new AdmobFetcher();
+        adFetcher = new AdmobFetcherExpress(mContext);
         adFetcher.addListener(this);
-        // Start prefetching ads
-        adFetcher.prefetchAds(context.getApplicationContext());
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public void onBindViewHolder(ViewWrapper<V> viewHolder, int position) {
+        if (viewHolder==null)
+            return;
 
-        switch (getItemViewType(position)) {
-            case VIEW_TYPE_AD_INSTALL:
-                NativeAppInstallAdView lvi1;
-                NativeAppInstallAd ad1 = (NativeAppInstallAd) getItem(position);
-                if (convertView == null) {
-                    lvi1 = getInstallAdView(parent, ad1);
-                } else {
-                    lvi1 = (NativeAppInstallAdView) convertView;
-                    AdViewHelper.bindInstallAdView(lvi1, ad1);
-                }
-                return lvi1;
-            case VIEW_TYPE_AD_CONTENT:
-                NativeContentAdView lvi2;
-                NativeContentAd ad2 = (NativeContentAd) getItem(position);
-                if (convertView == null) {
-                    lvi2 = getContentAdView(parent, ad2);
-                } else {
-                    lvi2 = (NativeContentAdView) convertView;
-                    AdViewHelper.bindContentAdView(lvi2, ad2);
-                }
-                return lvi2;
+        switch (viewHolder.getItemViewType()) {
+            case VIEW_TYPE_AD_EXPRESS:
+                //NativeExpressAdView lvi1 = (NativeExpressAdView) viewHolder.getView();
+                break;
             default:
                 int origPos = getOriginalContentPosition(position);
-                return mAdapter.getView(origPos, convertView, parent);
+                mAdapter.onBindViewHolder(viewHolder, origPos);
         }
     }
 
-    private NativeContentAdView getContentAdView(ViewGroup parent, NativeContentAd ad) {
-        // Inflate a layout and add it to the parent ViewGroup.
-        LayoutInflater inflater = (LayoutInflater) parent.getContext()
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        NativeContentAdView adView = (NativeContentAdView) inflater
-                .inflate(getContentAdsLayoutId(), parent, false);
-
-        AdViewHelper.bindContentAdView(adView, ad);
-
-        return adView;
+    @Override
+    public final ViewWrapper<V> onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case VIEW_TYPE_AD_EXPRESS:
+                NativeExpressAdView item = getExpressAdView(parent);
+                adFetcher.setupAd(item);
+                adFetcher.fetchAd(item);
+                return new ViewWrapper<V>((V)item);
+            default:
+                return mAdapter.onCreateViewHolder(parent, viewType);
+        }
     }
 
-    private NativeAppInstallAdView getInstallAdView(ViewGroup parent, NativeAppInstallAd ad) {
+    private NativeExpressAdView getExpressAdView(ViewGroup parent) {
         // Inflate a layout and add it to the parent ViewGroup.
         LayoutInflater inflater = (LayoutInflater) parent.getContext()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        NativeAppInstallAdView adView = (NativeAppInstallAdView) inflater
-                .inflate(getInstallAdsLayoutId(), parent, false);
-
-        AdViewHelper.bindInstallAdView(adView, ad);
-
+        NativeExpressAdView adView = (NativeExpressAdView) inflater
+                .inflate(R.layout.adexpresslistview_item, parent, false);
         return adView;
     }
 
@@ -227,11 +206,11 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
      * will return 12.</p>
      *
      * @return the total number of items this adapter can show, including ads.
-     * @see AdmobAdapterWrapper#setNoOfDataBetweenAds(int)
-     * @see AdmobAdapterWrapper#getNoOfDataBetweenAds()
+     * @see AdmobExpressRecyclerAdapterWrapper#setNoOfDataBetweenAds(int)
+     * @see AdmobExpressRecyclerAdapterWrapper#getNoOfDataBetweenAds()
      */
     @Override
-    public int getCount() {
+    public int getItemCount() {
 
         if (mAdapter != null) {
             /*
@@ -239,7 +218,7 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
             fit dataset.
              */
             int noOfAds = getAdsCountToPublish();
-            return mAdapter.getCount() > 0 ? mAdapter.getCount() + noOfAds : 0;
+            return mAdapter.getItemCount() > 0 ? mAdapter.getItemCount() + noOfAds : 0;
         } else {
             return 0;
         }
@@ -247,27 +226,8 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
 
     public int getAdsCountToPublish(){
         int noOfAds = Math.min(adFetcher.getFetchedAdsCount(),
-                mAdapter.getCount() / getNoOfDataBetweenAds());
+                mAdapter.getItemCount() / getNoOfDataBetweenAds());
         return Math.min(noOfAds, getLimitOfAds());
-    }
-
-    /**
-     * Gets the item in a given position in the dataset. If an ad is to be returned,
-     * a {@link NativeAd} object is returned.
-     *
-     * @param position the adapter position
-     * @return the object or ad contained in this adapter position
-     */
-    @Override
-    public Object getItem(int position) {
-
-        if (canShowAdAtPosition(position)) {
-            int adPos = getAdIndex(position);
-            return adFetcher.getAdForIndex(adPos);
-        } else {
-            int origPos = getOriginalContentPosition(position);
-            return mAdapter.getItem(origPos);
-        }
     }
 
     @Override
@@ -276,16 +236,11 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     }
 
     @Override
-    public int getViewTypeCount() {
-        return VIEW_TYPE_COUNT + getAdapter().getViewTypeCount();
-    }
-
-    @Override
     public int getItemViewType(int position) {
         if (canShowAdAtPosition(position)) {
-            int adPos = getAdIndex(position);
-            NativeAd ad = adFetcher.getAdForIndex(adPos);
-            return ad instanceof NativeAppInstallAd ? VIEW_TYPE_AD_INSTALL : VIEW_TYPE_AD_CONTENT;
+            //int adPos = getAdIndex(position);
+            //NativeExpressAdView ad = adFetcher.getAdForIndex(adPos);
+            return VIEW_TYPE_AD_EXPRESS;
         } else {
             int origPos = getOriginalContentPosition(position);
             return mAdapter.getItemViewType(origPos);
@@ -350,8 +305,8 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         int adIndex = getAdIndex(position);
         return position >= getNoOfDataBetweenAds()
                 && adIndex >= 0
-                && adIndex < getLimitOfAds()
-                && adFetcher.getFetchedAdsCount() > adIndex;
+                && adIndex < getLimitOfAds();
+                //& adFetcher.getFetchedAdsCount() > adIndex;
     }
 
     /**
@@ -365,7 +320,7 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
      * Clears all currently displaying ads to update them
      */
     public void requestUpdateAd() {
-        adFetcher.clearMapAds();
+        adFetcher.updateAds();
     }
 
     @Override

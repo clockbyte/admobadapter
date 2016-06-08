@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.clockbyte.admobadapter;
+package com.clockbyte.admobadapter.expressads;
 
 import android.content.Context;
 import android.database.DataSetObserver;
@@ -23,18 +23,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import com.google.android.gms.ads.formats.*;
+
+import com.clockbyte.admobadapter.AdViewHelper;
+import com.clockbyte.admobadapter.AdmobFetcher;
+import com.clockbyte.admobadapter.AdmobFetcherBase;
+import com.clockbyte.admobadapter.R;
+import com.google.android.gms.ads.formats.NativeAd;
+import com.google.android.gms.ads.formats.NativeAppInstallAd;
+import com.google.android.gms.ads.formats.NativeAppInstallAdView;
+import com.google.android.gms.ads.formats.NativeContentAd;
+import com.google.android.gms.ads.formats.NativeContentAdView;
 
 /**
  * Adapter that has common functionality for any adapters that need to show ads in-between
  * other data.
  */
-public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase.AdmobListener {
+public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetcherBase.AdmobListener {
 
-    private final String TAG = AdmobAdapterWrapper.class.getCanonicalName();
+    private final String TAG = AdmobExpressAdapterWrapper.class.getCanonicalName();
 
     private BaseAdapter mAdapter;
 
@@ -153,7 +159,7 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         adFetcher.setAdmobReleaseUnitId(admobReleaseUnitId);
     }
 
-    public AdmobAdapterWrapper(Context context) {
+    public AdmobExpressAdapterWrapper(Context context) {
         setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
         setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
         setContentAdsLayoutId(R.layout.adcontentlistview_item);
@@ -227,8 +233,8 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
      * will return 12.</p>
      *
      * @return the total number of items this adapter can show, including ads.
-     * @see AdmobAdapterWrapper#setNoOfDataBetweenAds(int)
-     * @see AdmobAdapterWrapper#getNoOfDataBetweenAds()
+     * @see AdmobExpressAdapterWrapper#setNoOfDataBetweenAds(int)
+     * @see AdmobExpressAdapterWrapper#getNoOfDataBetweenAds()
      */
     @Override
     public int getCount() {

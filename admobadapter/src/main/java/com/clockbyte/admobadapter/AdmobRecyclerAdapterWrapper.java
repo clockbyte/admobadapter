@@ -33,7 +33,7 @@ import com.google.android.gms.ads.formats.*;
  */
 public class AdmobRecyclerAdapterWrapper<T, V extends View>
         extends RecyclerView.Adapter<ViewWrapper<V>>
-        implements AdmobFetcher.AdmobListener {
+        implements AdmobFetcherBase.AdmobListener {
 
     private final String TAG = AdmobRecyclerAdapterWrapper.class.getCanonicalName();
 

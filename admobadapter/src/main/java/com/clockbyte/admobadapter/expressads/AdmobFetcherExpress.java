@@ -50,6 +50,19 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     private List<NativeExpressAdView> mPrefetchedAdList = new ArrayList<NativeExpressAdView>();
 
     /**
+     * Gets native ad at a particular index in the fetched ads list.
+     *
+     * @param adPos the index of ad in the fetched ads list
+     * @return the native ad in the list
+     * @see #getFetchedAdsCount()
+     */
+    public NativeExpressAdView getAdForIndex(int adPos) {
+        if(adPos>=0 && adPos < mPrefetchedAdList.size())
+            return mPrefetchedAdList.get(adPos);
+        return null;
+    }
+
+    /**
      * Fetches a new native ad.
      */
     protected synchronized void fetchAd(final NativeExpressAdView adView) {

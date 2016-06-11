@@ -141,13 +141,9 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View>
         if (viewHolder==null)
             return;
 
-        switch (viewHolder.getItemViewType()) {
-            case VIEW_TYPE_AD_EXPRESS:
-                //NativeExpressAdView lvi1 = (NativeExpressAdView) viewHolder.getView();
-                break;
-            default:
-                int origPos = getOriginalContentPosition(position);
-                mAdapter.onBindViewHolder(viewHolder, origPos);
+        if(viewHolder.getItemViewType()!=VIEW_TYPE_AD_EXPRESS){
+            int origPos = getOriginalContentPosition(position);
+            mAdapter.onBindViewHolder(viewHolder, origPos);
         }
     }
 
@@ -212,8 +208,6 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View>
     @Override
     public int getItemViewType(int position) {
         if (canShowAdAtPosition(position)) {
-            //int adPos = getAdIndex(position);
-            //NativeExpressAdView ad = adFetcher.getAdForIndex(adPos);
             return VIEW_TYPE_AD_EXPRESS;
         } else {
             int origPos = getOriginalContentPosition(position);
@@ -280,7 +274,6 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View>
         return position >= getNoOfDataBetweenAds()
                 && adIndex >= 0
                 && adIndex < getLimitOfAds();
-                //& adFetcher.getFetchedAdsCount() > adIndex;
     }
 
     /**

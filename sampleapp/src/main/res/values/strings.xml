@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">admobadapter-sampleapp</string>
     <string name="banner_admob_unit_id">ca-app-pub-xxx/xxx</string>
+    <string name="testDeviceID">6BA3752AF66F8D8553248A71886E648D</string>
 </resources>

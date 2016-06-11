@@ -2,44 +2,43 @@ package com.clockbyte.admobadapter.sampleapp.express;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
-import com.clockbyte.admobadapter.expressads.AdmobExpressRecyclerAdapterWrapper;
+import com.clockbyte.admobadapter.expressads.AdmobExpressAdapterWrapper;
 import com.clockbyte.admobadapter.sampleapp.R;
-import com.clockbyte.admobadapter.sampleapp.RecyclerExampleAdapter;
 
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity_RecyclerView_Express extends Activity {
+public class MainActivity_ListView_Express extends Activity {
 
-    RecyclerView rvMessages;
-    AdmobExpressRecyclerAdapterWrapper adapterWrapper;
+    ListView lvMessages;
+    AdmobExpressAdapterWrapper adapterWrapper;
     Timer updateAdsTimer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_recycleview);
+        setContentView(R.layout.activity_main_listview);
 
-        initRecyclerViewItems();
+        initListViewItems();
         initUpdateAdsTimer();
     }
 
     /**
-     * Inits an adapter with items, wrapping your adapter with a {@link AdmobExpressRecyclerAdapterWrapper} and setting the recyclerview to this wrapper
+     * Inits an adapter with items, wrapping your adapter with a {@link AdmobExpressAdapterWrapper} and setting the listview to this wrapper
      * FIRST OF ALL Please notice that the following code will work on a real devices but emulator!
      */
-    private void initRecyclerViewItems() {
-        rvMessages = (RecyclerView) findViewById(R.id.rvMessages);
-        rvMessages.setLayoutManager(new LinearLayoutManager(this));
+    private void initListViewItems() {
+        lvMessages = (ListView) findViewById(R.id.lvMessages);
 
         //creating your adapter, it could be a custom adapter as well
-        RecyclerExampleAdapter adapter  = new RecyclerExampleAdapter(this);
+        ArrayAdapter<String> adapter  = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1);
 
-        adapterWrapper = new AdmobExpressRecyclerAdapterWrapper(this);
+        adapterWrapper = new AdmobExpressAdapterWrapper(this);
         //TODO it's important to set your test device ID (you can find it in LogCat after launching the debug session i.e. by word "test")
         //if you launch app on emulator and experience some troubles
         // try passing the constant AdRequest.DEVICE_ID_EMULATOR
@@ -47,7 +46,7 @@ public class MainActivity_RecyclerView_Express extends Activity {
         //TODO set the custom ads layout if you wish. NOTE you have to set your admob unit ID in this XML.
         //It doesn't work for me if I set the unit ID in code with the method setAdUnitID() so it seems to be a bug
         //adapterWrapper.setExpressAdsLayoutId(R.layout.adexpresslistview_item);
-        adapterWrapper.setAdapter(adapter); //wrapping your adapter with a AdmobExpressRecyclerAdapterWrapper.
+        adapterWrapper.setAdapter(adapter); //wrapping your adapter with a AdmobExpressAdapterWrapper.
 
         //Sets the max count of ad blocks per dataset, by default it equals to 3 (according to the Admob's policies and rules)
         adapterWrapper.setLimitOfAds(3);
@@ -63,7 +62,7 @@ public class MainActivity_RecyclerView_Express extends Activity {
         //String admobUnitId = getResources().getString(R.string.banner_admob_unit_id);
         //adapterWrapper.setAdmobReleaseUnitId(admobUnitId);
 
-        rvMessages.setAdapter(adapterWrapper); // setting an AdmobExpressRecyclerAdapterWrapper to a RecyclerView
+        lvMessages.setAdapter(adapterWrapper); // setting an AdmobAdapterWrapper to a ListView
 
         //preparing the collection of data
         final String sItem = "item #";

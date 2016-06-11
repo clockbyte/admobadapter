@@ -21,6 +21,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 
 import com.clockbyte.admobadapter.AdmobFetcherBase;
 import com.clockbyte.admobadapter.R;
@@ -59,7 +60,6 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
 
         if (context != null) {
             Log.i(TAG, "Fetching Ad now");
-            //adView.loadAd(getAdRequest()); //Fetching the ads item
             new Handler(context.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
@@ -88,11 +88,6 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
      * @param adView
      */
     protected synchronized void setupAd(final NativeExpressAdView adView) {
-        String admobUnitId = TextUtils.isEmpty(getAdmobReleaseUnitId()) ?
-                mContext.get().getResources().getString(R.string.test_admob_express_unit_id)
-                : getAdmobReleaseUnitId();
-        adView.setAdUnitId(admobUnitId);
-        adView.setAdSize(new AdSize(320,150));
         adView.setAdListener(new AdListener() {
             @Override
             public void onAdFailedToLoad(int errorCode) {

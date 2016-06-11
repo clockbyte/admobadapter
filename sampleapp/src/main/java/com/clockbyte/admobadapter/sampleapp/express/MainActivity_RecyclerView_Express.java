@@ -40,6 +40,13 @@ public class MainActivity_RecyclerView_Express extends Activity {
         RecyclerExampleAdapter adapter  = new RecyclerExampleAdapter(this);
 
         adapterWrapper = new AdmobExpressRecyclerAdapterWrapper(this);
+        //TODO it's important to set your test device ID (you can find it in LogCat after launching the debug session i.e. by word "test")
+        //if you launch app on emulator and experience some troubles
+        // you should try passing the constant AdRequest.DEVICE_ID_EMULATOR
+        adapterWrapper.setTestDeviceId("6BA3752AF66F8D8553248A71886E648D");//set an unique test device ID
+        //TODO set the custom ads layout if you wish. NOTE you have to set your admob unit ID in this XML.
+        //It doesn't work for me if I set the unit ID in code with the method setAdUnitID() so it seems to be a bug
+        //adapterWrapper.setExpressAdsLayoutId(R.layout.adexpresslistview_item);
         adapterWrapper.setAdapter(adapter); //wrapping your adapter with a AdmobExpressRecyclerAdapterWrapper.
         //here you can use the following string to set your custom layouts for a different types of native ads
         //adapterWrapper.setInstallAdsLayoutId(R.layout.your_installad_layout);

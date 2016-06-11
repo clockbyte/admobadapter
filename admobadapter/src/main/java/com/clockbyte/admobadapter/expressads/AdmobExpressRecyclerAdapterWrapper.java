@@ -22,6 +22,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.clockbyte.admobadapter.AdmobFetcherBase;
 import com.clockbyte.admobadapter.R;
@@ -59,7 +60,6 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View>
     AdmobFetcherExpress adFetcher;
     Context mContext;
 
-    private static final int VIEW_TYPE_COUNT = 1;
     private static final int VIEW_TYPE_AD_EXPRESS = 1;
 
     private final static int DEFAULT_NO_OF_DATA_BETWEEN_ADS = 10;
@@ -103,36 +103,20 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View>
         this.mLimitOfAds = mLimitOfAds;
     }
 
-    private int mContentAdsLayoutId;
+    private int mExpressAdsLayoutId;
 
     /*
-    * Gets the res layout id for published content ads {@link https://support.google.com/admob/answer/6240809}
+    * Gets the res layout id for published express ads
     */
-    public int getContentAdsLayoutId() {
-        return mContentAdsLayoutId;
+    public int getExpressAdsLayoutId() {
+        return mExpressAdsLayoutId;
     }
 
     /*
-    * Sets the res layout id for published content ads {@link https://support.google.com/admob/answer/6240809}
+    * Sets the res layout id for published express ads
     */
-    public void setContentAdsLayoutId(int mContentAdsLayoutId) {
-        this.mContentAdsLayoutId = mContentAdsLayoutId;
-    }
-
-    private int mInstallAdsLayoutId;
-
-    /*
-    * Gets the res layout id for published install app ads {@link https://support.google.com/admob/answer/6240809}
-    */
-    public int getInstallAdsLayoutId() {
-        return mInstallAdsLayoutId;
-    }
-
-    /*
-    * Sets the res layout id for published install app ads {@link https://support.google.com/admob/answer/6240809}
-    */
-    public void setInstallAdsLayoutId(int mInstallAdsLayoutId) {
-        this.mInstallAdsLayoutId = mInstallAdsLayoutId;
+    public void setExpressAdsLayoutId(int mExpressAdsLayoutId) {
+        this.mExpressAdsLayoutId = mExpressAdsLayoutId;
     }
 
     /*
@@ -142,20 +126,10 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View>
         adFetcher.setTestDeviceId(testDeviceId);
     }
 
-    /*
-    *Sets a release unit ID for admob banners. ID should be active, please check it in your Admob's account.
-    * Be careful: don't set it or set to null if you still haven't deployed a Release.
-    * Otherwise your Admob account could be banned
-    */
-    public void setAdmobReleaseUnitId(String admobReleaseUnitId) {
-        adFetcher.setAdmobReleaseUnitId(admobReleaseUnitId);
-    }
-
     public AdmobExpressRecyclerAdapterWrapper(Context context) {
         setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
         setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
-        setContentAdsLayoutId(R.layout.adcontentlistview_item);
-        setInstallAdsLayoutId(R.layout.adinstalllistview_item);
+        setExpressAdsLayoutId(R.layout.adexpresslistview_item);
         mContext = context;
 
         adFetcher = new AdmobFetcherExpress(mContext);
@@ -195,7 +169,7 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View>
         LayoutInflater inflater = (LayoutInflater) parent.getContext()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         NativeExpressAdView adView = (NativeExpressAdView) inflater
-                .inflate(R.layout.adexpresslistview_item, parent, false);
+                .inflate(getExpressAdsLayoutId(), parent, false);
         return adView;
     }
 

@@ -58,7 +58,7 @@ public class MainActivity_RecyclerView extends Activity {
         //String admobUnitId = getResources().getString(R.string.banner_admob_unit_id);
         //adapterWrapper.setAdmobReleaseUnitId(admobUnitId);
 
-        rvMessages.setAdapter(adapterWrapper); // setting an AdmobRecyclerAdapterWrapper to a ListView
+        rvMessages.setAdapter(adapterWrapper); // setting an AdmobRecyclerAdapterWrapper to a RecyclerView
 
         //preparing the collection of data
         final String sItem = "item #";

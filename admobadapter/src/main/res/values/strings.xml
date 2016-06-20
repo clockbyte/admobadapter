@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">admobadapter</string>
-    <string name="test_admob_unit_id">ca-app-pub-3940256099942544/3986624511</string>
-    <string name="test_admob_express_unit_id">ca-app-pub-3940256099942544/1072772517</string>
+    <string name="test_admob_unit_id">ca-app-pub-0101818484053803/8523366214</string>
+    <string name="test_admob_express_unit_id">ca-app-pub-0101818484053803/8523366214</string>
 </resources>

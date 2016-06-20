@@ -19,14 +19,10 @@ package com.clockbyte.admobadapter.expressads;
 
 import android.content.Context;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 
 import com.clockbyte.admobadapter.AdmobFetcherBase;
-import com.clockbyte.admobadapter.R;
 import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.NativeExpressAdView;
 
 import java.lang.ref.WeakReference;

@@ -50,13 +50,15 @@ public class MainActivity_RecyclerView_Express extends Activity {
         adapterWrapper.setAdapter(adapter); //wrapping your adapter with a AdmobExpressRecyclerAdapterWrapper.
 
         //Sets the max count of ad blocks per dataset, by default it equals to 3 (according to the Admob's policies and rules)
-        adapterWrapper.setLimitOfAds(3);
+        adapterWrapper.setLimitOfAds(10);
 
         //Sets the number of your data items between ad blocks, by default it equals to 10.
         //You should set it according to the Admob's policies and rules which says not to
         //display more than one ad block at the visible part of the screen,
         // so you should choose this parameter carefully and according to your item's height and screen resolution of a target devices
         adapterWrapper.setNoOfDataBetweenAds(10);
+
+        adapterWrapper.setFirstAdIndex(0);
 
         //It's a test admob ID. Please replace it with a real one only when you will be ready to deploy your product to the Release!
         //Otherwise your Admob account could be banned

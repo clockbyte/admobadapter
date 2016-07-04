@@ -65,14 +65,17 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
     private final static int DEFAULT_LIMIT_OF_ADS = 3;
 
     private int mNoOfDataBetweenAds;
-    private int firstAdPosition = -1;
+    private int firstAdIndex = 0;
 
-    public int getFirstAdPosition() {
-        return firstAdPosition;
+    public int getFirstAdIndex() {
+        return firstAdIndex;
     }
 
-    public void setFirstAdPosition(int firstAdPosition) {
-        this.firstAdPosition = firstAdPosition;
+    /*
+    * Sets the first ad block index (zero-based) in the adapter, by default it equals to 0
+    */
+    public void setFirstAdIndex(int firstAdIndex) {
+        this.firstAdIndex = firstAdIndex;
     }
 
     /*
@@ -203,10 +206,14 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
     }
 
     public int getAdsCountToPublish(){
-        int expected = (mAdapter.getItemCount() + getOffsetValue()) / getNoOfDataBetweenAds();
-        expected += firstAdPosition > -1 ? 1 : 0;
-        int noOfAds = Math.min(adFetcher.getFetchedAdsCount(), expected);
-        return Math.min(noOfAds, getLimitOfAds());
+        //int cntFetched = adFetcher.getFetchedAdsCount();
+        //if(cntFetched == 0) return 0;
+        int expected = 0;
+        if(mAdapter.getItemCount() > 0 && mAdapter.getItemCount()>= getOffsetValue()+1)
+            expected = (mAdapter.getItemCount() - getOffsetValue()) / getNoOfDataBetweenAds() + 1;
+        expected = Math.max(0, expected);
+        //int noOfAds = Math.min(cntFetched, expected);
+        return Math.min(expected, getLimitOfAds());
     }
 
     @Override
@@ -263,13 +270,8 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
      */
     private int getAdIndex(int position) {
         int index = -1;
-        if (firstAdPosition > -1 &&
-            (position <= firstAdPosition + getNoOfDataBetweenAds()) &&
-            position >= firstAdPosition) {
-            index = 0;
-        } else if (firstAdPosition > -1 && (position > firstAdPosition + getNoOfDataBetweenAds())) {
-            index = (position + getOffsetValue()) / getNoOfDataBetweenAds();
-        }
+        if(position >= getOffsetValue())
+            index = (position - getOffsetValue()) / (getNoOfDataBetweenAds()+1);
         Log.d("POSITION", "index " + index + " for position " + position);
         return index;
     }
@@ -281,11 +283,12 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
      * @return {@code true} if an ad position, {@code false} otherwise
      */
     private boolean isAdPosition(int position) {
-        return position % (getNoOfDataBetweenAds() + 1) == getOffsetValue();
+        int result = (position - getOffsetValue()) % (getNoOfDataBetweenAds() + 1);
+        return result == 0;
     }
 
     private int getOffsetValue() {
-        return firstAdPosition > -1 ? firstAdPosition : 0;
+        return getFirstAdIndex() > 0 ? getFirstAdIndex() : 0;
     }
 
     /**
@@ -296,7 +299,7 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
      */
     private boolean isAdAvailable(int position) {
         int adIndex = getAdIndex(position);
-        int firstAdPos = getFirstAdPosition() > -1 ? getFirstAdPosition() -1 : getNoOfDataBetweenAds();
+        int firstAdPos = getOffsetValue();
 
         return position >= firstAdPos && adIndex >= 0 && adIndex < getLimitOfAds();
     }

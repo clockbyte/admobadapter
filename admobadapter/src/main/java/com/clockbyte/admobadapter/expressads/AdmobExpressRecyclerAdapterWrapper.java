@@ -65,20 +65,7 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
     private final static int DEFAULT_LIMIT_OF_ADS = 3;
 
     private int mNoOfDataBetweenAds;
-    private int firstAdIndex = 0;
-
-    public int getFirstAdIndex() {
-        return firstAdIndex;
-    }
-
-    /*
-    * Sets the first ad block index (zero-based) in the adapter, by default it equals to 0
-    */
-    public void setFirstAdIndex(int firstAdIndex) {
-        this.firstAdIndex = firstAdIndex;
-    }
-
-    /*
+   /*
     * Gets the number of your data items between ad blocks, by default it equals to 10.
     * You should set it according to the Admob's policies and rules which says not to
     * display more than one ad block at the visible part of the screen
@@ -96,6 +83,19 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
     */
     public void setNoOfDataBetweenAds(int mNoOfDataBetweenAds) {
         this.mNoOfDataBetweenAds = mNoOfDataBetweenAds;
+    }
+
+    private int firstAdIndex = 0;
+
+    public int getFirstAdIndex() {
+        return firstAdIndex;
+    }
+
+    /*
+    * Sets the first ad block index (zero-based) in the adapter, by default it equals to 0
+    */
+    public void setFirstAdIndex(int firstAdIndex) {
+        this.firstAdIndex = firstAdIndex;
     }
 
     private int mLimitOfAds;

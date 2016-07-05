@@ -19,6 +19,7 @@ package com.clockbyte.admobadapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,6 +85,19 @@ public class AdmobRecyclerAdapterWrapper<T, V extends View>
     */
     public void setNoOfDataBetweenAds(int mNoOfDataBetweenAds) {
         this.mNoOfDataBetweenAds = mNoOfDataBetweenAds;
+    }
+
+    private int firstAdIndex = 0;
+
+    public int getFirstAdIndex() {
+        return firstAdIndex;
+    }
+
+    /*
+    * Sets the first ad block index (zero-based) in the adapter, by default it equals to 0
+    */
+    public void setFirstAdIndex(int firstAdIndex) {
+        this.firstAdIndex = firstAdIndex;
     }
 
     private int mLimitOfAds;
@@ -259,9 +273,14 @@ public class AdmobRecyclerAdapterWrapper<T, V extends View>
     }
 
     public int getAdsCountToPublish(){
-        int noOfAds = Math.min(adFetcher.getFetchedAdsCount(),
-                mAdapter.getItemCount() / getNoOfDataBetweenAds());
-        return Math.min(noOfAds, getLimitOfAds());
+        //int cntFetched = adFetcher.getFetchedAdsCount();
+        //if(cntFetched == 0) return 0;
+        int expected = 0;
+        if(mAdapter.getItemCount() > 0 && mAdapter.getItemCount()>= getOffsetValue()+1)
+            expected = (mAdapter.getItemCount() - getOffsetValue()) / getNoOfDataBetweenAds() + 1;
+        expected = Math.max(0, expected);
+        //int noOfAds = Math.min(cntFetched, expected);
+        return Math.min(expected, getLimitOfAds());
     }
 
     /**
@@ -308,8 +327,11 @@ public class AdmobRecyclerAdapterWrapper<T, V extends View>
     protected int getOriginalContentPosition(int position) {
         int noOfAds = getAdsCountToPublish();
         // No of spaces for ads in the dataset, according to ad placement rules
-        int adSpacesCount = position / (getNoOfDataBetweenAds() + 1);
-        return position - Math.min(adSpacesCount, noOfAds);
+        int adSpacesCount = (getAdIndex(position) + 1);
+        int originalPosition = position - Math.min(adSpacesCount, noOfAds);
+        Log.d("POSITION", position + " is originally " + originalPosition);
+
+        return originalPosition;
     }
 
     /**
@@ -334,7 +356,11 @@ public class AdmobRecyclerAdapterWrapper<T, V extends View>
      * @return the index of the ad within the list of fetched ads
      */
     private int getAdIndex(int position) {
-        return (position / getNoOfDataBetweenAds()) - 1;
+        int index = -1;
+        if(position >= getOffsetValue())
+            index = (position - getOffsetValue()) / (getNoOfDataBetweenAds()+1);
+        Log.d("POSITION", "index " + index + " for position " + position);
+        return index;
     }
 
     /**
@@ -344,7 +370,12 @@ public class AdmobRecyclerAdapterWrapper<T, V extends View>
      * @return {@code true} if an ad position, {@code false} otherwise
      */
     private boolean isAdPosition(int position) {
-        return (position + 1) % (getNoOfDataBetweenAds() + 1) == 0;
+        int result = (position - getOffsetValue()) % (getNoOfDataBetweenAds() + 1);
+        return result == 0;
+    }
+
+    private int getOffsetValue() {
+        return getFirstAdIndex() > 0 ? getFirstAdIndex() : 0;
     }
 
     /**
@@ -355,10 +386,9 @@ public class AdmobRecyclerAdapterWrapper<T, V extends View>
      */
     private boolean isAdAvailable(int position) {
         int adIndex = getAdIndex(position);
-        return position >= getNoOfDataBetweenAds()
-                && adIndex >= 0
-                && adIndex < getLimitOfAds()
-                && adFetcher.getFetchedAdsCount() > adIndex;
+        int firstAdPos = getOffsetValue();
+
+        return position >= firstAdPos && adIndex >= 0 && adIndex < getLimitOfAds();
     }
 
     /**

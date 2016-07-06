@@ -1,7 +1,7 @@
 Admob Adapter
 ======================
 
-The reference to the [DOCUMENTATION] for people who are in hurry!(https://github.com/clockbyte/admobadapter/wiki/Cookbook)
+The reference to the [DOCUMENTATION](https://github.com/clockbyte/admobadapter/wiki/Cookbook) for people who are in hurry!
 
 Admob Adapter is an Android library that makes it easy to integrate [Admob native ads](https://firebase.google.com/docs/admob/android/native) (both Express and Advanced) into ```ListView/RecyclerView``` in the way that is shown in the following image/animation.
 

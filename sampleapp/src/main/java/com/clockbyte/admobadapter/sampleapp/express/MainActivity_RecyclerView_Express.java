@@ -58,6 +58,8 @@ public class MainActivity_RecyclerView_Express extends Activity {
         // so you should choose this parameter carefully and according to your item's height and screen resolution of a target devices
         adapterWrapper.setNoOfDataBetweenAds(10);
 
+        adapterWrapper.setFirstAdIndex(2);
+
         //It's a test admob ID. Please replace it with a real one only when you will be ready to deploy your product to the Release!
         //Otherwise your Admob account could be banned
         //String admobUnitId = getResources().getString(R.string.banner_admob_unit_id);

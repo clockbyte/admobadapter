@@ -9,6 +9,8 @@ Admob Adapter is an Android library that makes it easy to integrate [Admob nativ
 
 ![](https://raw.githubusercontent.com/clockbyte/admobadapter/master/screenshots/ezgif.com-gif-maker.gif "Demo gif")
 
+You can read the rest info at the [project's home page](https://github.com/clockbyte/admobadapter/wiki/Home) if you wish.
+
 #Main features
 
 * Publish of the native ads without changing the logic of your ```Adapter```

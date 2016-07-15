@@ -145,10 +145,10 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     }
 
     /*
-    *Sets a test device ID. Normally you don't have to set it
+    *Add a test device ID.
     */
-    public void setTestDeviceId(String testDeviceId) {
-        adFetcher.setTestDeviceId(testDeviceId);
+    public void addTestDeviceId(String testDeviceId) {
+        adFetcher.addTestDeviceId(testDeviceId);
     }
 
     /*

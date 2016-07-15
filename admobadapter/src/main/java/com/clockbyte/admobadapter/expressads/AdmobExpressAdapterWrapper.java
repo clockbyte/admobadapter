@@ -131,10 +131,10 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     }
 
     /*
-    *Sets a test device ID. Normally you don't have to set it
+    *Add a test device ID.
     */
-    public void setTestDeviceId(String testDeviceId) {
-        adFetcher.setTestDeviceId(testDeviceId);
+    public void addTestDeviceId(String testDeviceId) {
+        adFetcher.addTestDeviceId(testDeviceId);
     }
 
     public AdmobExpressAdapterWrapper(Context context) {

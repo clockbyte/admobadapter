@@ -7,6 +7,7 @@ import android.widget.ListView;
 
 import com.clockbyte.admobadapter.expressads.AdmobExpressAdapterWrapper;
 import com.clockbyte.admobadapter.sampleapp.R;
+import com.google.android.gms.ads.AdRequest;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -42,7 +43,8 @@ public class MainActivity_ListView_Express extends Activity {
         //TODO it's important to set your test device ID (you can find it in LogCat after launching the debug session i.e. by word "test")
         //if you launch app on emulator and experience some troubles
         // try passing the constant AdRequest.DEVICE_ID_EMULATOR
-        adapterWrapper.setTestDeviceId(getString(R.string.testDeviceID));//set an unique test device ID
+        adapterWrapper.addTestDeviceId(getString(R.string.testDeviceID));//set an unique test device ID
+        adapterWrapper.addTestDeviceId(AdRequest.DEVICE_ID_EMULATOR);
         //TODO set the custom ads layout if you wish. NOTE you have to set your admob unit ID in this XML.
         //It doesn't work for me if I set the unit ID in code with the method setAdUnitID() so it seems to be a bug
         //adapterWrapper.setExpressAdsLayoutId(R.layout.adexpresslistview_item);

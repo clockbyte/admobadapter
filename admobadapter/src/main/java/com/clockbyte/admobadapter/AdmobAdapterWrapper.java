@@ -152,6 +152,14 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     }
 
     /*
+*Sets a test device ID. Normally you don't have to set it
+*/
+    @Deprecated
+    public void setTestDeviceId(String testDeviceId) {
+        adFetcher.addTestDeviceId(testDeviceId);
+    }
+
+    /*
     *Sets a release unit ID for admob banners. ID should be active, please check it in your Admob's account.
     * Be careful: don't set it or set to null if you still haven't deployed a Release.
     * Otherwise your Admob account could be banned

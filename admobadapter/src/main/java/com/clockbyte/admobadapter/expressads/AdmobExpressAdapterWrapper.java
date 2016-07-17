@@ -23,12 +23,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 
 import com.clockbyte.admobadapter.AdmobAdapterCalculator;
 import com.clockbyte.admobadapter.AdmobAdapterWrapperInterface;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
 import com.clockbyte.admobadapter.R;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.NativeExpressAdView;
 
 /**
@@ -70,6 +72,8 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
 
     private final static int DEFAULT_NO_OF_DATA_BETWEEN_ADS = 10;
     private final static int DEFAULT_LIMIT_OF_ADS = 3;
+    private static final AdSize DEFAULT_AD_SIZE = new AdSize(AdSize.FULL_WIDTH, 150);
+    private static final String DEFAULT_AD_UNIT_ID = "ca-app-pub-3940256099942544/1072772517";
 
     /*
     * Gets the number of your data items between ad blocks, by default it equals to 10.
@@ -114,20 +118,20 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
         AdapterCalculator.setLimitOfAds(mLimitOfAds);
     }
 
-    private int mExpressAdsLayoutId;
+    private String mAdsUnitId;
 
     /*
     * Gets the res layout id for published express ads
     */
-    public int getExpressAdsLayoutId() {
-        return mExpressAdsLayoutId;
+    public String getAdsUnitId() {
+        return mAdsUnitId;
     }
 
     /*
     * Sets the res layout id for published express ads
     */
-    public void setExpressAdsLayoutId(int mExpressAdsLayoutId) {
-        this.mExpressAdsLayoutId = mExpressAdsLayoutId;
+    public void setAdsUnitId(String mAdsUnitId) {
+        this.mAdsUnitId = mAdsUnitId;
     }
 
     /*
@@ -137,10 +141,35 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
         adFetcher.addTestDeviceId(testDeviceId);
     }
 
+    /*
+    *Sets a test device ID. Normally you don't have to set it
+    */
+    @Deprecated
+    public void setTestDeviceId(String testDeviceId) {
+        adFetcher.addTestDeviceId(testDeviceId);
+    }
+
+    private AdSize mAdSize;
+
+    /*
+    * Gets ad size
+    */
+    public AdSize getAdSize() {
+        return mAdSize;
+    }
+
+    /*
+    * Sets ad size
+    */
+    public void setAdSize(AdSize mAdSize) {
+        this.mAdSize = mAdSize;
+    }
+
     public AdmobExpressAdapterWrapper(Context context) {
         setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
         setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
-        setExpressAdsLayoutId(R.layout.adexpresslistview_item);
+        setAdsUnitId(DEFAULT_AD_UNIT_ID);
+        setAdSize(DEFAULT_AD_SIZE);
         mContext = context;
 
         adFetcher = new AdmobFetcherExpress(mContext);
@@ -168,11 +197,11 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     }
 
     private NativeExpressAdView getExpressAdView(ViewGroup parent) {
-        // Inflate a layout and add it to the parent ViewGroup.
-        LayoutInflater inflater = (LayoutInflater) parent.getContext()
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        NativeExpressAdView adView = (NativeExpressAdView) inflater
-                .inflate(getExpressAdsLayoutId(), parent, false);
+        NativeExpressAdView adView = new NativeExpressAdView(mContext);
+        adView.setAdSize(getAdSize());
+        adView.setAdUnitId(getAdsUnitId());
+        adView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,
+                AbsListView.LayoutParams.WRAP_CONTENT));
         return adView;
     }
 

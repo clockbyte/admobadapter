@@ -19,8 +19,6 @@ package com.clockbyte.admobadapter.expressads;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -30,6 +28,7 @@ import com.clockbyte.admobadapter.AdmobFetcherBase;
 import com.clockbyte.admobadapter.R;
 import com.clockbyte.admobadapter.RecyclerViewAdapterBase;
 import com.clockbyte.admobadapter.ViewWrapper;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.NativeExpressAdView;
 
 /**
@@ -41,13 +40,13 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
 
     private final String TAG = AdmobExpressRecyclerAdapterWrapper.class.getCanonicalName();
 
-    private RecyclerViewAdapterBase<T,V> mAdapter;
+    private RecyclerViewAdapterBase<T, V> mAdapter;
 
-    public RecyclerViewAdapterBase<T,V> getAdapter() {
+    public RecyclerViewAdapterBase<T, V> getAdapter() {
         return mAdapter;
     }
 
-    public void setAdapter(RecyclerViewAdapterBase<T,V> adapter) {
+    public void setAdapter(RecyclerViewAdapterBase<T, V> adapter) {
         mAdapter = adapter;
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -66,6 +65,8 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
 
     private final static int DEFAULT_NO_OF_DATA_BETWEEN_ADS = 10;
     private final static int DEFAULT_LIMIT_OF_ADS = 3;
+    private static final AdSize DEFAULT_AD_SIZE = new AdSize(AdSize.FULL_WIDTH, 150);
+    private static final String DEFAULT_AD_UNIT_ID = "ca-app-pub-3940256099942544/1072772517";
 
     /*
     * Gets the number of your data items between ad blocks, by default it equals to 10.
@@ -76,6 +77,7 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
     public int getNoOfDataBetweenAds() {
         return AdapterCalculator.getNoOfDataBetweenAds();
     }
+
     /*
     * Sets the number of your data items between ad blocks, by default it equals to 10.
     * You should set it according to the Admob's policies and rules which says not to
@@ -89,6 +91,7 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
     public int getFirstAdIndex() {
         return AdapterCalculator.getFirstAdIndex();
     }
+
     /*
     * Sets the first ad block index (zero-based) in the adapter, by default it equals to 0
     */
@@ -110,20 +113,20 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
         AdapterCalculator.setLimitOfAds(mLimitOfAds);
     }
 
-    private int mExpressAdsLayoutId;
+    private String mAdsUnitId;
 
     /*
     * Gets the res layout id for published express ads
     */
-    public int getExpressAdsLayoutId() {
-        return mExpressAdsLayoutId;
+    public String getAdsUnitId() {
+        return mAdsUnitId;
     }
 
     /*
     * Sets the res layout id for published express ads
     */
-    public void setExpressAdsLayoutId(int mExpressAdsLayoutId) {
-        this.mExpressAdsLayoutId = mExpressAdsLayoutId;
+    public void setAdsUnitId(String mAdsUnitId) {
+        this.mAdsUnitId = mAdsUnitId;
     }
 
     /*
@@ -133,10 +136,35 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
         adFetcher.addTestDeviceId(testDeviceId);
     }
 
+    /*
+    *Sets a test device ID. Normally you don't have to set it
+    */
+    @Deprecated
+    public void setTestDeviceId(String testDeviceId) {
+        adFetcher.addTestDeviceId(testDeviceId);
+    }
+
+    private AdSize mAdSize;
+
+    /*
+    * Gets ad size
+    */
+    public AdSize getAdSize() {
+        return mAdSize;
+    }
+
+    /*
+    * Sets ad size
+    */
+    public void setAdSize(AdSize mAdSize) {
+        this.mAdSize = mAdSize;
+    }
+
     public AdmobExpressRecyclerAdapterWrapper(Context context) {
         setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
         setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
-        setExpressAdsLayoutId(R.layout.adexpresslistview_item);
+        setAdsUnitId(DEFAULT_AD_UNIT_ID);
+        setAdSize(DEFAULT_AD_SIZE);
         mContext = context;
 
         adFetcher = new AdmobFetcherExpress(mContext);
@@ -145,10 +173,10 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
 
     @Override
     public void onBindViewHolder(ViewWrapper<V> viewHolder, int position) {
-        if (viewHolder==null)
+        if (viewHolder == null)
             return;
 
-        if(viewHolder.getItemViewType()!=VIEW_TYPE_AD_EXPRESS){
+        if (viewHolder.getItemViewType() != VIEW_TYPE_AD_EXPRESS) {
             int origPos = AdapterCalculator.getOriginalContentPosition(position);
             mAdapter.onBindViewHolder(viewHolder, origPos);
         }
@@ -161,18 +189,18 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
                 NativeExpressAdView item = getExpressAdView(parent);
                 adFetcher.setupAd(item);
                 adFetcher.fetchAd(item);
-                return new ViewWrapper<V>((V)item);
+                return new ViewWrapper<V>((V) item);
             default:
                 return mAdapter.onCreateViewHolder(parent, viewType);
         }
     }
 
     private NativeExpressAdView getExpressAdView(ViewGroup parent) {
-        // Inflate a layout and add it to the parent ViewGroup.
-        LayoutInflater inflater = (LayoutInflater) parent.getContext()
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        NativeExpressAdView adView = (NativeExpressAdView) inflater
-                .inflate(getExpressAdsLayoutId(), parent, false);
+        NativeExpressAdView adView = new NativeExpressAdView(mContext);
+        adView.setAdSize(getAdSize());
+        adView.setAdUnitId(getAdsUnitId());
+        adView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,
+                RecyclerView.LayoutParams.WRAP_CONTENT));
         return adView;
     }
 

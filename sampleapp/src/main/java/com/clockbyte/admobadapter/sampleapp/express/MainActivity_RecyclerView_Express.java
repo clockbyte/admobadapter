@@ -9,6 +9,8 @@ import com.clockbyte.admobadapter.expressads.AdmobExpressRecyclerAdapterWrapper;
 import com.clockbyte.admobadapter.sampleapp.R;
 import com.clockbyte.admobadapter.sampleapp.RecyclerExampleAdapter;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -24,6 +26,10 @@ public class MainActivity_RecyclerView_Express extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_recycleview);
+
+        //highly-recommended in Firebase docs to initialize things early as possible
+        //test_admob_app_id is different with unit_id! you could get it in your Admob console
+        MobileAds.initialize(getApplicationContext(), getString(R.string.test_admob_app_id));
 
         initRecyclerViewItems();
         initUpdateAdsTimer();
@@ -61,11 +67,10 @@ public class MainActivity_RecyclerView_Express extends Activity {
         adapterWrapper.setNoOfDataBetweenAds(10);
 
         adapterWrapper.setFirstAdIndex(2);
-
-        //It's a test admob ID. Please replace it with a real one only when you will be ready to deploy your product to the Release!
-        //Otherwise your Admob account could be banned
-        //String admobUnitId = getResources().getString(R.string.banner_admob_unit_id);
-        //adapterWrapper.setAdmobReleaseUnitId(admobUnitId);
+        //due to the docs you should set the ad size before ads will be loaded
+        //AdSize.FULL_WIDTH x 150 is default size.
+        adapterWrapper.setAdSize(new AdSize(AdSize.FULL_WIDTH,150));
+        adapterWrapper.setAdsUnitId(getString(R.string.test_admob_express_unit_id));
 
         rvMessages.setAdapter(adapterWrapper); // setting an AdmobExpressRecyclerAdapterWrapper to a RecyclerView
 

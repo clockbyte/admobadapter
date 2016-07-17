@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.ArrayAdapter;
 
 import com.clockbyte.admobadapter.AdmobRecyclerAdapterWrapper;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -22,6 +23,10 @@ public class MainActivity_RecyclerView extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_recycleview);
+
+        //highly-recommended in Firebase docs to initialize things early as possible
+        //test_admob_app_id is different with unit_id! you could get it in your Admob console
+        MobileAds.initialize(getApplicationContext(), getString(R.string.test_admob_app_id));
 
         initRecyclerViewItems();
         initUpdateAdsTimer();

@@ -62,18 +62,18 @@ public abstract class AdmobFetcherBase {
         this.admobReleaseUnitId = admobReleaseUnitId;
     }
 
-    protected String testDeviceId;
+    protected ArrayList<String> testDeviceId = new ArrayList<String>();
     /*
     *Gets a test device ID. Normally you don't have to set it
      */
-    public String getTestDeviceId() {
+    public ArrayList<String> getTestDeviceIds() {
         return testDeviceId;
     }
     /*
     *Sets a test device ID. Normally you don't have to set it
      */
-    public void setTestDeviceId(String testDeviceId) {
-        this.testDeviceId = testDeviceId;
+    public void addTestDeviceId(String testDeviceId) {
+        this.testDeviceId.add(testDeviceId);
     }
 
     /**
@@ -133,11 +133,10 @@ public abstract class AdmobFetcherBase {
      */
     protected synchronized AdRequest getAdRequest() {
         AdRequest.Builder adBldr = new AdRequest.Builder();
-        if(!TextUtils.isEmpty(getTestDeviceId()))
-            adBldr.addTestDevice(getTestDeviceId());
+        for (String id : getTestDeviceIds()) {
+            adBldr.addTestDevice(id);
+        }
         return adBldr.build();
-        //.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-        // All emulators are added by default as test devices
     }
 
     /**

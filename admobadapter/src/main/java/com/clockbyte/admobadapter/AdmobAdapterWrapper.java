@@ -19,6 +19,7 @@ package com.clockbyte.admobadapter;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +33,7 @@ import com.google.android.gms.ads.formats.*;
  * Adapter that has common functionality for any adapters that need to show ads in-between
  * other data.
  */
-public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase.AdmobListener {
+public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase.AdmobListener, AdmobAdapterWrapperInterface {
 
     private final String TAG = AdmobAdapterWrapper.class.getCanonicalName();
 
@@ -59,6 +60,17 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
 
     AdmobFetcher adFetcher;
     Context mContext;
+    private AdmobAdapterCalculator AdapterCalculator = new AdmobAdapterCalculator(this);
+    /*
+    * Gets an object which incapsulates transformation of the source and ad blocks indices
+    */
+    public AdmobAdapterCalculator getAdapterCalculator(){return AdapterCalculator;}
+    /*
+* Injects an object which incapsulates transformation of the source and ad blocks indices. You could override calculations
+* by inheritance of AdmobAdapterCalculator class
+*/
+    public void setAdapterCalculator(AdmobAdapterCalculator adapterCalculatordmob){AdapterCalculator = adapterCalculatordmob;}
+
 
     private static final int VIEW_TYPE_COUNT = 2;
     private static final int VIEW_TYPE_AD_CONTENT = 1;
@@ -67,8 +79,6 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     private final static int DEFAULT_NO_OF_DATA_BETWEEN_ADS = 10;
     private final static int DEFAULT_LIMIT_OF_ADS = 3;
 
-    private int mNoOfDataBetweenAds;
-
     /*
     * Gets the number of your data items between ad blocks, by default it equals to 10.
     * You should set it according to the Admob's policies and rules which says not to
@@ -76,9 +86,8 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     * so you should choose this parameter carefully and according to your item's height and screen resolution of a target devices
     */
     public int getNoOfDataBetweenAds() {
-        return mNoOfDataBetweenAds;
+        return AdapterCalculator.getNoOfDataBetweenAds();
     }
-
     /*
     * Sets the number of your data items between ad blocks, by default it equals to 10.
     * You should set it according to the Admob's policies and rules which says not to
@@ -86,23 +95,31 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     * so you should choose this parameter carefully and according to your item's height and screen resolution of a target devices
     */
     public void setNoOfDataBetweenAds(int mNoOfDataBetweenAds) {
-        this.mNoOfDataBetweenAds = mNoOfDataBetweenAds;
+        AdapterCalculator.setNoOfDataBetweenAds(mNoOfDataBetweenAds);
     }
 
-    private int mLimitOfAds;
+    public int getFirstAdIndex() {
+        return AdapterCalculator.getFirstAdIndex();
+    }
+    /*
+    * Sets the first ad block index (zero-based) in the adapter, by default it equals to 0
+    */
+    public void setFirstAdIndex(int firstAdIndex) {
+        AdapterCalculator.setFirstAdIndex(firstAdIndex);
+    }
 
     /*
     * Gets the max count of ad blocks per dataset, by default it equals to 3 (according to the Admob's policies and rules)
     */
     public int getLimitOfAds() {
-        return mLimitOfAds;
+        return AdapterCalculator.getLimitOfAds();
     }
 
     /*
     * Sets the max count of ad blocks per dataset, by default it equals to 3 (according to the Admob's policies and rules)
     */
     public void setLimitOfAds(int mLimitOfAds) {
-        this.mLimitOfAds = mLimitOfAds;
+        AdapterCalculator.setLimitOfAds(mLimitOfAds);
     }
 
     private int mContentAdsLayoutId;
@@ -138,10 +155,18 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     }
 
     /*
-    *Sets a test device ID. Normally you don't have to set it
+    *Add a test device ID.
     */
+    public void addTestDeviceId(String testDeviceId) {
+        adFetcher.addTestDeviceId(testDeviceId);
+    }
+
+    /*
+*Sets a test device ID. Normally you don't have to set it
+*/
+    @Deprecated
     public void setTestDeviceId(String testDeviceId) {
-        adFetcher.setTestDeviceId(testDeviceId);
+        adFetcher.addTestDeviceId(testDeviceId);
     }
 
     /*
@@ -191,7 +216,7 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
                 }
                 return lvi2;
             default:
-                int origPos = getOriginalContentPosition(position);
+                int origPos = AdapterCalculator.getOriginalContentPosition(position);
                 return mAdapter.getView(origPos, convertView, parent);
         }
     }
@@ -238,17 +263,11 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
             No of currently fetched ads, as long as it isn't more than no of max ads that can
             fit dataset.
              */
-            int noOfAds = getAdsCountToPublish();
+            int noOfAds = AdapterCalculator.getAdsCountToPublish();
             return mAdapter.getCount() > 0 ? mAdapter.getCount() + noOfAds : 0;
         } else {
             return 0;
         }
-    }
-
-    public int getAdsCountToPublish(){
-        int noOfAds = Math.min(adFetcher.getFetchedAdsCount(),
-                mAdapter.getCount() / getNoOfDataBetweenAds());
-        return Math.min(noOfAds, getLimitOfAds());
     }
 
     /**
@@ -261,11 +280,11 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     @Override
     public Object getItem(int position) {
 
-        if (canShowAdAtPosition(position)) {
-            int adPos = getAdIndex(position);
+        if (AdapterCalculator.canShowAdAtPosition(position)) {
+            int adPos = AdapterCalculator.getAdIndex(position);
             return adFetcher.getAdForIndex(adPos);
         } else {
-            int origPos = getOriginalContentPosition(position);
+            int origPos = AdapterCalculator.getOriginalContentPosition(position);
             return mAdapter.getItem(origPos);
         }
     }
@@ -282,76 +301,14 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
 
     @Override
     public int getItemViewType(int position) {
-        if (canShowAdAtPosition(position)) {
-            int adPos = getAdIndex(position);
+        if (AdapterCalculator.canShowAdAtPosition(position)) {
+            int adPos = AdapterCalculator.getAdIndex(position);
             NativeAd ad = adFetcher.getAdForIndex(adPos);
             return ad instanceof NativeAppInstallAd ? VIEW_TYPE_AD_INSTALL : VIEW_TYPE_AD_CONTENT;
         } else {
-            int origPos = getOriginalContentPosition(position);
+            int origPos = AdapterCalculator.getOriginalContentPosition(position);
             return mAdapter.getItemViewType(origPos);
         }
-    }
-
-    /**
-     * Translates an adapter position to an actual position within the underlying dataset.
-     *
-     * @param position the adapter position
-     * @return the original position that the adapter position would have been without ads
-     */
-    protected int getOriginalContentPosition(int position) {
-        int noOfAds = getAdsCountToPublish();
-        // No of spaces for ads in the dataset, according to ad placement rules
-        int adSpacesCount = position / (getNoOfDataBetweenAds() + 1);
-        return position - Math.min(adSpacesCount, noOfAds);
-    }
-
-    /**
-     * Determines if an ad can be shown at the given position. Checks if the position is for
-     * an ad, using the preconfigured ad positioning rules; and if a native ad object is
-     * available to place in that position.
-     *
-     * @param position the adapter position
-     * @return <code>true</code> if ads can
-     */
-    protected boolean canShowAdAtPosition(int position) {
-
-        // Is this a valid position for an ad?
-        // Is an ad for this position available?
-        return isAdPosition(position) && isAdAvailable(position);
-    }
-
-    /**
-     * Gets the ad index for this adapter position within the list of currently fetched ads.
-     *
-     * @param position the adapter position
-     * @return the index of the ad within the list of fetched ads
-     */
-    private int getAdIndex(int position) {
-        return (position / getNoOfDataBetweenAds()) - 1;
-    }
-
-    /**
-     * Checks if adapter position is an ad position.
-     *
-     * @param position the adapter position
-     * @return {@code true} if an ad position, {@code false} otherwise
-     */
-    private boolean isAdPosition(int position) {
-        return (position + 1) % (getNoOfDataBetweenAds() + 1) == 0;
-    }
-
-    /**
-     * Checks if an ad is available for this position.
-     *
-     * @param position the adapter position
-     * @return {@code true} if an ad is available, {@code false} otherwise
-     */
-    private boolean isAdAvailable(int position) {
-        int adIndex = getAdIndex(position);
-        return position >= getNoOfDataBetweenAds()
-                && adIndex >= 0
-                && adIndex < getLimitOfAds()
-                && adFetcher.getFetchedAdsCount() > adIndex;
     }
 
     /**
@@ -372,5 +329,10 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     public void onAdCountChanged() {
 
         notifyDataSetChanged();
+    }
+
+    @Override
+    public int getAdapterCount() {
+        return mAdapter.getCount();
     }
 }

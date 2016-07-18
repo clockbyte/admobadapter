@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.clockbyte.admobadapter.AdmobAdapterWrapper;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -20,6 +21,10 @@ public class MainActivity_ListView extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_listview);
+
+        //highly-recommended in Firebase docs to initialize things early as possible
+        //test_admob_app_id is different with unit_id! you could get it in your Admob console
+        MobileAds.initialize(getApplicationContext(), getString(R.string.test_admob_app_id));
 
         initListViewItems();
         initUpdateAdsTimer();
@@ -50,6 +55,8 @@ public class MainActivity_ListView extends Activity {
         //display more than one ad block at the visible part of the screen,
         // so you should choose this parameter carefully and according to your item's height and screen resolution of a target devices
         adapterWrapper.setNoOfDataBetweenAds(10);
+
+        adapterWrapper.setFirstAdIndex(2);
 
         //It's a test admob ID. Please replace it with a real one only when you will be ready to deploy your product to the Release!
         //Otherwise your Admob account could be banned

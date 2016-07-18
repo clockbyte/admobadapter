@@ -7,6 +7,9 @@ import android.widget.ListView;
 
 import com.clockbyte.admobadapter.expressads.AdmobExpressAdapterWrapper;
 import com.clockbyte.admobadapter.sampleapp.R;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -22,6 +25,10 @@ public class MainActivity_ListView_Express extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_listview);
+
+        //highly-recommended in Firebase docs to initialize things early as possible
+        //test_admob_app_id is different with unit_id! you could get it in your Admob console
+        MobileAds.initialize(getApplicationContext(), getString(R.string.test_admob_app_id));
 
         initListViewItems();
         initUpdateAdsTimer();
@@ -42,7 +49,8 @@ public class MainActivity_ListView_Express extends Activity {
         //TODO it's important to set your test device ID (you can find it in LogCat after launching the debug session i.e. by word "test")
         //if you launch app on emulator and experience some troubles
         // try passing the constant AdRequest.DEVICE_ID_EMULATOR
-        adapterWrapper.setTestDeviceId(getString(R.string.testDeviceID));//set an unique test device ID
+        adapterWrapper.addTestDeviceId(getString(R.string.testDeviceID));//set an unique test device ID
+        adapterWrapper.addTestDeviceId(AdRequest.DEVICE_ID_EMULATOR);
         //TODO set the custom ads layout if you wish. NOTE you have to set your admob unit ID in this XML.
         //It doesn't work for me if I set the unit ID in code with the method setAdUnitID() so it seems to be a bug
         //adapterWrapper.setExpressAdsLayoutId(R.layout.adexpresslistview_item);
@@ -57,10 +65,11 @@ public class MainActivity_ListView_Express extends Activity {
         // so you should choose this parameter carefully and according to your item's height and screen resolution of a target devices
         adapterWrapper.setNoOfDataBetweenAds(10);
 
-        //It's a test admob ID. Please replace it with a real one only when you will be ready to deploy your product to the Release!
-        //Otherwise your Admob account could be banned
-        //String admobUnitId = getResources().getString(R.string.banner_admob_unit_id);
-        //adapterWrapper.setAdmobReleaseUnitId(admobUnitId);
+        adapterWrapper.setFirstAdIndex(2);
+        //due to the docs you should set the ad size before ads will be loaded
+        //AdSize.FULL_WIDTH x 150 is default size.
+        adapterWrapper.setAdSize(new AdSize(AdSize.FULL_WIDTH,150));
+        adapterWrapper.setAdsUnitId(getString(R.string.test_admob_express_unit_id));
 
         lvMessages.setAdapter(adapterWrapper); // setting an AdmobAdapterWrapper to a ListView
 

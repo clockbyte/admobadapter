@@ -21,13 +21,13 @@ import android.util.Log;
 
 public class AdmobAdapterCalculator {
 
-    private AdmobAdapterWrapperInterface mAdmobAdapter;
+    protected AdmobAdapterWrapperInterface mAdmobAdapter;
 
     public AdmobAdapterCalculator(AdmobAdapterWrapperInterface admobAdapter){
         mAdmobAdapter = admobAdapter;
     }
 
-    private int mNoOfDataBetweenAds;
+    protected int mNoOfDataBetweenAds;
     /*
     * Gets the number of your data items between ad blocks, by default it equals to 10.
     * You should set it according to the Admob's policies and rules which says not to
@@ -48,7 +48,7 @@ public class AdmobAdapterCalculator {
         this.mNoOfDataBetweenAds = mNoOfDataBetweenAds;
     }
 
-    private int firstAdIndex = 0;
+    protected int firstAdIndex = 0;
 
     public int getFirstAdIndex() {
         return firstAdIndex;
@@ -61,7 +61,7 @@ public class AdmobAdapterCalculator {
         this.firstAdIndex = firstAdIndex;
     }
 
-    private int mLimitOfAds;
+    protected int mLimitOfAds;
 
     /*
     * Gets the max count of ad blocks per dataset, by default it equals to 3 (according to the Admob's policies and rules)

@@ -59,7 +59,17 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
 
     AdmobFetcherExpress adFetcher;
     Context mContext;
-    private final AdmobAdapterCalculator AdapterCalculator = new AdmobAdapterCalculator(this);
+    private AdmobAdapterCalculator AdapterCalculator = new AdmobAdapterCalculator(this);
+    /*
+    * Gets an object which incapsulates transformation of the source and ad blocks indices
+    */
+    public AdmobAdapterCalculator getAdapterCalculator(){return AdapterCalculator;}
+    /*
+* Injects an object which incapsulates transformation of the source and ad blocks indices. You could override calculations
+* by inheritance of AdmobAdapterCalculator class
+*/
+    public void setAdapterCalculator(AdmobAdapterCalculator adapterCalculatordmob){AdapterCalculator = adapterCalculatordmob;}
+
 
     private static final int VIEW_TYPE_AD_EXPRESS = 1;
 

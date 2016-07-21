@@ -100,7 +100,7 @@ public class MainActivity_RecyclerView_Express extends Activity {
                     }
                 });
             }
-        }, 60*1000, 60*1000);
+        }, 20*1000, 20*1000);
     }
 
     /*

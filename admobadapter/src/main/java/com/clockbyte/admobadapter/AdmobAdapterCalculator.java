@@ -79,13 +79,10 @@ public class AdmobAdapterCalculator {
 
 
     public int getAdsCountToPublish(){
-        //int cntFetched = adFetcher.getFetchedAdsCount();
-        //if(cntFetched == 0) return 0;
         int expected = 0;
         if(mAdmobAdapter.getAdapterCount() > 0 && mAdmobAdapter.getAdapterCount()>= getOffsetValue()+1)
             expected = (mAdmobAdapter.getAdapterCount() - getOffsetValue()) / getNoOfDataBetweenAds() + 1;
         expected = Math.max(0, expected);
-        //int noOfAds = Math.min(cntFetched, expected);
         return Math.min(expected, getLimitOfAds());
     }
 

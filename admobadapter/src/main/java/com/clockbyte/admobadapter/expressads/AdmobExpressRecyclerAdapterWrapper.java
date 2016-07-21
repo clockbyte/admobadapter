@@ -185,8 +185,8 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
     public void onBindViewHolder(ViewWrapper<V> viewHolder, int position) {
         if (viewHolder == null)
             return;
-
-        if (viewHolder.getItemViewType() != VIEW_TYPE_AD_EXPRESS) {
+        if(viewHolder.getItemViewType()!=VIEW_TYPE_AD_EXPRESS)
+        {
             int origPos = AdapterCalculator.getOriginalContentPosition(position);
             mAdapter.onBindViewHolder(viewHolder, origPos);
         }
@@ -199,7 +199,9 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
                 NativeExpressAdView item = getExpressAdView(parent);
                 adFetcher.setupAd(item);
                 adFetcher.fetchAd(item);
-                return new ViewWrapper<V>((V) item);
+                ViewWrapper viewWrapper = new ViewWrapper<V>((V) item);
+                viewWrapper.setIsRecyclable(false);
+                return viewWrapper;
             default:
                 return mAdapter.onCreateViewHolder(parent, viewType);
         }
@@ -277,5 +279,10 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
     @Override
     public int getAdapterCount() {
         return mAdapter.getItemCount();
+    }
+
+    @Override
+    public AdmobFetcherBase getAdmobFetcher() {
+        return adFetcher;
     }
 }

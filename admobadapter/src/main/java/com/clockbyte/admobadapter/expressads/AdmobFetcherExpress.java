@@ -120,8 +120,9 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     private synchronized void onAdFetched(NativeExpressAdView adNative) {
         Log.i(TAG, "onAdFetched");
         if (canUseThisAd(adNative)) {
-            mPrefetchedAdList.add(adNative);
-            mNoOfFetchedAds++;
+            if(!mPrefetchedAdList.contains(adNative))
+                mPrefetchedAdList.add(adNative);
+            mNoOfFetchedAds = mPrefetchedAdList.size();
         }
         mFetchFailCount = 0;
         notifyObserversOfAdSizeChange();
@@ -140,9 +141,10 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
      * update all the ads in Map to refresh
      * */
     public synchronized void updateAds() {
-        for (NativeExpressAdView ad: mPrefetchedAdList) {
+        /*for (NativeExpressAdView ad: mPrefetchedAdList) {
             fetchAd(ad);
-        }
+        }*/
+        mPrefetchedAdList.clear();
     }
 
 }

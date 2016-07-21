@@ -51,7 +51,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
     private AdLoader adLoader;
     private List<NativeAd> mPrefetchedAdList = new ArrayList<NativeAd>();
     private Map<Integer, NativeAd> adMapAtIndex = new HashMap<Integer, NativeAd>();
-    AtomicBoolean lockFetch = new AtomicBoolean();
+    protected AtomicBoolean lockFetch = new AtomicBoolean();
 
     /**
      * Gets native ad at a particular index in the fetched ads list.

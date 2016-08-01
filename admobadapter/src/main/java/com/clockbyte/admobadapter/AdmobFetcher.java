@@ -22,18 +22,15 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
-import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.NativeAppInstallAd;
 import com.google.android.gms.ads.formats.NativeContentAd;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AdmobFetcher extends AdmobFetcherBase{
 
@@ -51,7 +48,6 @@ public class AdmobFetcher extends AdmobFetcherBase{
     private AdLoader adLoader;
     private List<NativeAd> mPrefetchedAdList = new ArrayList<NativeAd>();
     private Map<Integer, NativeAd> adMapAtIndex = new HashMap<Integer, NativeAd>();
-    protected AtomicBoolean lockFetch = new AtomicBoolean();
 
     /**
      * Gets native ad at a particular index in the fetched ads list.
@@ -210,8 +206,10 @@ public class AdmobFetcher extends AdmobFetcherBase{
      */
     private synchronized void onAdFetched(NativeAd adNative) {
         Log.i(TAG, "onAdFetched");
+        int index = -1;
         if (canUseThisAd(adNative)) {
             mPrefetchedAdList.add(adNative);
+            index = mPrefetchedAdList.size()-1;
             mNoOfFetchedAds++;
         }
         lockFetch.set(false);

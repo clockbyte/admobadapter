@@ -103,6 +103,17 @@ public class AdmobAdapterCalculator {
     }
 
     /**
+     * Translates an ad position to an actual position withing the adapter wrapper.
+     *
+     * @param adPos the ad's position in the fetched list
+     * @return the position of the adapter wrapper item
+     */
+    public int translateAdToAdapterWrapperPosition(int adPos) {
+        int wrappedPosition = adPos*getNoOfDataBetweenAds() + getOffsetValue();
+        return wrappedPosition;
+    }
+
+    /**
      * Determines if an ad can be shown at the given position. Checks if the position is for
      * an ad, using the preconfigured ad positioning rules; and if a native ad object is
      * available to place in that position.

@@ -22,6 +22,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.clockbyte.admobadapter.AdViewHelper;
 import com.clockbyte.admobadapter.AdmobAdapterCalculator;
 import com.clockbyte.admobadapter.AdmobAdapterWrapperInterface;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
@@ -196,24 +197,13 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
     public final ViewWrapper<V> onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case VIEW_TYPE_AD_EXPRESS:
-                NativeExpressAdView item = getExpressAdView(parent);
+                NativeExpressAdView item = AdViewHelper.getExpressAdView(mContext, getAdSize(), getAdsUnitId());
                 adFetcher.setupAd(item);
                 adFetcher.fetchAd(item);
-                ViewWrapper viewWrapper = new ViewWrapper<V>((V) item);
-                viewWrapper.setIsRecyclable(false);
-                return viewWrapper;
+                return new ViewWrapper<V>((V) item);
             default:
                 return mAdapter.onCreateViewHolder(parent, viewType);
         }
-    }
-
-    private NativeExpressAdView getExpressAdView(ViewGroup parent) {
-        NativeExpressAdView adView = new NativeExpressAdView(mContext);
-        adView.setAdSize(getAdSize());
-        adView.setAdUnitId(getAdsUnitId());
-        adView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,
-                RecyclerView.LayoutParams.WRAP_CONTENT));
-        return adView;
     }
 
     /**
@@ -271,9 +261,8 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
     }
 
     @Override
-    public void onAdCountChanged() {
-
-        notifyDataSetChanged();
+    public void onAdChanged() {
+        //notifyDataSetChanged();
     }
 
     @Override

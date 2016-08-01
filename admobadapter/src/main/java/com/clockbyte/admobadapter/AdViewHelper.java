@@ -21,11 +21,14 @@ import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.NativeExpressAdView;
 import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.ads.formats.NativeAppInstallAd;
 import com.google.android.gms.ads.formats.NativeAppInstallAdView;
@@ -112,6 +115,15 @@ public class AdViewHelper {
         // Call the NativeContentAdView's setNativeAd method to register the
         // NativeAdObject.
         adView.setNativeAd(ad);
+    }
+
+    public static NativeExpressAdView getExpressAdView(Context context, AdSize adSize, String adsUnitId) {
+        NativeExpressAdView adView = new NativeExpressAdView(context);
+        adView.setAdSize(adSize);
+        adView.setAdUnitId(adsUnitId);
+        adView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,
+                AbsListView.LayoutParams.WRAP_CONTENT));
+        return adView;
     }
 
 }

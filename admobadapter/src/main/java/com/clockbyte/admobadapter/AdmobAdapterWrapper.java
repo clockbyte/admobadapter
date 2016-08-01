@@ -326,7 +326,7 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     }
 
     @Override
-    public void onAdCountChanged() {
+    public void onAdChanged() {
 
         notifyDataSetChanged();
     }

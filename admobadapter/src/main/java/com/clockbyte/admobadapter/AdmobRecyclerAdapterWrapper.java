@@ -332,8 +332,7 @@ public class AdmobRecyclerAdapterWrapper<T, V extends View>
     }
 
     @Override
-    public void onAdCountChanged() {
-
+    public void onAdChanged() {
         notifyDataSetChanged();
     }
 

@@ -32,7 +32,7 @@ public class MainActivity_RecyclerView_Express extends Activity {
         MobileAds.initialize(getApplicationContext(), getString(R.string.test_admob_app_id));
 
         initRecyclerViewItems();
-        initUpdateAdsTimer();
+        //initUpdateAdsTimer();
     }
 
     /**

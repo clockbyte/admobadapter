@@ -26,8 +26,10 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 
+import com.clockbyte.admobadapter.AdViewHelper;
 import com.clockbyte.admobadapter.AdmobAdapterCalculator;
 import com.clockbyte.admobadapter.AdmobAdapterWrapperInterface;
+import com.clockbyte.admobadapter.AdmobFetcher;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
 import com.clockbyte.admobadapter.R;
 import com.google.android.gms.ads.AdSize;
@@ -190,28 +192,18 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
 
         switch (getItemViewType(position)) {
             case VIEW_TYPE_AD_EXPRESS:
-                NativeExpressAdView item = null;
-                if (convertView == null) {
-                    item = getExpressAdView(parent);
+                int adPos = AdapterCalculator.getAdIndex(position);
+                NativeExpressAdView item = adFetcher.getAdForIndex(adPos);
+                if(item==null) {
+                    item = AdViewHelper.getExpressAdView(mContext, getAdSize(), getAdsUnitId());
                     adFetcher.setupAd(item);
                     adFetcher.fetchAd(item);
-                } else {
-                    item = (NativeExpressAdView) convertView;
                 }
                 return item;
             default:
                 int origPos = AdapterCalculator.getOriginalContentPosition(position);
                 return mAdapter.getView(origPos, convertView, parent);
         }
-    }
-
-    private NativeExpressAdView getExpressAdView(ViewGroup parent) {
-        NativeExpressAdView adView = new NativeExpressAdView(mContext);
-        adView.setAdSize(getAdSize());
-        adView.setAdUnitId(getAdsUnitId());
-        adView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,
-                AbsListView.LayoutParams.WRAP_CONTENT));
-        return adView;
     }
 
     /**
@@ -293,8 +285,7 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     }
 
     @Override
-    public void onAdCountChanged() {
-
+    public void onAdChanged() {
         notifyDataSetChanged();
     }
 

@@ -18,21 +18,12 @@
 package com.clockbyte.admobadapter;
 
 import android.content.Context;
-import android.text.TextUtils;
-import android.util.Log;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdLoader;
+
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.formats.NativeAd;
-import com.google.android.gms.ads.formats.NativeAdOptions;
-import com.google.android.gms.ads.formats.NativeAppInstallAd;
-import com.google.android.gms.ads.formats.NativeContentAd;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class AdmobFetcherBase {
@@ -43,6 +34,7 @@ public abstract class AdmobFetcherBase {
     protected int mNoOfFetchedAds;
     protected int mFetchFailCount;
     protected WeakReference<Context> mContext = new WeakReference<Context>(null);
+    protected AtomicBoolean lockFetch = new AtomicBoolean();
 
     protected String admobReleaseUnitId;
     /*
@@ -124,7 +116,7 @@ public abstract class AdmobFetcherBase {
      */
     protected void notifyObserversOfAdSizeChange() {
         for (AdmobListener listener : mAdNativeListeners) {
-            listener.onAdCountChanged();
+            listener.onAdChanged();
         }
     }
 
@@ -147,6 +139,6 @@ public abstract class AdmobFetcherBase {
          * Raised when the number of ads have changed. Adapters that implement this class
          * should notify their data views that the dataset has changed.
          */
-        void onAdCountChanged();
+        void onAdChanged();
     }
 }

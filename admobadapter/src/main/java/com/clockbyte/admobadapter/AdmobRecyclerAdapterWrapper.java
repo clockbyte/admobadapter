@@ -194,12 +194,12 @@ public class AdmobRecyclerAdapterWrapper<T, V extends View>
 
         switch (viewHolder.getItemViewType()) {
             case VIEW_TYPE_AD_INSTALL:
-                NativeAppInstallAdView lvi1 = (NativeAppInstallAdView) viewHolder.getView();
+                NativeAppInstallAdView lvi1 = (NativeAppInstallAdView) viewHolder.itemView;
                 NativeAppInstallAd ad1 = (NativeAppInstallAd) getItem(position);
                 AdViewHelper.bindInstallAdView(lvi1, ad1);
                 break;
             case VIEW_TYPE_AD_CONTENT:
-                NativeContentAdView lvi2 = (NativeContentAdView) viewHolder.getView();
+                NativeContentAdView lvi2 = (NativeContentAdView) viewHolder.itemView;
                 NativeContentAd ad2 = (NativeContentAd) getItem(position);
                 AdViewHelper.bindContentAdView(lvi2, ad2);
                 break;

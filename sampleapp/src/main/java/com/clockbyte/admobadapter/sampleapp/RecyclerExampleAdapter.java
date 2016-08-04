@@ -24,7 +24,7 @@ public class RecyclerExampleAdapter extends RecyclerViewAdapterBase<String, Recy
 
     @Override
     public void onBindViewHolder(ViewWrapper<RecyclerViewExampleItem> viewHolder, int position) {
-        RecyclerViewExampleItem rvei = viewHolder.getView();
+        RecyclerViewExampleItem rvei = (RecyclerViewExampleItem) viewHolder.itemView;
         String str = getItem(position);
         rvei.bind(str);
     }

@@ -25,8 +25,6 @@ import android.view.ViewGroup;
 import com.clockbyte.admobadapter.AdmobAdapterCalculator;
 import com.clockbyte.admobadapter.AdmobAdapterWrapperInterface;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
-import com.clockbyte.admobadapter.R;
-import com.clockbyte.admobadapter.RecyclerViewAdapterBase;
 import com.clockbyte.admobadapter.ViewWrapper;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.NativeExpressAdView;
@@ -35,18 +33,19 @@ import com.google.android.gms.ads.NativeExpressAdView;
  * Adapter that has common functionality for any adapters that need to show ads in-between
  * other data.
  */
-public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends RecyclerView.Adapter<ViewWrapper<V>>
+public class AdmobExpressRecyclerAdapterWrapper<T, V extends View>
+        extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements AdmobFetcherBase.AdmobListener, AdmobAdapterWrapperInterface {
 
     private final String TAG = AdmobExpressRecyclerAdapterWrapper.class.getCanonicalName();
 
-    private RecyclerViewAdapterBase<T, V> mAdapter;
+    private RecyclerView.Adapter<RecyclerView.ViewHolder> mAdapter;
 
-    public RecyclerViewAdapterBase<T, V> getAdapter() {
+    public RecyclerView.Adapter<RecyclerView.ViewHolder> getAdapter() {
         return mAdapter;
     }
 
-    public void setAdapter(RecyclerViewAdapterBase<T, V> adapter) {
+    public void setAdapter(RecyclerView.Adapter<RecyclerView.ViewHolder> adapter) {
         mAdapter = adapter;
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -182,7 +181,7 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
     }
 
     @Override
-    public void onBindViewHolder(ViewWrapper<V> viewHolder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         if (viewHolder == null)
             return;
 
@@ -193,7 +192,7 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View> extends Recyc
     }
 
     @Override
-    public final ViewWrapper<V> onCreateViewHolder(ViewGroup parent, int viewType) {
+    public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case VIEW_TYPE_AD_EXPRESS:
                 NativeExpressAdView item = getExpressAdView(parent);

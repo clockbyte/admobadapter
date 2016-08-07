@@ -1,9 +1,9 @@
 package com.clockbyte.admobadapter.sampleapp;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
-import com.clockbyte.admobadapter.RecyclerViewAdapterBase;
 import com.clockbyte.admobadapter.ViewWrapper;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by FILM on 01.02.2016.
  */
-public class RecyclerExampleAdapter extends RecyclerViewAdapterBase<String, RecyclerViewExampleItem> {
+public class RecyclerExampleAdapter extends RecyclerView.Adapter<ViewWrapper<RecyclerViewExampleItem>> {
 
     private List<String> items = new ArrayList<String>();
 
@@ -23,8 +23,13 @@ public class RecyclerExampleAdapter extends RecyclerViewAdapterBase<String, Recy
     }
 
     @Override
+    public ViewWrapper<RecyclerViewExampleItem> onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new ViewWrapper<RecyclerViewExampleItem>(new RecyclerViewExampleItem(mContext));
+    }
+
+    @Override
     public void onBindViewHolder(ViewWrapper<RecyclerViewExampleItem> viewHolder, int position) {
-        RecyclerViewExampleItem rvei = viewHolder.getView();
+        RecyclerViewExampleItem rvei = (RecyclerViewExampleItem) viewHolder.itemView;
         String str = getItem(position);
         rvei.bind(str);
     }
@@ -34,13 +39,6 @@ public class RecyclerExampleAdapter extends RecyclerViewAdapterBase<String, Recy
         return items.size();
     }
 
-    @Override
-    protected RecyclerViewExampleItem onCreateItemView(ViewGroup parent, int viewType) {
-        RecyclerViewExampleItem rvei = new RecyclerViewExampleItem(mContext);
-        return rvei;
-    }
-
-    @Override
     public String getItem(int position) {
         return items.get(position);
     }

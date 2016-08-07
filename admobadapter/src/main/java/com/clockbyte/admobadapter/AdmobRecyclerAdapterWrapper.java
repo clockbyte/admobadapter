@@ -19,13 +19,10 @@ package com.clockbyte.admobadapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
+
 import com.google.android.gms.ads.formats.*;
 
 /**
@@ -33,18 +30,18 @@ import com.google.android.gms.ads.formats.*;
  * other data.
  */
 public class AdmobRecyclerAdapterWrapper<T, V extends View>
-        extends RecyclerView.Adapter<ViewWrapper<V>>
+        extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements AdmobFetcherBase.AdmobListener, AdmobAdapterWrapperInterface {
 
     private final String TAG = AdmobRecyclerAdapterWrapper.class.getCanonicalName();
 
-    private RecyclerViewAdapterBase<T,V> mAdapter;
+    private RecyclerView.Adapter<RecyclerView.ViewHolder> mAdapter;
 
-    public RecyclerViewAdapterBase<T,V> getAdapter() {
+    public RecyclerView.Adapter<RecyclerView.ViewHolder> getAdapter() {
         return mAdapter;
     }
 
-    public void setAdapter(RecyclerViewAdapterBase<T,V> adapter) {
+    public void setAdapter(RecyclerView.Adapter<RecyclerView.ViewHolder> adapter) {
         mAdapter = adapter;
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -188,18 +185,18 @@ public class AdmobRecyclerAdapterWrapper<T, V extends View>
     }
 
     @Override
-    public void onBindViewHolder(ViewWrapper<V> viewHolder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         if (viewHolder==null)
             return;
 
         switch (viewHolder.getItemViewType()) {
             case VIEW_TYPE_AD_INSTALL:
-                NativeAppInstallAdView lvi1 = (NativeAppInstallAdView) viewHolder.getView();
+                NativeAppInstallAdView lvi1 = (NativeAppInstallAdView) viewHolder.itemView;
                 NativeAppInstallAd ad1 = (NativeAppInstallAd) getItem(position);
                 AdViewHelper.bindInstallAdView(lvi1, ad1);
                 break;
             case VIEW_TYPE_AD_CONTENT:
-                NativeContentAdView lvi2 = (NativeContentAdView) viewHolder.getView();
+                NativeContentAdView lvi2 = (NativeContentAdView) viewHolder.itemView;
                 NativeContentAd ad2 = (NativeContentAd) getItem(position);
                 AdViewHelper.bindContentAdView(lvi2, ad2);
                 break;
@@ -210,7 +207,7 @@ public class AdmobRecyclerAdapterWrapper<T, V extends View>
     }
 
     @Override
-    public final ViewWrapper<V> onCreateViewHolder(ViewGroup parent, int viewType) {
+    public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case VIEW_TYPE_AD_INSTALL:
             case VIEW_TYPE_AD_CONTENT:
@@ -294,10 +291,8 @@ public class AdmobRecyclerAdapterWrapper<T, V extends View>
         if (AdapterCalculator.canShowAdAtPosition(position)) {
             int adPos = AdapterCalculator.getAdIndex(position);
             return adFetcher.getAdForIndex(adPos);
-        } else {
-            int origPos = AdapterCalculator.getOriginalContentPosition(position);
-            return mAdapter.getItem(origPos);
         }
+        else return null;
     }
 
     @Override

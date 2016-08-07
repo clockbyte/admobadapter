@@ -29,6 +29,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.google.android.gms.ads.formats.*;
 
+import java.util.EnumSet;
+
 /**
  * Adapter that has common functionality for any adapters that need to show ads in-between
  * other data.
@@ -122,36 +124,36 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         AdapterCalculator.setLimitOfAds(mLimitOfAds);
     }
 
-    private int mContentAdsLayoutId;
+    private NativeAdLayoutContext mContentAdsLayoutContext;
 
     /*
-    * Gets the res layout id for published content ads {@link https://support.google.com/admob/answer/6240809}
+    * Gets the context (the res layout id and a strategy of inflating and binding) for published content ads {@link https://support.google.com/admob/answer/6240809}
     */
-    public int getContentAdsLayoutId() {
-        return mContentAdsLayoutId;
+    public NativeAdLayoutContext getContentAdsLayoutContext() {
+        return mContentAdsLayoutContext;
     }
 
     /*
-    * Sets the res layout id for published content ads {@link https://support.google.com/admob/answer/6240809}
+    * Sets the context (the res layout id and a strategy of inflating and binding) for published content ads {@link https://support.google.com/admob/answer/6240809}
     */
-    public void setContentAdsLayoutId(int mContentAdsLayoutId) {
-        this.mContentAdsLayoutId = mContentAdsLayoutId;
+    public void setContentAdsLayoutContext(NativeAdLayoutContext mContentAdsLayoutContext) {
+        this.mContentAdsLayoutContext = mContentAdsLayoutContext;
     }
 
-    private int mInstallAdsLayoutId;
+    private NativeAdLayoutContext mInstallAdsLayoutContext;
 
     /*
-    * Gets the res layout id for published install app ads {@link https://support.google.com/admob/answer/6240809}
+    * Gets the context (the res layout id and a strategy of inflating and binding) for published install app ads {@link https://support.google.com/admob/answer/6240809}
     */
-    public int getInstallAdsLayoutId() {
-        return mInstallAdsLayoutId;
+    public NativeAdLayoutContext getInstallAdsLayoutContext() {
+        return mInstallAdsLayoutContext;
     }
 
     /*
-    * Sets the res layout id for published install app ads {@link https://support.google.com/admob/answer/6240809}
+    * Sets the context (the res layout id and a strategy of inflating and binding) for published install app ads {@link https://support.google.com/admob/answer/6240809}
     */
-    public void setInstallAdsLayoutId(int mInstallAdsLayoutId) {
-        this.mInstallAdsLayoutId = mInstallAdsLayoutId;
+    public void setInstallAdsLayoutContext(NativeAdLayoutContext mInstallAdsLayoutContext) {
+        this.mInstallAdsLayoutContext = mInstallAdsLayoutContext;
     }
 
     /*
@@ -179,13 +181,19 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     }
 
     public AdmobAdapterWrapper(Context context) {
+        this(context, EnumSet.allOf(EAdType.class));
+    }
+
+    public AdmobAdapterWrapper(Context context, EnumSet<EAdType> adTypesToShow) {
         setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
         setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
-        setContentAdsLayoutId(R.layout.adcontentlistview_item);
-        setInstallAdsLayoutId(R.layout.adinstalllistview_item);
+        setContentAdsLayoutContext(ContentAdLayoutContext.getDefault());
+        setInstallAdsLayoutContext(InstallAppAdLayoutContext.getDefault());
         mContext = context;
 
         adFetcher = new AdmobFetcher();
+        adFetcher.setAdTypeToFetch(adTypesToShow == null || adTypesToShow.isEmpty()
+                ?  EnumSet.allOf(EAdType.class): adTypesToShow);
         adFetcher.addListener(this);
         // Start prefetching ads
         adFetcher.prefetchAds(context.getApplicationContext());
@@ -199,50 +207,26 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
                 NativeAppInstallAdView lvi1;
                 NativeAppInstallAd ad1 = (NativeAppInstallAd) getItem(position);
                 if (convertView == null) {
-                    lvi1 = getInstallAdView(parent, ad1);
+                    lvi1 = (NativeAppInstallAdView) getInstallAdsLayoutContext().inflateView(parent);
                 } else {
                     lvi1 = (NativeAppInstallAdView) convertView;
-                    AdViewHelper.bindInstallAdView(lvi1, ad1);
                 }
+                getInstallAdsLayoutContext().bind(lvi1, ad1);
                 return lvi1;
             case VIEW_TYPE_AD_CONTENT:
                 NativeContentAdView lvi2;
                 NativeContentAd ad2 = (NativeContentAd) getItem(position);
                 if (convertView == null) {
-                    lvi2 = getContentAdView(parent, ad2);
+                    lvi2 = (NativeContentAdView) getContentAdsLayoutContext().inflateView(parent);
                 } else {
                     lvi2 = (NativeContentAdView) convertView;
-                    AdViewHelper.bindContentAdView(lvi2, ad2);
                 }
+                getContentAdsLayoutContext().bind(lvi2, ad2);
                 return lvi2;
             default:
                 int origPos = AdapterCalculator.getOriginalContentPosition(position);
                 return mAdapter.getView(origPos, convertView, parent);
         }
-    }
-
-    private NativeContentAdView getContentAdView(ViewGroup parent, NativeContentAd ad) {
-        // Inflate a layout and add it to the parent ViewGroup.
-        LayoutInflater inflater = (LayoutInflater) parent.getContext()
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        NativeContentAdView adView = (NativeContentAdView) inflater
-                .inflate(getContentAdsLayoutId(), parent, false);
-
-        AdViewHelper.bindContentAdView(adView, ad);
-
-        return adView;
-    }
-
-    private NativeAppInstallAdView getInstallAdView(ViewGroup parent, NativeAppInstallAd ad) {
-        // Inflate a layout and add it to the parent ViewGroup.
-        LayoutInflater inflater = (LayoutInflater) parent.getContext()
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        NativeAppInstallAdView adView = (NativeAppInstallAdView) inflater
-                .inflate(getInstallAdsLayoutId(), parent, false);
-
-        AdViewHelper.bindInstallAdView(adView, ad);
-
-        return adView;
     }
 
     /**
@@ -336,8 +320,4 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         return mAdapter.getCount();
     }
 
-    @Override
-    public AdmobFetcherBase getAdmobFetcher() {
-        return adFetcher;
-    }
 }

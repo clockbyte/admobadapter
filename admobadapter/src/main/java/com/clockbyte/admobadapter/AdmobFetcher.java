@@ -28,6 +28,7 @@ import com.google.android.gms.ads.formats.NativeAppInstallAd;
 import com.google.android.gms.ads.formats.NativeContentAd;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,20 @@ public class AdmobFetcher extends AdmobFetcherBase{
     private AdLoader adLoader;
     private List<NativeAd> mPrefetchedAdList = new ArrayList<NativeAd>();
     private Map<Integer, NativeAd> adMapAtIndex = new HashMap<Integer, NativeAd>();
+
+    private EnumSet<EAdType> adTypeToFetch = EnumSet.allOf(EAdType.class);
+    /**
+     * Gets enumset which sets which of ad types this Fetcher should load
+     */
+    public EnumSet<EAdType> getAdTypeToFetch() {
+        return adTypeToFetch;
+    }
+    /**
+     * Gets enumset which sets which of ad types this Fetcher should load
+     */
+    public void setAdTypeToFetch(EnumSet<EAdType> adTypeToFetch) {
+        this.adTypeToFetch = adTypeToFetch;
+    }
 
     /**
      * Gets native ad at a particular index in the fetched ads list.
@@ -171,19 +186,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
         String admobUnitId = TextUtils.isEmpty(getAdmobReleaseUnitId()) ?
                 mContext.get().getResources().getString(R.string.test_admob_unit_id)
                 : getAdmobReleaseUnitId();
-        adLoader = new AdLoader.Builder(mContext.get(), admobUnitId)
-                .forAppInstallAd(new NativeAppInstallAd.OnAppInstallAdLoadedListener() {
-                    @Override
-                    public void onAppInstallAdLoaded(NativeAppInstallAd appInstallAd) {
-                        onAdFetched(appInstallAd);
-                    }
-                })
-                .forContentAd(new NativeContentAd.OnContentAdLoadedListener() {
-                    @Override
-                    public void onContentAdLoaded(NativeContentAd contentAd) {
-                        onAdFetched(contentAd);
-                    }
-                })
+        AdLoader.Builder adloaderBuilder = new AdLoader.Builder(mContext.get(), admobUnitId)
                 .withAdListener(new AdListener() {
                     @Override
                     public void onAdFailedToLoad(int errorCode) {
@@ -197,8 +200,23 @@ public class AdmobFetcher extends AdmobFetcherBase{
                 .withNativeAdOptions(new NativeAdOptions.Builder()
                         // Methods in the NativeAdOptions.Builder class can be
                         // used here to specify individual options settings.
-                        .build())
-                .build();
+                        .build());
+        if(getAdTypeToFetch().contains(EAdType.ADVANCED_INSTALLAPP))
+            adloaderBuilder.forAppInstallAd(new NativeAppInstallAd.OnAppInstallAdLoadedListener() {
+                    @Override
+                    public void onAppInstallAdLoaded(NativeAppInstallAd appInstallAd) {
+                        onAdFetched(appInstallAd);
+                    }
+                });
+        if(getAdTypeToFetch().contains(EAdType.ADVANCED_CONTENT))
+            adloaderBuilder.forContentAd(new NativeContentAd.OnContentAdLoadedListener() {
+                    @Override
+                    public void onContentAdLoaded(NativeContentAd contentAd) {
+                        onAdFetched(contentAd);
+                    }
+                });
+
+        adLoader = adloaderBuilder.build();
     }
 
     /**
@@ -217,5 +235,4 @@ public class AdmobFetcher extends AdmobFetcherBase{
         ensurePrefetchAmount();
         notifyObserversOfAdSizeChange();
     }
-
 }

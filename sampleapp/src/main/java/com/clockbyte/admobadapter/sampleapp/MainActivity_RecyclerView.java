@@ -7,9 +7,13 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.ArrayAdapter;
 
 import com.clockbyte.admobadapter.AdmobRecyclerAdapterWrapper;
+import com.clockbyte.admobadapter.ContentAdLayoutContext;
+import com.clockbyte.admobadapter.EAdType;
+import com.clockbyte.admobadapter.InstallAppAdLayoutContext;
 import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -44,10 +48,18 @@ public class MainActivity_RecyclerView extends Activity {
         RecyclerExampleAdapter adapter  = new RecyclerExampleAdapter(this);
 
         adapterWrapper = new AdmobRecyclerAdapterWrapper(this);
-        adapterWrapper.setAdapter(adapter); //wrapping your adapter with a AdmobAdapterWrapper.
-        //here you can use the following string to set your custom layouts for a different types of native ads
-        //adapterWrapper.setInstallAdsLayoutId(R.layout.your_installad_layout);
-        //adapterWrapper.setcontentAdsLayoutId(R.layout.your_installad_layout);
+        //By default both types of ads are loaded by wrapper.
+        // To set which of them to show in the list you should use an appropriate ctor
+        //adapterWrapper = new AdmobRecyclerAdapterWrapper(this, EnumSet.of(EAdType.ADVANCED_INSTALLAPP));
+
+        //wrapping your adapter with a AdmobAdapterWrapper.
+        adapterWrapper.setAdapter(adapter);
+        //inject your custom layout and strategy of binding for it for installapp/content  ads
+        //here you should pass the extended NativeAdLayoutContext
+        //by default it has a value InstallAppAdLayoutContext.getDefault()
+        //adapterWrapper.setInstallAdsLayoutContext(...);
+        //by default it has a value ContentAdLayoutContext.getDefault()
+        //adapterWrapper.setContentAdsLayoutContext(...);
 
         //Sets the max count of ad blocks per dataset, by default it equals to 3 (according to the Admob's policies and rules)
         adapterWrapper.setLimitOfAds(3);

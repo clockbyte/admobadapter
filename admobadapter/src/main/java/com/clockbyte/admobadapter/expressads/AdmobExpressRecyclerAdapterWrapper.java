@@ -269,8 +269,4 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View>
         return mAdapter.getItemCount();
     }
 
-    @Override
-    public AdmobFetcherBase getAdmobFetcher() {
-        return adFetcher;
-    }
 }

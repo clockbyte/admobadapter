@@ -5,5 +5,4 @@ package com.clockbyte.admobadapter;
  */
 public interface AdmobAdapterWrapperInterface {
     int getAdapterCount();
-    AdmobFetcherBase getAdmobFetcher();
 }

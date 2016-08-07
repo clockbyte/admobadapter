@@ -45,16 +45,15 @@ public class MainActivity_ListView extends Activity {
         //By default both types of ads are loaded by wrapper.
         // To set which of them to show in the list you should use an appropriate ctor
         //adapterWrapper = new AdmobAdapterWrapper(this, EnumSet.of(EAdType.ADVANCED_INSTALLAPP));
-        adapterWrapper.setAdapter(adapter); //wrapping your adapter with a AdmobAdapterWrapper.
+
+        //wrapping your adapter with a AdmobAdapterWrapper.
+        adapterWrapper.setAdapter(adapter);
         //inject your custom layout and strategy of binding for it for installapp/content  ads
         //here you should pass the extended NativeAdLayoutContext
         //by default it has a value InstallAppAdLayoutContext.getDefault()
         //adapterWrapper.setInstallAdsLayoutContext(...);
         //by default it has a value ContentAdLayoutContext.getDefault()
         //adapterWrapper.setContentAdsLayoutContext(...);
-        //Also by default both types of ads are loaded by wrapper.
-        // To switch off one of them you should set null to the appropriate setter i.e. the following to switch off Content ads
-        // adapterWrapper.setContentAdsLayoutContext(null);
 
         //Sets the max count of ad blocks per dataset, by default it equals to 3 (according to the Admob's policies and rules)
         adapterWrapper.setLimitOfAds(3);

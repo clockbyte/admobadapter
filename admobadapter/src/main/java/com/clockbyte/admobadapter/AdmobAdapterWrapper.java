@@ -19,6 +19,7 @@ package com.clockbyte.admobadapter;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -156,35 +157,61 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         this.mInstallAdsLayoutContext = mInstallAdsLayoutContext;
     }
 
-    /*
-    *Add a test device ID.
+    /**
+     * Use this constructor for test purposes. if you are going to release the live version
+     * please use the appropriate constructor
+     * @see #AdmobAdapterWrapper(Context, String)
+     * @param testDevicesId sets a devices ID to test ads interaction.
+     * You could pass null but it's better to set ids for all your test devices
+     * including emulators. for emulator just use the
+     * @see {AdRequest.DEVICE_ID_EMULATOR}
     */
-    public void addTestDeviceId(String testDeviceId) {
-        adFetcher.addTestDeviceId(testDeviceId);
+    public AdmobAdapterWrapper(Context context, String[] testDevicesId) {
+        this(context, testDevicesId, EnumSet.allOf(EAdType.class));
+    }
+    /**
+     * @param admobReleaseUnitId sets a release unit ID for admob banners.
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobAdapterWrapper(Context, String[])
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+     */
+    public AdmobAdapterWrapper(Context context, String admobReleaseUnitId) {
+        this(context, admobReleaseUnitId, EnumSet.allOf(EAdType.class));
     }
 
-    /*
-*Sets a test device ID. Normally you don't have to set it
-*/
-    @Deprecated
-    public void setTestDeviceId(String testDeviceId) {
-        adFetcher.addTestDeviceId(testDeviceId);
-    }
-
-    /*
-    *Sets a release unit ID for admob banners. ID should be active, please check it in your Admob's account.
-    * Be careful: don't set it or set to null if you still haven't deployed a Release.
-    * Otherwise your Admob account could be banned
+    /**
+     * Use this constructor for test purposes. if you are going to release the live version
+     * please use the appropriate constructor
+     * @see #AdmobAdapterWrapper(Context, String)
+     * @param testDevicesId sets a devices ID to test ads interaction.
+     * You could pass null but it's better to set ids for all your test devices
+     * including emulators. for emulator just use the
+     * @see {AdRequest.DEVICE_ID_EMULATOR}
+    * @param adTypesToShow sets the types of ads to show in the list.
+    * By default all types are loaded by wrapper.
+    * i.e. pass EnumSet.of(EAdType.ADVANCED_INSTALLAPP) to show only install app ads
     */
-    public void setAdmobReleaseUnitId(String admobReleaseUnitId) {
-        adFetcher.setAdmobReleaseUnitId(admobReleaseUnitId);
+    public AdmobAdapterWrapper(Context context, String[] testDevicesId, EnumSet<EAdType> adTypesToShow) {
+        init(context, null, testDevicesId, adTypesToShow);
+    }
+    /**
+     * @param admobReleaseUnitId sets a release unit ID for admob banners.
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobAdapterWrapper(Context, String[])
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+    * @param adTypesToShow sets the types of ads to show in the list.
+    * By default all types are loaded by wrapper.
+    * i.e. pass EnumSet.of(EAdType.ADVANCED_INSTALLAPP) to show only install app ads
+    */
+    public AdmobAdapterWrapper(Context context, String admobReleaseUnitId, EnumSet<EAdType> adTypesToShow) {
+        init(context, admobReleaseUnitId, null, adTypesToShow);
     }
 
-    public AdmobAdapterWrapper(Context context) {
-        this(context, EnumSet.allOf(EAdType.class));
-    }
-
-    public AdmobAdapterWrapper(Context context, EnumSet<EAdType> adTypesToShow) {
+    private void init(Context context, String admobReleaseUnitId, String[] testDevicesId, EnumSet<EAdType> adTypesToShow){
         setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
         setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
         setContentAdsLayoutContext(ContentAdLayoutContext.getDefault());
@@ -192,6 +219,11 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         mContext = context;
 
         adFetcher = new AdmobFetcher();
+        if(!TextUtils.isEmpty(admobReleaseUnitId))
+            adFetcher.setAdmobReleaseUnitId(admobReleaseUnitId);
+        if(testDevicesId!=null)
+            for (String testId: testDevicesId)
+                adFetcher.addTestDeviceId(testId);
         adFetcher.setAdTypeToFetch(adTypesToShow == null || adTypesToShow.isEmpty()
                 ?  EnumSet.allOf(EAdType.class): adTypesToShow);
         adFetcher.addListener(this);

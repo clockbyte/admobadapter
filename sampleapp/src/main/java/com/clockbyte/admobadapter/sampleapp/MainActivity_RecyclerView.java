@@ -54,7 +54,7 @@ public class MainActivity_RecyclerView extends Activity {
 
         //wrapping your adapter with a AdmobAdapterWrapper.
         adapterWrapper.setAdapter(adapter);
-        //inject your custom layout and strategy of binding for it for installapp/content  ads
+        //inject your custom layout and strategy of binding for installapp/content  ads
         //here you should pass the extended NativeAdLayoutContext
         //by default it has a value InstallAppAdLayoutContext.getDefault()
         //adapterWrapper.setInstallAdsLayoutContext(...);

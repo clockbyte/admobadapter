@@ -357,4 +357,9 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         return mAdapter.getCount();
     }
 
+    @Override
+    public AdmobFetcherBase getFetcher() {
+        return adFetcher;
+    }
+
 }

@@ -361,4 +361,9 @@ public class AdmobRecyclerAdapterWrapper<T, V extends View>
         return mAdapter.getItemCount();
     }
 
+    @Override
+    public AdmobFetcherBase getFetcher() {
+        return adFetcher;
+    }
+
 }

@@ -20,7 +20,6 @@ public class MainActivity_RecyclerView_Express extends Activity {
 
     RecyclerView rvMessages;
     AdmobExpressRecyclerAdapterWrapper adapterWrapper;
-    Timer updateAdsTimer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,7 +31,6 @@ public class MainActivity_RecyclerView_Express extends Activity {
         MobileAds.initialize(getApplicationContext(), getString(R.string.test_admob_app_id));
 
         initRecyclerViewItems();
-        initUpdateAdsTimer();
     }
 
     /**
@@ -46,15 +44,14 @@ public class MainActivity_RecyclerView_Express extends Activity {
         //creating your adapter, it could be a custom adapter as well
         RecyclerExampleAdapter adapter  = new RecyclerExampleAdapter(this);
 
-        adapterWrapper = new AdmobExpressRecyclerAdapterWrapper(this);
-        //TODO it's important to set your test device ID (you can find it in LogCat after launching the debug session i.e. by word "test")
-        //if you launch app on emulator and experience some troubles
-        // try passing the constant AdRequest.DEVICE_ID_EMULATOR
-        adapterWrapper.addTestDeviceId(getString(R.string.testDeviceID));//set an unique test device ID
-        adapterWrapper.addTestDeviceId(AdRequest.DEVICE_ID_EMULATOR);
-        //TODO set the custom ads layout if you wish. NOTE you have to set your admob unit ID in this XML.
-        //It doesn't work for me if I set the unit ID in code with the method setAdUnitID() so it seems to be a bug
-        //adapterWrapper.setExpressAdsLayoutId(R.layout.adexpresslistview_item);
+        //your test devices' ids
+        String[] testDevicesIds = new String[]{getString(R.string.testDeviceID),AdRequest.DEVICE_ID_EMULATOR};
+        //when you'll be ready for release please use another ctor with admobReleaseUnitId instead.
+        adapterWrapper = new AdmobExpressRecyclerAdapterWrapper(this, testDevicesIds);
+        //By default the ad size is set to FULL_WIDTHx150
+        //To set a custom size you should use an appropriate ctor
+        //adapterWrapper = new AdmobExpressRecyclerAdapterWrapper(this, testDevicesIds, new AdSize(AdSize.FULL_WIDTH, 150));
+
         adapterWrapper.setAdapter(adapter); //wrapping your adapter with a AdmobExpressRecyclerAdapterWrapper.
 
         //Sets the max count of ad blocks per dataset, by default it equals to 3 (according to the Admob's policies and rules)
@@ -67,10 +64,6 @@ public class MainActivity_RecyclerView_Express extends Activity {
         adapterWrapper.setNoOfDataBetweenAds(10);
 
         adapterWrapper.setFirstAdIndex(2);
-        //due to the docs you should set the ad size before ads will be loaded
-        //AdSize.FULL_WIDTH x 150 is default size.
-        adapterWrapper.setAdSize(new AdSize(AdSize.FULL_WIDTH,150));
-        adapterWrapper.setAdsUnitId(getString(R.string.test_admob_express_unit_id));
 
         rvMessages.setAdapter(adapterWrapper); // setting an AdmobExpressRecyclerAdapterWrapper to a RecyclerView
 
@@ -86,31 +79,11 @@ public class MainActivity_RecyclerView_Express extends Activity {
     }
 
     /*
-    * Could be omitted. It's only for updating an ad blocks in each 60 seconds without refreshing the list
-     */
-    private void initUpdateAdsTimer() {
-        updateAdsTimer = new Timer();
-        updateAdsTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        adapterWrapper.requestUpdateAd();
-                    }
-                });
-            }
-        }, 60*1000, 60*1000);
-    }
-
-    /*
     * Seems to be a good practice to destroy all the resources you have used earlier :)
      */
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(updateAdsTimer!=null)
-            updateAdsTimer.cancel();
         adapterWrapper.destroyAds();
     }
 }

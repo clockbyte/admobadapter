@@ -42,7 +42,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
     /**
      * Maximum number of ads to prefetch.
      */
-    private static final int PREFETCHED_ADS_SIZE = 2;
+    public static final int PREFETCHED_ADS_SIZE = 2;
     /**
      * Maximum number of times to try fetch an ad after failed attempts.
      */

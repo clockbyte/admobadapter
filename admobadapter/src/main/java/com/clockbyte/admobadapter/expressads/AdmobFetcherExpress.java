@@ -34,6 +34,11 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     private final String TAG = AdmobFetcherExpress.class.getCanonicalName();
 
     /**
+     * Maximum number of ads to prefetch.
+     */
+    public static final int PREFETCHED_ADS_SIZE = 2;
+
+    /**
      * Maximum number of times to try fetch an ad after failed attempts.
      */
     private static final int MAX_FETCH_ATTEMPT = 4;

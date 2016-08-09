@@ -20,6 +20,8 @@ package com.clockbyte.admobadapter;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.SparseArray;
+
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.formats.NativeAd;
@@ -48,7 +50,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
 
     private AdLoader adLoader;
     private List<NativeAd> mPrefetchedAdList = new ArrayList<NativeAd>();
-    private Map<Integer, NativeAd> adMapAtIndex = new HashMap<Integer, NativeAd>();
+    private SparseArray adMapAtIndex = new SparseArray();
 
     private EnumSet<EAdType> adTypeToFetch = EnumSet.allOf(EAdType.class);
     /**
@@ -72,7 +74,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
      * @see #getFetchedAdsCount()
      */
     public synchronized NativeAd getAdForIndex(final int index) {
-        NativeAd adNative = adMapAtIndex.get(index);
+        NativeAd adNative = (NativeAd) adMapAtIndex.get(index);
 
         if (adNative == null && mPrefetchedAdList.size() > 0) {
             adNative = mPrefetchedAdList.remove(0);
@@ -233,6 +235,6 @@ public class AdmobFetcher extends AdmobFetcherBase{
         lockFetch.set(false);
         mFetchFailCount = 0;
         ensurePrefetchAmount();
-        notifyObserversOfAdSizeChange();
+        notifyObserversOfAdSizeChange(index);
     }
 }

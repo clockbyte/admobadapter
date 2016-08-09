@@ -18,6 +18,7 @@
 package com.clockbyte.admobadapter.expressads;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -256,12 +257,33 @@ public class AdmobExpressRecyclerAdapterWrapper<T, V extends View>
      * Clears all currently displaying ads to update them
      */
     public void requestUpdateAd() {
-        adFetcher.updateAds();
+        adFetcher.updateFetchedAds();
     }
 
     @Override
+    public void onAdChanged(int adIdx) {
+        notifyDataSetChanged();
+        //todo refactor this quick and dirty trick. This is a temp fix
+        //for NativeExpressAdView which is loaded but not displayed while list is rendering
+        if(adIdx == 0){
+            final NativeExpressAdView ad = adFetcher.getAdForIndex(adIdx);
+            if(ad == null) return;
+            new Handler(mContext.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    adFetcher.fetchAd(ad);
+                }
+            }, 1000);
+        }
+    }
+
+    /**
+     * Raised when the number of ads have changed. Adapters that implement this class
+     * should notify their data views that the dataset has changed.
+     */
+    @Override
     public void onAdChanged() {
-        //notifyDataSetChanged();
+        notifyDataSetChanged();
     }
 
     @Override

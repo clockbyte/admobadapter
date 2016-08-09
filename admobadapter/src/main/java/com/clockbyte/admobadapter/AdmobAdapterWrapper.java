@@ -20,14 +20,10 @@ package com.clockbyte.admobadapter;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
+
 import com.google.android.gms.ads.formats.*;
 
 import java.util.EnumSet;
@@ -342,8 +338,17 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     }
 
     @Override
-    public void onAdChanged() {
+    public void onAdChanged(int adIdx) {
 
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Raised when the number of ads have changed. Adapters that implement this class
+     * should notify their data views that the dataset has changed.
+     */
+    @Override
+    public void onAdChanged() {
         notifyDataSetChanged();
     }
 

@@ -18,6 +18,7 @@
 package com.clockbyte.admobadapter;
 
 import android.content.Context;
+import android.os.Handler;
 
 import com.google.android.gms.ads.AdRequest;
 
@@ -108,16 +109,24 @@ public abstract class AdmobFetcherBase {
         mFetchFailCount = 0;
         mNoOfFetchedAds = 0;
         mContext.clear();
-        notifyObserversOfAdSizeChange();
+        notifyObserversOfAdSizeChange(-1);
     }
 
     /**
      * Notifies all registered {@link AdmobListener} of a change in ad data count.
      */
-    protected void notifyObserversOfAdSizeChange() {
-        for (AdmobListener listener : mAdNativeListeners) {
-            listener.onAdChanged();
-        }
+    protected void notifyObserversOfAdSizeChange(final int adIdx) {
+        Context context = mContext.get();
+        new Handler(context.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                for (AdmobListener listener : mAdNativeListeners)
+                    if(adIdx < 0)
+                        listener.onAdChanged();
+                    else listener.onAdChanged(adIdx);
+            }
+        });
+
     }
 
     /**
@@ -135,6 +144,12 @@ public abstract class AdmobFetcherBase {
      * Listener that is notified when changes to the list of fetched native ads are made.
      */
     public interface AdmobListener {
+        /**
+         * Raised when the ad have changed. Adapters that implement this class
+         * should notify their data views that the dataset has changed.
+         * @param adIdx the index of ad block which state was changed
+         */
+        void onAdChanged(int adIdx);
         /**
          * Raised when the number of ads have changed. Adapters that implement this class
          * should notify their data views that the dataset has changed.

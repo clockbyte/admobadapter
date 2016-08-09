@@ -19,20 +19,17 @@ package com.clockbyte.admobadapter.expressads;
 
 import android.content.Context;
 import android.database.DataSetObserver;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 
 import com.clockbyte.admobadapter.AdViewHelper;
 import com.clockbyte.admobadapter.AdmobAdapterCalculator;
 import com.clockbyte.admobadapter.AdmobAdapterWrapperInterface;
-import com.clockbyte.admobadapter.AdmobFetcher;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
-import com.clockbyte.admobadapter.R;
 import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.NativeExpressAdView;
 
 /**
@@ -189,7 +186,6 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         switch (getItemViewType(position)) {
             case VIEW_TYPE_AD_EXPRESS:
                 int adPos = AdapterCalculator.getAdIndex(position);
@@ -281,9 +277,30 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
      * Clears all currently displaying ads to update them
      */
     public void requestUpdateAd() {
-        adFetcher.updateAds();
+        adFetcher.updateFetchedAds();
     }
 
+    @Override
+    public void onAdChanged(int adIdx) {
+        notifyDataSetChanged();
+        //todo refactor this quick and dirty trick. This is a temp fix
+        //for NativeExpressAdView which is loaded but not displayed while list is rendering
+        if(adIdx == 0){
+            final NativeExpressAdView ad = adFetcher.getAdForIndex(adIdx);
+            if(ad == null) return;
+            new Handler(mContext.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    adFetcher.fetchAd(ad);
+                }
+            }, 1000);
+        }
+    }
+
+    /**
+     * Raised when the number of ads have changed. Adapters that implement this class
+     * should notify their data views that the dataset has changed.
+     */
     @Override
     public void onAdChanged() {
         notifyDataSetChanged();

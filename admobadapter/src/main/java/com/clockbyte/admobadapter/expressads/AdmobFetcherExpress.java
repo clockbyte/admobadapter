@@ -136,6 +136,11 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     }
 
     @Override
+    public synchronized int getFetchingAdsCount() {
+        return mPrefetchedAds.size();
+    }
+
+    @Override
     public synchronized void destroyAllAds() {
         super.destroyAllAds();
         for(NativeExpressAdView ad:mPrefetchedAds){

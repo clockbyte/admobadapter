@@ -87,6 +87,12 @@ public abstract class AdmobFetcherBase {
     public synchronized int getFetchedAdsCount() {
         return mNoOfFetchedAds;
     }
+    /**
+     * Gets the number of ads that have been fetched and are currently being fetched
+     *
+     * @return the number of ads that have been fetched and are currently being fetched
+     */
+    public abstract int getFetchingAdsCount();
 
     /**
      * Fetches a new native ad.

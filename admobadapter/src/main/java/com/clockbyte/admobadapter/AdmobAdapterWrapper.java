@@ -32,7 +32,7 @@ import java.util.EnumSet;
  * Adapter that has common functionality for any adapters that need to show ads in-between
  * other data.
  */
-public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase.AdmobListener, AdmobAdapterWrapperInterface {
+public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase.AdmobListener {
 
     private final String TAG = AdmobAdapterWrapper.class.getCanonicalName();
 
@@ -57,9 +57,9 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         });
     }
 
-    AdmobFetcher adFetcher;
-    Context mContext;
-    private AdmobAdapterCalculator AdapterCalculator = new AdmobAdapterCalculator(this);
+    private AdmobFetcher adFetcher;
+    private Context mContext;
+    private AdmobAdapterCalculator AdapterCalculator = new AdmobAdapterCalculator();
     /*
     * Gets an object which incapsulates transformation of the source and ad blocks indices
     */
@@ -252,7 +252,8 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
                 getContentAdsLayoutContext().bind(lvi2, ad2);
                 return lvi2;
             default:
-                int origPos = AdapterCalculator.getOriginalContentPosition(position);
+                int origPos = AdapterCalculator.getOriginalContentPosition(position,
+                        adFetcher.getFetchedAdsCount(), mAdapter.getCount());
                 return mAdapter.getView(origPos, convertView, parent);
         }
     }
@@ -275,7 +276,7 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
             No of currently fetched ads, as long as it isn't more than no of max ads that can
             fit dataset.
              */
-            int noOfAds = AdapterCalculator.getAdsCountToPublish();
+            int noOfAds = AdapterCalculator.getAdsCountToPublish(adFetcher.getFetchedAdsCount(), mAdapter.getCount());
             return mAdapter.getCount() > 0 ? mAdapter.getCount() + noOfAds : 0;
         } else {
             return 0;
@@ -292,11 +293,12 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     @Override
     public Object getItem(int position) {
 
-        if (AdapterCalculator.canShowAdAtPosition(position)) {
+        if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchedAdsCount())) {
             int adPos = AdapterCalculator.getAdIndex(position);
             return adFetcher.getAdForIndex(adPos);
         } else {
-            int origPos = AdapterCalculator.getOriginalContentPosition(position);
+            int origPos = AdapterCalculator.getOriginalContentPosition(position,
+                    adFetcher.getFetchedAdsCount(), mAdapter.getCount());
             return mAdapter.getItem(origPos);
         }
     }
@@ -313,12 +315,13 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
 
     @Override
     public int getItemViewType(int position) {
-        if (AdapterCalculator.canShowAdAtPosition(position)) {
+        if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchedAdsCount())) {
             int adPos = AdapterCalculator.getAdIndex(position);
             NativeAd ad = adFetcher.getAdForIndex(adPos);
             return ad instanceof NativeAppInstallAd ? VIEW_TYPE_AD_INSTALL : VIEW_TYPE_AD_CONTENT;
         } else {
-            int origPos = AdapterCalculator.getOriginalContentPosition(position);
+            int origPos = AdapterCalculator.getOriginalContentPosition(position,
+                    adFetcher.getFetchedAdsCount(), mAdapter.getCount());
             return mAdapter.getItemViewType(origPos);
         }
     }
@@ -350,16 +353,6 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     @Override
     public void onAdChanged() {
         notifyDataSetChanged();
-    }
-
-    @Override
-    public int getAdapterCount() {
-        return mAdapter.getCount();
-    }
-
-    @Override
-    public AdmobFetcherBase getFetcher() {
-        return adFetcher;
     }
 
 }

@@ -48,6 +48,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
      */
     private static final int MAX_FETCH_ATTEMPT = 4;
 
+    private int mFetchingAdsCnt = 0;
     private AdLoader adLoader;
     private List<NativeAd> mPrefetchedAdList = new ArrayList<NativeAd>();
     private SparseArray adMapAtIndex = new SparseArray();
@@ -88,6 +89,11 @@ public class AdmobFetcher extends AdmobFetcherBase{
         return adNative;
     }
 
+    @Override
+    public synchronized int getFetchingAdsCount() {
+        return mFetchingAdsCnt;
+    }
+
     /**
      * Fetches a new native ad.
      *
@@ -108,6 +114,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
      * The converse of this call is {@link #prefetchAds(Context)}.
      */
     public synchronized void destroyAllAds() {
+        mFetchingAdsCnt = 0;
         adMapAtIndex.clear();
         mPrefetchedAdList.clear();
 
@@ -122,6 +129,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
      * */
     public synchronized void clearMapAds() {
           adMapAtIndex.clear();
+        mFetchingAdsCnt = mPrefetchedAdList.size();
     }
 
     /**
@@ -134,6 +142,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
             Log.i(TAG, "Fetching Ad now");
             if(lockFetch.getAndSet(true))
                 return;
+            mFetchingAdsCnt++;
             adLoader.loadAd(getAdRequest()); //Fetching the ads item
         } else {
             mFetchFailCount++;
@@ -196,6 +205,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
                         Log.i(TAG, "onAdFailedToLoad " + errorCode);
                         lockFetch.set(false);
                         mFetchFailCount++;
+                        mFetchingAdsCnt--;
                         ensurePrefetchAmount();
                     }
                 })

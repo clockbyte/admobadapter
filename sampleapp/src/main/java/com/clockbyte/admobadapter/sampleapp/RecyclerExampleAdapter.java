@@ -3,6 +3,7 @@ package com.clockbyte.admobadapter.sampleapp;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.clockbyte.admobadapter.ViewWrapper;
 
@@ -12,7 +13,7 @@ import java.util.List;
 /**
  * Created by FILM on 01.02.2016.
  */
-public class RecyclerExampleAdapter extends RecyclerView.Adapter<ViewWrapper<RecyclerViewExampleItem>> {
+public class RecyclerExampleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<String> items = new ArrayList<String>();
 
@@ -28,7 +29,7 @@ public class RecyclerExampleAdapter extends RecyclerView.Adapter<ViewWrapper<Rec
     }
 
     @Override
-    public void onBindViewHolder(ViewWrapper<RecyclerViewExampleItem> viewHolder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         RecyclerViewExampleItem rvei = (RecyclerViewExampleItem) viewHolder.itemView;
         String str = getItem(position);
         rvei.bind(str);

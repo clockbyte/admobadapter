@@ -10,6 +10,7 @@ import com.clockbyte.admobadapter.AdmobRecyclerAdapterWrapper;
 import com.clockbyte.admobadapter.ContentAdLayoutContext;
 import com.clockbyte.admobadapter.EAdType;
 import com.clockbyte.admobadapter.InstallAppAdLayoutContext;
+import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
@@ -47,10 +48,13 @@ public class MainActivity_RecyclerView extends Activity {
         //creating your adapter, it could be a custom adapter as well
         RecyclerExampleAdapter adapter  = new RecyclerExampleAdapter(this);
 
-        adapterWrapper = new AdmobRecyclerAdapterWrapper(this);
+        //your test devices' ids
+        String[] testDevicesIds = new String[]{getString(R.string.testDeviceID),AdRequest.DEVICE_ID_EMULATOR};
+        //when you'll be ready for release please use another ctor with admobReleaseUnitId instead.
+        adapterWrapper = new AdmobRecyclerAdapterWrapper(this, testDevicesIds);
         //By default both types of ads are loaded by wrapper.
         // To set which of them to show in the list you should use an appropriate ctor
-        //adapterWrapper = new AdmobRecyclerAdapterWrapper(this, EnumSet.of(EAdType.ADVANCED_INSTALLAPP));
+        //adapterWrapper = new AdmobRecyclerAdapterWrapper(this, testDevicesIds, EnumSet.of(EAdType.ADVANCED_INSTALLAPP));
 
         //wrapping your adapter with a AdmobAdapterWrapper.
         adapterWrapper.setAdapter(adapter);
@@ -69,13 +73,7 @@ public class MainActivity_RecyclerView extends Activity {
         //display more than one ad block at the visible part of the screen,
         // so you should choose this parameter carefully and according to your item's height and screen resolution of a target devices
         adapterWrapper.setNoOfDataBetweenAds(10);
-
         adapterWrapper.setFirstAdIndex(2);
-
-        //It's a test admob ID. Please replace it with a real one only when you will be ready to deploy your product to the Release!
-        //Otherwise your Admob account could be banned
-        //String admobUnitId = getResources().getString(R.string.banner_admob_unit_id);
-        //adapterWrapper.setAdmobReleaseUnitId(admobUnitId);
 
         rvMessages.setAdapter(adapterWrapper); // setting an AdmobRecyclerAdapterWrapper to a RecyclerView
 

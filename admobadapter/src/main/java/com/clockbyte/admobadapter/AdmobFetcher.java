@@ -20,6 +20,8 @@ package com.clockbyte.admobadapter;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.SparseArray;
+
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.formats.NativeAd;
@@ -40,15 +42,16 @@ public class AdmobFetcher extends AdmobFetcherBase{
     /**
      * Maximum number of ads to prefetch.
      */
-    private static final int PREFETCHED_ADS_SIZE = 2;
+    public static final int PREFETCHED_ADS_SIZE = 2;
     /**
      * Maximum number of times to try fetch an ad after failed attempts.
      */
     private static final int MAX_FETCH_ATTEMPT = 4;
 
+    private int mFetchingAdsCnt = 0;
     private AdLoader adLoader;
     private List<NativeAd> mPrefetchedAdList = new ArrayList<NativeAd>();
-    private Map<Integer, NativeAd> adMapAtIndex = new HashMap<Integer, NativeAd>();
+    private SparseArray adMapAtIndex = new SparseArray();
 
     private EnumSet<EAdType> adTypeToFetch = EnumSet.allOf(EAdType.class);
     /**
@@ -72,7 +75,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
      * @see #getFetchedAdsCount()
      */
     public synchronized NativeAd getAdForIndex(final int index) {
-        NativeAd adNative = adMapAtIndex.get(index);
+        NativeAd adNative = (NativeAd) adMapAtIndex.get(index);
 
         if (adNative == null && mPrefetchedAdList.size() > 0) {
             adNative = mPrefetchedAdList.remove(0);
@@ -84,6 +87,11 @@ public class AdmobFetcher extends AdmobFetcherBase{
 
         ensurePrefetchAmount(); // Make sure we have enough pre-fetched ads
         return adNative;
+    }
+
+    @Override
+    public synchronized int getFetchingAdsCount() {
+        return mFetchingAdsCnt;
     }
 
     /**
@@ -106,6 +114,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
      * The converse of this call is {@link #prefetchAds(Context)}.
      */
     public synchronized void destroyAllAds() {
+        mFetchingAdsCnt = 0;
         adMapAtIndex.clear();
         mPrefetchedAdList.clear();
 
@@ -120,6 +129,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
      * */
     public synchronized void clearMapAds() {
           adMapAtIndex.clear();
+        mFetchingAdsCnt = mPrefetchedAdList.size();
     }
 
     /**
@@ -132,6 +142,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
             Log.i(TAG, "Fetching Ad now");
             if(lockFetch.getAndSet(true))
                 return;
+            mFetchingAdsCnt++;
             adLoader.loadAd(getAdRequest()); //Fetching the ads item
         } else {
             mFetchFailCount++;
@@ -194,6 +205,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
                         Log.i(TAG, "onAdFailedToLoad " + errorCode);
                         lockFetch.set(false);
                         mFetchFailCount++;
+                        mFetchingAdsCnt--;
                         ensurePrefetchAmount();
                     }
                 })
@@ -233,6 +245,6 @@ public class AdmobFetcher extends AdmobFetcherBase{
         lockFetch.set(false);
         mFetchFailCount = 0;
         ensurePrefetchAmount();
-        notifyObserversOfAdSizeChange();
+        notifyObserversOfAdSizeChange(index);
     }
 }

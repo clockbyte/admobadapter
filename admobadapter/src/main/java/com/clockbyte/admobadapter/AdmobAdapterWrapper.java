@@ -19,14 +19,11 @@ package com.clockbyte.admobadapter;
 
 import android.content.Context;
 import android.database.DataSetObserver;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
+
 import com.google.android.gms.ads.formats.*;
 
 import java.util.EnumSet;
@@ -35,7 +32,7 @@ import java.util.EnumSet;
  * Adapter that has common functionality for any adapters that need to show ads in-between
  * other data.
  */
-public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase.AdmobListener, AdmobAdapterWrapperInterface {
+public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase.AdmobListener {
 
     private final String TAG = AdmobAdapterWrapper.class.getCanonicalName();
 
@@ -60,9 +57,9 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         });
     }
 
-    AdmobFetcher adFetcher;
-    Context mContext;
-    private AdmobAdapterCalculator AdapterCalculator = new AdmobAdapterCalculator(this);
+    private AdmobFetcher adFetcher;
+    private Context mContext;
+    private AdmobAdapterCalculator AdapterCalculator = new AdmobAdapterCalculator();
     /*
     * Gets an object which incapsulates transformation of the source and ad blocks indices
     */
@@ -156,35 +153,61 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         this.mInstallAdsLayoutContext = mInstallAdsLayoutContext;
     }
 
-    /*
-    *Add a test device ID.
+    /**
+     * Use this constructor for test purposes. if you are going to release the live version
+     * please use the appropriate constructor
+     * @see #AdmobAdapterWrapper(Context, String)
+     * @param testDevicesId sets a devices ID to test ads interaction.
+     * You could pass null but it's better to set ids for all your test devices
+     * including emulators. for emulator just use the
+     * @see {AdRequest.DEVICE_ID_EMULATOR}
     */
-    public void addTestDeviceId(String testDeviceId) {
-        adFetcher.addTestDeviceId(testDeviceId);
+    public AdmobAdapterWrapper(Context context, String[] testDevicesId) {
+        this(context, testDevicesId, EnumSet.allOf(EAdType.class));
+    }
+    /**
+     * @param admobReleaseUnitId sets a release unit ID for admob banners.
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobAdapterWrapper(Context, String[])
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+     */
+    public AdmobAdapterWrapper(Context context, String admobReleaseUnitId) {
+        this(context, admobReleaseUnitId, EnumSet.allOf(EAdType.class));
     }
 
-    /*
-*Sets a test device ID. Normally you don't have to set it
-*/
-    @Deprecated
-    public void setTestDeviceId(String testDeviceId) {
-        adFetcher.addTestDeviceId(testDeviceId);
-    }
-
-    /*
-    *Sets a release unit ID for admob banners. ID should be active, please check it in your Admob's account.
-    * Be careful: don't set it or set to null if you still haven't deployed a Release.
-    * Otherwise your Admob account could be banned
+    /**
+     * Use this constructor for test purposes. if you are going to release the live version
+     * please use the appropriate constructor
+     * @see #AdmobAdapterWrapper(Context, String)
+     * @param testDevicesId sets a devices ID to test ads interaction.
+     * You could pass null but it's better to set ids for all your test devices
+     * including emulators. for emulator just use the
+     * @see {AdRequest.DEVICE_ID_EMULATOR}
+    * @param adTypesToShow sets the types of ads to show in the list.
+    * By default all types are loaded by wrapper.
+    * i.e. pass EnumSet.of(EAdType.ADVANCED_INSTALLAPP) to show only install app ads
     */
-    public void setAdmobReleaseUnitId(String admobReleaseUnitId) {
-        adFetcher.setAdmobReleaseUnitId(admobReleaseUnitId);
+    public AdmobAdapterWrapper(Context context, String[] testDevicesId, EnumSet<EAdType> adTypesToShow) {
+        init(context, null, testDevicesId, adTypesToShow);
+    }
+    /**
+     * @param admobReleaseUnitId sets a release unit ID for admob banners.
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobAdapterWrapper(Context, String[])
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+    * @param adTypesToShow sets the types of ads to show in the list.
+    * By default all types are loaded by wrapper.
+    * i.e. pass EnumSet.of(EAdType.ADVANCED_INSTALLAPP) to show only install app ads
+    */
+    public AdmobAdapterWrapper(Context context, String admobReleaseUnitId, EnumSet<EAdType> adTypesToShow) {
+        init(context, admobReleaseUnitId, null, adTypesToShow);
     }
 
-    public AdmobAdapterWrapper(Context context) {
-        this(context, EnumSet.allOf(EAdType.class));
-    }
-
-    public AdmobAdapterWrapper(Context context, EnumSet<EAdType> adTypesToShow) {
+    private void init(Context context, String admobReleaseUnitId, String[] testDevicesId, EnumSet<EAdType> adTypesToShow){
         setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
         setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
         setContentAdsLayoutContext(ContentAdLayoutContext.getDefault());
@@ -192,6 +215,11 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         mContext = context;
 
         adFetcher = new AdmobFetcher();
+        if(!TextUtils.isEmpty(admobReleaseUnitId))
+            adFetcher.setAdmobReleaseUnitId(admobReleaseUnitId);
+        if(testDevicesId!=null)
+            for (String testId: testDevicesId)
+                adFetcher.addTestDeviceId(testId);
         adFetcher.setAdTypeToFetch(adTypesToShow == null || adTypesToShow.isEmpty()
                 ?  EnumSet.allOf(EAdType.class): adTypesToShow);
         adFetcher.addListener(this);
@@ -224,7 +252,8 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
                 getContentAdsLayoutContext().bind(lvi2, ad2);
                 return lvi2;
             default:
-                int origPos = AdapterCalculator.getOriginalContentPosition(position);
+                int origPos = AdapterCalculator.getOriginalContentPosition(position,
+                        adFetcher.getFetchedAdsCount(), mAdapter.getCount());
                 return mAdapter.getView(origPos, convertView, parent);
         }
     }
@@ -247,7 +276,7 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
             No of currently fetched ads, as long as it isn't more than no of max ads that can
             fit dataset.
              */
-            int noOfAds = AdapterCalculator.getAdsCountToPublish();
+            int noOfAds = AdapterCalculator.getAdsCountToPublish(adFetcher.getFetchedAdsCount(), mAdapter.getCount());
             return mAdapter.getCount() > 0 ? mAdapter.getCount() + noOfAds : 0;
         } else {
             return 0;
@@ -264,11 +293,12 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     @Override
     public Object getItem(int position) {
 
-        if (AdapterCalculator.canShowAdAtPosition(position)) {
+        if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchedAdsCount())) {
             int adPos = AdapterCalculator.getAdIndex(position);
             return adFetcher.getAdForIndex(adPos);
         } else {
-            int origPos = AdapterCalculator.getOriginalContentPosition(position);
+            int origPos = AdapterCalculator.getOriginalContentPosition(position,
+                    adFetcher.getFetchedAdsCount(), mAdapter.getCount());
             return mAdapter.getItem(origPos);
         }
     }
@@ -285,12 +315,13 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
 
     @Override
     public int getItemViewType(int position) {
-        if (AdapterCalculator.canShowAdAtPosition(position)) {
+        if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchedAdsCount())) {
             int adPos = AdapterCalculator.getAdIndex(position);
             NativeAd ad = adFetcher.getAdForIndex(adPos);
             return ad instanceof NativeAppInstallAd ? VIEW_TYPE_AD_INSTALL : VIEW_TYPE_AD_CONTENT;
         } else {
-            int origPos = AdapterCalculator.getOriginalContentPosition(position);
+            int origPos = AdapterCalculator.getOriginalContentPosition(position,
+                    adFetcher.getFetchedAdsCount(), mAdapter.getCount());
             return mAdapter.getItemViewType(origPos);
         }
     }
@@ -310,14 +341,18 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     }
 
     @Override
-    public void onAdChanged() {
+    public void onAdChanged(int adIdx) {
 
         notifyDataSetChanged();
     }
 
+    /**
+     * Raised when the number of ads have changed. Adapters that implement this class
+     * should notify their data views that the dataset has changed.
+     */
     @Override
-    public int getAdapterCount() {
-        return mAdapter.getCount();
+    public void onAdChanged() {
+        notifyDataSetChanged();
     }
 
 }

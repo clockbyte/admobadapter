@@ -21,12 +21,6 @@ import android.util.Log;
 
 public class AdmobAdapterCalculator {
 
-    protected AdmobAdapterWrapperInterface mAdmobAdapter;
-
-    public AdmobAdapterCalculator(AdmobAdapterWrapperInterface admobAdapter){
-        mAdmobAdapter = admobAdapter;
-    }
-
     protected int mNoOfDataBetweenAds;
     /*
     * Gets the number of your data items between ad blocks, by default it equals to 10.
@@ -77,12 +71,20 @@ public class AdmobAdapterCalculator {
         this.mLimitOfAds = mLimitOfAds;
     }
 
-
-    public int getAdsCountToPublish(){
+    /**
+     * Gets the count of ads that could be published
+     *
+     * @param fetchedAdsCount the count of completely fetched ads that are ready to be published
+     * @param sourceItemsCount the count of items in the source collection
+     * @return the original position that the adapter position would have been without ads
+     */
+    public int getAdsCountToPublish(int fetchedAdsCount, int sourceItemsCount){
+        if(fetchedAdsCount == 0) return 0;
         int expected = 0;
-        if(mAdmobAdapter.getAdapterCount() > 0 && mAdmobAdapter.getAdapterCount()>= getOffsetValue()+1)
-            expected = (mAdmobAdapter.getAdapterCount() - getOffsetValue()) / getNoOfDataBetweenAds() + 1;
+        if(sourceItemsCount > 0 && sourceItemsCount >= getOffsetValue()+1)
+            expected = (sourceItemsCount - getOffsetValue()) / getNoOfDataBetweenAds() + 1;
         expected = Math.max(0, expected);
+        expected = Math.min(fetchedAdsCount, expected);
         return Math.min(expected, getLimitOfAds());
     }
 
@@ -90,10 +92,12 @@ public class AdmobAdapterCalculator {
      * Translates an adapter position to an actual position within the underlying dataset.
      *
      * @param position the adapter position
+     * @param fetchedAdsCount the count of completely fetched ads that are ready to be published
+     * @param sourceItemsCount the count of items in the source collection
      * @return the original position that the adapter position would have been without ads
      */
-    public int getOriginalContentPosition(int position) {
-        int noOfAds = getAdsCountToPublish();
+    public int getOriginalContentPosition(int position, int fetchedAdsCount, int sourceItemsCount) {
+        int noOfAds = getAdsCountToPublish(fetchedAdsCount, sourceItemsCount);
         // No of spaces for ads in the dataset, according to ad placement rules
         int adSpacesCount = (getAdIndex(position) + 1);
         int originalPosition = position - Math.min(adSpacesCount, noOfAds);
@@ -119,13 +123,14 @@ public class AdmobAdapterCalculator {
      * available to place in that position.
      *
      * @param position the adapter position
+     * @param fetchedAdsCount the count of completely fetched ads that are ready to be published
      * @return <code>true</code> if ads can
      */
-    public boolean canShowAdAtPosition(int position) {
+    public boolean canShowAdAtPosition(int position, int fetchedAdsCount) {
 
         // Is this a valid position for an ad?
         // Is an ad for this position available?
-        return isAdPosition(position) && isAdAvailable(position);
+        return isAdPosition(position) && isAdAvailable(position, fetchedAdsCount);
     }
 
     /**
@@ -161,14 +166,27 @@ public class AdmobAdapterCalculator {
      * Checks if an ad is available for this position.
      *
      * @param position the adapter position
+     * @param fetchedAdsCount the count of completely fetched ads that are ready to be published
      * @return {@code true} if an ad is available, {@code false} otherwise
      */
-    public boolean isAdAvailable(int position) {
+    public boolean isAdAvailable(int position, int fetchedAdsCount) {
+        if(fetchedAdsCount == 0) return false;
         int adIndex = getAdIndex(position);
         int firstAdPos = getOffsetValue();
 
-        return position >= firstAdPos && adIndex >= 0 && adIndex < getLimitOfAds();
+        return position >= firstAdPos && adIndex >= 0 && adIndex < getLimitOfAds() && adIndex < fetchedAdsCount;
     }
 
-
+    /**
+     * Checks if we have to request the next ad block for this position.
+     *
+     * @param position the adapter position
+     * @param fetchingAdsCount the count of fetched and currently fetching ads
+     * @return {@code true} if an ad is not available to publish and we should fetch one, {@code false} otherwise
+     */
+    public boolean hasToFetchAd(int position, int fetchingAdsCount){
+        int adIndex = getAdIndex(position);
+        int firstAdPos = getOffsetValue();
+        return  position >= firstAdPos && adIndex >= 0 && adIndex < getLimitOfAds() && adIndex >= fetchingAdsCount;
+    }
 }

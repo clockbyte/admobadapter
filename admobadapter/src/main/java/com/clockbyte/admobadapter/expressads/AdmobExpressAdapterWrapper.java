@@ -19,19 +19,15 @@ package com.clockbyte.admobadapter.expressads;
 
 import android.content.Context;
 import android.database.DataSetObserver;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.os.Handler;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 
 import com.clockbyte.admobadapter.AdViewHelper;
 import com.clockbyte.admobadapter.AdmobAdapterCalculator;
-import com.clockbyte.admobadapter.AdmobAdapterWrapperInterface;
-import com.clockbyte.admobadapter.AdmobFetcher;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
-import com.clockbyte.admobadapter.R;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.NativeExpressAdView;
 
@@ -39,8 +35,7 @@ import com.google.android.gms.ads.NativeExpressAdView;
  * Adapter that has common functionality for any adapters that need to show ads in-between
  * other data.
  */
-public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetcherBase.AdmobListener,
-        AdmobAdapterWrapperInterface {
+public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetcherBase.AdmobListener {
 
     private final String TAG = AdmobExpressAdapterWrapper.class.getCanonicalName();
 
@@ -65,9 +60,9 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
         });
     }
 
-    AdmobFetcherExpress adFetcher;
-    Context mContext;
-    private AdmobAdapterCalculator AdapterCalculator = new AdmobAdapterCalculator(this);
+    private AdmobFetcherExpress adFetcher;
+    private Context mContext;
+    private AdmobAdapterCalculator AdapterCalculator = new AdmobAdapterCalculator();
     /*
     * Gets an object which incapsulates transformation of the source and ad blocks indices
     */
@@ -130,78 +125,106 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     }
 
     private String mAdsUnitId;
-
-    /*
-    * Gets the res layout id for published express ads
-    */
-    public String getAdsUnitId() {
-        return mAdsUnitId;
-    }
-
-    /*
-    * Sets the res layout id for published express ads
-    */
-    public void setAdsUnitId(String mAdsUnitId) {
-        this.mAdsUnitId = mAdsUnitId;
-    }
-
-    /*
-    *Add a test device ID.
-    */
-    public void addTestDeviceId(String testDeviceId) {
-        adFetcher.addTestDeviceId(testDeviceId);
-    }
-
-    /*
-    *Sets a test device ID. Normally you don't have to set it
-    */
-    @Deprecated
-    public void setTestDeviceId(String testDeviceId) {
-        adFetcher.addTestDeviceId(testDeviceId);
-    }
-
     private AdSize mAdSize;
 
-    /*
-    * Gets ad size
-    */
-    public AdSize getAdSize() {
-        return mAdSize;
+    /**
+     * Use this constructor for test purposes. if you are going to release the live version
+     * please use the appropriate constructor
+     * @see #AdmobExpressAdapterWrapper(Context, String)
+     * @param testDevicesId sets a devices ID to test ads interaction.
+     * You could pass null but it's better to set ids for all your test devices
+     * including emulators. for emulator just use the
+     * @see {AdRequest.DEVICE_ID_EMULATOR}
+     */
+    public AdmobExpressAdapterWrapper(Context context, String[] testDevicesId) {
+        init(context, null, testDevicesId, null);
+    }
+    /**
+     * @param admobReleaseUnitId sets a release unit ID for admob banners.
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobExpressAdapterWrapper(Context, String[])
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+     */
+    public AdmobExpressAdapterWrapper(Context context, String admobReleaseUnitId) {
+        init(context, admobReleaseUnitId, null, null);
     }
 
-    /*
-    * Sets ad size
-    */
-    public void setAdSize(AdSize mAdSize) {
-        this.mAdSize = mAdSize;
+    /**
+     * Use this constructor for test purposes. if you are going to release the live version
+     * please use the appropriate constructor
+     * @see #AdmobExpressAdapterWrapper(Context, String, AdSize)
+     * @param testDevicesId sets a devices ID to test ads interaction.
+     * You could pass null but it's better to set ids for all your test devices
+     * including emulators. for emulator just use the
+     * @see {AdRequest.DEVICE_ID_EMULATOR}
+     * @param adSize sets ad size. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
+     */
+    public AdmobExpressAdapterWrapper(Context context, String[] testDevicesId, AdSize adSize) {
+        init(context, null, testDevicesId, adSize);
+    }
+    /**
+     * @param admobReleaseUnitId sets a release unit ID for admob banners.
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobExpressAdapterWrapper(Context, String[], AdSize)
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+     * @param adSize sets ad size. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
+     */
+    public AdmobExpressAdapterWrapper(Context context, String admobReleaseUnitId, AdSize adSize) {
+        init(context, admobReleaseUnitId, null, adSize);
     }
 
-    public AdmobExpressAdapterWrapper(Context context) {
+    private void init(Context context, String admobReleaseUnitId, String[] testDevicesId, AdSize adSize) {
         setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
         setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
-        setAdsUnitId(DEFAULT_AD_UNIT_ID);
-        setAdSize(DEFAULT_AD_SIZE);
+        this.mAdsUnitId = TextUtils.isEmpty(admobReleaseUnitId)? DEFAULT_AD_UNIT_ID : admobReleaseUnitId;
+        this.mAdSize = adSize==null?DEFAULT_AD_SIZE:adSize;
         mContext = context;
 
         adFetcher = new AdmobFetcherExpress(mContext);
+        if(testDevicesId!=null)
+            for (String testId: testDevicesId)
+                adFetcher.addTestDeviceId(testId);
         adFetcher.addListener(this);
+        prefetchAds(AdmobFetcherExpress.PREFETCHED_ADS_SIZE);
+    }
+
+    /**
+     * Will start async prefetch of ad block to use its further
+     * @return last created NativeExpressAdView
+     */
+    private NativeExpressAdView prefetchAds(int cntToPrefetch){
+        NativeExpressAdView last = null;
+        for (int i = 0; i < cntToPrefetch; i++){
+            final NativeExpressAdView item = AdViewHelper.getExpressAdView(mContext, this.mAdSize, this.mAdsUnitId);
+            adFetcher.setupAd(item);
+            //2 sec throttling to prevent a high-load of server
+            new Handler(mContext.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    adFetcher.fetchAd(item);
+                }
+            }, 2000*i);
+            last = item;
+        }
+        return last;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         switch (getItemViewType(position)) {
             case VIEW_TYPE_AD_EXPRESS:
                 int adPos = AdapterCalculator.getAdIndex(position);
                 NativeExpressAdView item = adFetcher.getAdForIndex(adPos);
-                if(item==null) {
-                    item = AdViewHelper.getExpressAdView(mContext, getAdSize(), getAdsUnitId());
-                    adFetcher.setupAd(item);
-                    adFetcher.fetchAd(item);
-                }
+                if(item==null)
+                    item = prefetchAds(1);
                 return item;
             default:
-                int origPos = AdapterCalculator.getOriginalContentPosition(position);
+                int origPos = AdapterCalculator.getOriginalContentPosition(position,
+                        adFetcher.getFetchedAdsCount(), mAdapter.getCount());
                 return mAdapter.getView(origPos, convertView, parent);
         }
     }
@@ -220,11 +243,9 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     public int getCount() {
 
         if (mAdapter != null) {
-            /*
-            No of currently fetched ads, as long as it isn't more than no of max ads that can
-            fit dataset.
-             */
-            int noOfAds = AdapterCalculator.getAdsCountToPublish();
+            /* Cnt of currently fetched ads, as long as it isn't more than no of max ads that can
+            fit dataset. */
+            int noOfAds = AdapterCalculator.getAdsCountToPublish(adFetcher.getFetchedAdsCount(), mAdapter.getCount());
             return mAdapter.getCount() > 0 ? mAdapter.getCount() + noOfAds : 0;
         } else {
             return 0;
@@ -240,12 +261,12 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
      */
     @Override
     public Object getItem(int position) {
-
-        if (AdapterCalculator.canShowAdAtPosition(position)) {
+        if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchedAdsCount())) {
             int adPos = AdapterCalculator.getAdIndex(position);
             return adFetcher.getAdForIndex(adPos);
         } else {
-            int origPos = AdapterCalculator.getOriginalContentPosition(position);
+            int origPos = AdapterCalculator.getOriginalContentPosition(position,
+                    adFetcher.getFetchedAdsCount(), mAdapter.getCount());
             return mAdapter.getItem(origPos);
         }
     }
@@ -262,12 +283,19 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
 
     @Override
     public int getItemViewType(int position) {
-        if (AdapterCalculator.canShowAdAtPosition(position)) {
+        checkNeedFetchAd(position);
+        if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchedAdsCount())) {
             return VIEW_TYPE_AD_EXPRESS;
         } else {
-            int origPos = AdapterCalculator.getOriginalContentPosition(position);
+            int origPos = AdapterCalculator.getOriginalContentPosition(position,
+                    adFetcher.getFetchedAdsCount(), mAdapter.getCount());
             return mAdapter.getItemViewType(origPos);
         }
+    }
+
+    private void checkNeedFetchAd(int position){
+        if(AdapterCalculator.hasToFetchAd(position, adFetcher.getFetchingAdsCount()))
+            prefetchAds(1);
     }
 
     /**
@@ -281,16 +309,21 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
      * Clears all currently displaying ads to update them
      */
     public void requestUpdateAd() {
-        adFetcher.updateAds();
+        adFetcher.updateFetchedAds();
     }
 
+    @Override
+    public void onAdChanged(int adIdx) {
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Raised when the number of ads have changed. Adapters that implement this class
+     * should notify their data views that the dataset has changed.
+     */
     @Override
     public void onAdChanged() {
         notifyDataSetChanged();
     }
 
-    @Override
-    public int getAdapterCount() {
-        return mAdapter.getCount();
-    }
 }

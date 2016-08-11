@@ -26,12 +26,17 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.NativeExpressAdView;
 
 import java.lang.ref.WeakReference;
-import java.util.Enumeration;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdmobFetcherExpress extends AdmobFetcherBase {
 
     private final String TAG = AdmobFetcherExpress.class.getCanonicalName();
+
+    /**
+     * Maximum number of ads to prefetch.
+     */
+    public static final int PREFETCHED_ADS_SIZE = 2;
 
     /**
      * Maximum number of times to try fetch an ad after failed attempts.
@@ -43,8 +48,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
         mContext = new WeakReference<Context>(context);
     }
 
-    private ConcurrentHashMap<Integer, NativeExpressAdView> mPrefetchedAds =
-            new ConcurrentHashMap<Integer, NativeExpressAdView>();
+    private List<NativeExpressAdView> mPrefetchedAds = new ArrayList<NativeExpressAdView>();
 
     /**
      * Gets native ad at a particular index in the fetched ads list.
@@ -54,7 +58,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
      * @see #getFetchedAdsCount()
      */
     public synchronized NativeExpressAdView getAdForIndex(int adPos) {
-        if(mPrefetchedAds.containsKey(adPos))
+        if(mPrefetchedAds.size() > adPos)
             return mPrefetchedAds.get(adPos);
         return null;
     }
@@ -98,6 +102,11 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
      * @param adView
      */
     protected synchronized void setupAd(final NativeExpressAdView adView) {
+        if(mFetchFailCount > MAX_FETCH_ATTEMPT)
+            return;
+
+        if(!mPrefetchedAds.contains(adView))
+            mPrefetchedAds.add(adView);
         adView.setAdListener(new AdListener() {
             @Override
             public void onAdFailedToLoad(int errorCode) {
@@ -121,34 +130,37 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     private synchronized void onAdFetched(NativeExpressAdView adNative) {
         Log.i(TAG, "onAdFetched");
         if (canUseThisAd(adNative)) {
-            mPrefetchedAds.put(mPrefetchedAds.size(), adNative);
-            mNoOfFetchedAds = mPrefetchedAds.size();
+            notifyObserversOfAdSizeChange(mNoOfFetchedAds++);
         }
         mFetchFailCount = 0;
-        notifyObserversOfAdSizeChange();
+    }
+
+    @Override
+    public synchronized int getFetchingAdsCount() {
+        return mPrefetchedAds.size();
     }
 
     @Override
     public synchronized void destroyAllAds() {
         super.destroyAllAds();
-        Enumeration<NativeExpressAdView> en = mPrefetchedAds.elements();
-        while(en.hasMoreElements()){
-            NativeExpressAdView ad = en.nextElement();
+        for(NativeExpressAdView ad:mPrefetchedAds){
             ad.destroy();
         }
         mPrefetchedAds.clear();
     }
 
-    /**
-     * update all the ads in Map to refresh
-     * */
-    public synchronized void updateAds() {
-        Enumeration<NativeExpressAdView> en = mPrefetchedAds.elements();
-        while(en.hasMoreElements()){
-            NativeExpressAdView ad = en.nextElement();
-            fetchAd(ad);
+    public synchronized void updateFetchedAds() {
+        final Context context = mContext.get();
+        //use throttling to prevent high-load of server
+        for(int i = 0;i<mPrefetchedAds.size();i++){
+            final NativeExpressAdView finalItem = mPrefetchedAds.get(i);
+            new Handler(context.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    fetchAd(finalItem);
+                }
+            }, 20000*i);
         }
-        Log.i(TAG, "updateAds");
+        Log.i(TAG, "onAdsUpdate");
     }
-
 }

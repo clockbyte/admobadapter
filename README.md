@@ -1,7 +1,7 @@
 Admob Adapter
 ======================
 
-We've finally released [v1.1](https://github.com/clockbyte/admobadapter/releases/tag/v1.1)!
+We've finally released [v1.2](https://github.com/clockbyte/admobadapter/releases/tag/v1.2)! No flickering, no empty spaces!
 
 The reference to the [DOCUMENTATION](https://github.com/clockbyte/admobadapter/wiki/Cookbook) for people who are in hurry!
 

@@ -3,7 +3,7 @@ Admob Adapter
 
 We've finally released [v1.2](https://github.com/clockbyte/admobadapter/releases/tag/v1.2)! No flickering, no empty spaces!
 
-We are happy to let you know that our lib was uploaded to the Maven-central, so now you are able to link it with your Gradle/Maven, look at [DOCUMENTATION](https://github.com/clockbyte/admobadapter/wiki/Installation) :)
+We are happy to let you know that our lib was uploaded to the Maven-central, so now you are able to link it with your Gradle/Maven, look through the [DOCUMENTATION](https://github.com/clockbyte/admobadapter/wiki/Installation) :)
 
 The reference to the [COOK RECIPES](https://github.com/clockbyte/admobadapter/wiki/Cookbook) for people who are in hurry!
 

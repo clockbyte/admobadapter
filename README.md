@@ -5,7 +5,7 @@ We've finally released [v1.2](https://github.com/clockbyte/admobadapter/releases
 
 We are happy to let you know that our lib was uploaded to the Maven-central, so now you are able to link it with your Gradle/Maven, look at [DOCUMENTATION](https://github.com/clockbyte/admobadapter/wiki/Installation) :)
 
-The reference to the [DOCUMENTATION](https://github.com/clockbyte/admobadapter/wiki/Cookbook) for people who are in hurry!
+The reference to the [COOK RECIPES](https://github.com/clockbyte/admobadapter/wiki/Cookbook) for people who are in hurry!
 
 Admob Adapter is an Android library that makes it easy to integrate [Admob native ads](https://firebase.google.com/docs/admob/android/native) (both Express and Advanced) into ```ListView/RecyclerView``` in the way that is shown in the following image/animation.
 

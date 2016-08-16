@@ -75,7 +75,9 @@ public class AdmobFetcher extends AdmobFetcherBase{
      * @see #getFetchedAdsCount()
      */
     public synchronized NativeAd getAdForIndex(final int index) {
-        NativeAd adNative = (NativeAd) adMapAtIndex.get(index);
+        NativeAd adNative = null;
+        if(index >= 0)
+            adNative = (NativeAd) adMapAtIndex.get(index);
 
         if (adNative == null && mPrefetchedAdList.size() > 0) {
             adNative = mPrefetchedAdList.remove(0);

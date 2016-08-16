@@ -75,6 +75,9 @@ public class MainActivity_RecyclerView extends Activity {
         adapterWrapper.setNoOfDataBetweenAds(10);
         adapterWrapper.setFirstAdIndex(2);
 
+        //if you use several view types in your source adapter then you have to set the biggest view type value with the following method
+        //adapterWrapper.setViewTypeBiggestSource(100);
+
         rvMessages.setAdapter(adapterWrapper); // setting an AdmobRecyclerAdapterWrapper to a RecyclerView
 
         //preparing the collection of data

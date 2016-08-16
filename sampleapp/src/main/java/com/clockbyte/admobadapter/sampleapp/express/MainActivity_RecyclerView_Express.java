@@ -62,8 +62,10 @@ public class MainActivity_RecyclerView_Express extends Activity {
         //display more than one ad block at the visible part of the screen,
         // so you should choose this parameter carefully and according to your item's height and screen resolution of a target devices
         adapterWrapper.setNoOfDataBetweenAds(10);
-
         adapterWrapper.setFirstAdIndex(2);
+
+        //if you use several view types in your source adapter then you have to set the biggest view type value with the following method
+        //adapterWrapper.setViewTypeBiggestSource(100);
 
         rvMessages.setAdapter(adapterWrapper); // setting an AdmobExpressRecyclerAdapterWrapper to a RecyclerView
 

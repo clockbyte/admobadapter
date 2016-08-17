@@ -193,6 +193,39 @@ public class AdmobExpressRecyclerAdapterWrapper
     }
 
     /**
+     * @param admobReleaseUnitId sets a release unit ID for admob banners.
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobExpressRecyclerAdapterWrapper(Context, String[])
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+     * @param testDevicesId sets a devices ID to test ads interaction.
+     * You could pass null but it's better to set ids for all your test devices
+     * including emulators. for emulator just use the
+     * @see {AdRequest.DEVICE_ID_EMULATOR}
+     */
+    public AdmobExpressRecyclerAdapterWrapper(Context context, String admobReleaseUnitId, String[] testDevicesId) {
+        init(context, admobReleaseUnitId, testDevicesId, null);
+    }
+
+    /**
+     * @param admobReleaseUnitId sets a release unit ID for admob banners.
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobExpressRecyclerAdapterWrapper(Context, String[])
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+     * @param testDevicesId sets a devices ID to test ads interaction.
+     * You could pass null but it's better to set ids for all your test devices
+     * including emulators. for emulator just use the
+     * @see {AdRequest.DEVICE_ID_EMULATOR}
+     * @param adSize sets ad size. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
+     */
+    public AdmobExpressRecyclerAdapterWrapper(Context context, String admobReleaseUnitId, String[] testDevicesId, AdSize adSize) {
+        init(context, admobReleaseUnitId, testDevicesId, adSize);
+    }
+
+    /**
      * Use this constructor for test purposes. if you are going to release the live version
      * please use the appropriate constructor
      * @see #AdmobExpressRecyclerAdapterWrapper(Context, String, AdSize)

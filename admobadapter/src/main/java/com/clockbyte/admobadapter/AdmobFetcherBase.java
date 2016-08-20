@@ -114,8 +114,8 @@ public abstract class AdmobFetcherBase {
     public synchronized void destroyAllAds() {
         mFetchFailCount = 0;
         mNoOfFetchedAds = 0;
-        mContext.clear();
         notifyObserversOfAdSizeChange(-1);
+        mContext.clear();
     }
 
     /**

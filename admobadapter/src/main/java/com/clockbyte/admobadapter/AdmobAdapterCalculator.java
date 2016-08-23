@@ -79,7 +79,7 @@ public class AdmobAdapterCalculator {
      * @return the original position that the adapter position would have been without ads
      */
     public int getAdsCountToPublish(int fetchedAdsCount, int sourceItemsCount){
-        if(fetchedAdsCount == 0) return 0;
+        if(fetchedAdsCount == 0 || getNoOfDataBetweenAds() == 0) return 0;
         int expected = 0;
         if(sourceItemsCount > 0 && sourceItemsCount >= getOffsetValue()+1)
             expected = (sourceItemsCount - getOffsetValue()) / getNoOfDataBetweenAds() + 1;

@@ -211,32 +211,226 @@ public class AdmobAdapterCalculatorTest {
     }
 
     @Test
-    public void testCanShowAdAtPosition() throws Exception {
-
+    public void testCanShowAdAtPosition0_fetchedCntIs3_Success() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.canShowAdAtPosition(0, 3), is(true));
     }
 
     @Test
-    public void testGetAdIndex() throws Exception {
-
+    public void testCanShowAdAtPosition22_fetchedCntIs3_Success() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.canShowAdAtPosition(22, 3), is(true));
     }
 
     @Test
-    public void testIsAdPosition() throws Exception {
-
+    public void testCanShowAdAtPosition33_fetchedCntIs3_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.canShowAdAtPosition(33, 3), is(false));
     }
 
     @Test
-    public void testGetOffsetValue() throws Exception {
-
+    public void testCanShowAdAtPosition_fetchedCntIs0_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.canShowAdAtPosition(0, 0), is(false));
     }
 
     @Test
-    public void testIsAdAvailable() throws Exception {
-
+    public void testCanShowAdAtPosition99_firstIdxIs99_Success() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 99, 10);
+        assertThat(admobAdapterCalculator.canShowAdAtPosition(99, 10), is(true));
     }
 
     @Test
-    public void testHasToFetchAd() throws Exception {
+    public void testCanShowAdAtPosition98_firstIdxIs99_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 99, 10);
+        assertThat(admobAdapterCalculator.canShowAdAtPosition(98, 10), is(false));
+    }
 
+    @Test
+    public void testCanShowAdAtPosition100_firstIdxIs99_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 99, 10);
+        assertThat(admobAdapterCalculator.canShowAdAtPosition(100, 10), is(false));
+    }
+
+    @Test
+    public void testCanShowAdAtPosition10_firstIdxIs10_Success() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 10, 10);
+        assertThat(admobAdapterCalculator.canShowAdAtPosition(10, 10), is(true));
+    }
+
+    @Test
+    public void testCanShowAdAtPosition0_itemsBetweenAds0_Success() throws Exception {
+        setupAdmobAdapterCalculatorHelper(0, 0, 200);
+        assertThat(admobAdapterCalculator.canShowAdAtPosition(0, 200), is(true));
+    }
+
+    @Test
+    public void testCanShowAdAtPosition0_limitAdsIs0_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 0);
+        assertThat(admobAdapterCalculator.canShowAdAtPosition(0, 100), is(false));
+    }
+
+    private final int Fail = -1;
+
+    @Test
+    public void testGetAdIndex_position0_firstIdxIs0_Result0() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.getAdIndex(0), is(0));
+    }
+
+    @Test
+    public void testGetAdIndex_position99_firstIdxIs99_Result0() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 99, 10);
+        assertThat(admobAdapterCalculator.getAdIndex(99), is(0));
+    }
+
+    @Test
+    public void testGetAdIndex_position98_firstIdxIs99_ResultFail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 99, 10);
+        assertThat(admobAdapterCalculator.getAdIndex(98), is(Fail));
+    }
+
+    @Test
+    public void testGetAdIndex_position100_firstIdxIs99_Result0() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 99, 10);
+        assertThat(admobAdapterCalculator.getAdIndex(100), is(0));
+    }
+
+    @Test
+    public void testGetAdIndex_position10_firstIdxIs10_Result0() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 10, 10);
+        assertThat(admobAdapterCalculator.getAdIndex(10), is(0));
+    }
+
+    @Test
+    public void testGetAdIndex_position0_itemsBetweenAds0_Result0() throws Exception {
+        setupAdmobAdapterCalculatorHelper(0, 0, 200);
+        assertThat(admobAdapterCalculator.getAdIndex(0), is(0));
+    }
+
+    @Test
+    public void testGetAdIndex_position0_limitAdsIs0_Result0() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 0);
+        assertThat(admobAdapterCalculator.getAdIndex(0), is(0));
+    }
+
+    @Test
+    public void testIsAdAvailable_position0_fetchedCntIs3_Success() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.isAdAvailable(0, 3), is(true));
+    }
+
+    @Test
+    public void testIsAdAvailable_position22_fetchedCntIs3_Success() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.isAdAvailable(22, 3), is(true));
+    }
+
+    @Test
+    public void testIsAdAvailable_position33_fetchedCntIs3_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.isAdAvailable(33, 3), is(false));
+    }
+
+    @Test
+    public void testIsAdAvailable_fetchedCntIs0_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.isAdAvailable(0, 0), is(false));
+    }
+
+    @Test
+    public void testIsAdAvailable_position99_firstIdxIs99_Success() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 99, 10);
+        assertThat(admobAdapterCalculator.isAdAvailable(99, 10), is(true));
+    }
+
+    @Test
+    public void testIsAdAvailable_position98_firstIdxIs99_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 99, 10);
+        assertThat(admobAdapterCalculator.isAdAvailable(98, 10), is(false));
+    }
+
+    @Test
+    public void testIsAdAvailable_position100_firstIdxIs99_Success() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 99, 10);
+        assertThat(admobAdapterCalculator.isAdAvailable(100, 10), is(true));
+    }
+
+    @Test
+    public void testIsAdAvailable_position10_firstIdxIs10_Success() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 10, 10);
+        assertThat(admobAdapterCalculator.isAdAvailable(10, 10), is(true));
+    }
+
+    @Test
+    public void testIsAdAvailable_position0_itemsBetweenAds0_Success() throws Exception {
+        setupAdmobAdapterCalculatorHelper(0, 0, 200);
+        assertThat(admobAdapterCalculator.isAdAvailable(0, 200), is(true));
+    }
+
+    @Test
+    public void testIsAdAvailable_position0_limitAdsIs0_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 0);
+        assertThat(admobAdapterCalculator.isAdAvailable(0, 100), is(false));
+    }
+
+    @Test
+    public void testHasToFetchAd_position0_fetchedCntIs3_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.hasToFetchAd(0, 3), is(false));
+    }
+
+    @Test
+    public void testHasToFetchAd_position22_fetchedCntIs3_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.hasToFetchAd(22, 3), is(false));
+    }
+
+    @Test
+    public void testHasToFetchAd_position33_fetchedCntIs3_Success() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.hasToFetchAd(33, 3), is(true));
+    }
+
+    @Test
+    public void testHasToFetchAd_fetchedCntIs0_Success() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.hasToFetchAd(0, 0), is(true));
+    }
+
+    @Test
+    public void testHasToFetchAd_position99_firstIdxIs99_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 99, 10);
+        assertThat(admobAdapterCalculator.hasToFetchAd(99, 10), is(false));
+    }
+
+    @Test
+    public void testHasToFetchAd_position98_firstIdxIs99_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 99, 10);
+        assertThat(admobAdapterCalculator.hasToFetchAd(98, 10), is(false));
+    }
+
+    @Test
+    public void testHasToFetchAd_position100_firstIdxIs99_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 99, 10);
+        assertThat(admobAdapterCalculator.hasToFetchAd(100, 10), is(false));
+    }
+
+    @Test
+    public void testHasToFetchAd_position10_firstIdxIs10_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 10, 10);
+        assertThat(admobAdapterCalculator.hasToFetchAd(10, 10), is(false));
+    }
+
+    @Test
+    public void testHasToFetchAd_position0_itemsBetweenAds0_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(0, 0, 200);
+        assertThat(admobAdapterCalculator.hasToFetchAd(0, 200), is(false));
+    }
+
+    @Test
+    public void testHasToFetchAd_position0_limitAdsIs0_Fail() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 0);
+        assertThat(admobAdapterCalculator.hasToFetchAd(0, 100), is(false));
     }
 }

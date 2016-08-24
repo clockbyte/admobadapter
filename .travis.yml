@@ -8,4 +8,4 @@ android:
   components:
     - build-tools-24.0.1
 
-script: ./gradlew connectedAndroidTest
+script: ./gradlew build connectedCheck

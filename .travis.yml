@@ -1,10 +1,17 @@
 language: android
 android:
   components:
-    - build-tools-22.0.1
-    - android-22
+  - build-tools-24.0.1
+  - android-24
 # Additional components
-    - extra-com_android_support_appcompat-v7:22.2.1
+    - extra-com_android_support_appcompat-v7:24.2.0
     - extra-google-m2repository
     - extra-android-m2repository
-    - addon-google_apis-google-19
+    - addon-google_apis-google-24
+    
+    before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/

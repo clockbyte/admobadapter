@@ -22,4 +22,4 @@ android:
         - extra-google-google_play_services
 
 script: ./gradlew build connectedCheck
-./gradlew connectedAndroidTest
+script: ./gradlew connectedAndroidTest

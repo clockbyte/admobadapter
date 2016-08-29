@@ -101,6 +101,15 @@ public class AdmobExpressRecyclerAdapterWrapper
     private static final String DEFAULT_AD_UNIT_ID = "ca-app-pub-3940256099942544/1072772517";
     private final static int DEFAULT_VIEWTYPE_SOURCE_MAX = 0;
 
+    /**
+     * Gets the number of ads that have been fetched so far.
+     *
+     * @return the number of ads that have been fetched
+     */
+    public int getFetchedAdsCount() {
+        return adFetcher.getFetchedAdsCount();
+    }
+
     private int getViewTypeAdExpress(){
         return getViewTypeBiggestSource() + VIEW_TYPE_AD_EXPRESS + 1;
     }

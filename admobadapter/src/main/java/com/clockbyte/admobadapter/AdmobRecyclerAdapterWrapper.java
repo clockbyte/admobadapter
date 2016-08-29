@@ -99,6 +99,15 @@ public class AdmobRecyclerAdapterWrapper
     private final static int DEFAULT_LIMIT_OF_ADS = 3;
     private final static int DEFAULT_VIEWTYPE_SOURCE_MAX = 0;
 
+    /**
+     * Gets the number of ads that have been fetched so far.
+     *
+     * @return the number of ads that have been fetched
+     */
+    public int getFetchedAdsCount() {
+        return adFetcher.getFetchedAdsCount();
+    }
+
     private int getViewTypeAdContent(){
         return getViewTypeBiggestSource() + VIEW_TYPE_AD_CONTENT + 1;
     }

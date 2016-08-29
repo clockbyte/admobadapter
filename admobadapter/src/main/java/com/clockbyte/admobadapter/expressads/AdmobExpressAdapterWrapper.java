@@ -81,6 +81,15 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     private static final AdSize DEFAULT_AD_SIZE = new AdSize(AdSize.FULL_WIDTH, 150);
     private static final String DEFAULT_AD_UNIT_ID = "ca-app-pub-3940256099942544/1072772517";
 
+    /**
+     * Gets the number of ads that have been fetched so far.
+     *
+     * @return the number of ads that have been fetched
+     */
+    public int getFetchedAdsCount() {
+        return adFetcher.getFetchedAdsCount();
+    }
+
     private int getViewTypeAdExpress(){
         return mAdapter.getViewTypeCount() + VIEW_TYPE_AD_EXPRESS;
     }

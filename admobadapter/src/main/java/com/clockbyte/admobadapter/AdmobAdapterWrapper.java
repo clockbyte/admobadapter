@@ -78,6 +78,15 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     private final static int DEFAULT_NO_OF_DATA_BETWEEN_ADS = 10;
     private final static int DEFAULT_LIMIT_OF_ADS = 3;
 
+    /**
+     * Gets the number of ads that have been fetched so far.
+     *
+     * @return the number of ads that have been fetched
+     */
+    public int getFetchedAdsCount() {
+        return adFetcher.getFetchedAdsCount();
+    }
+
     private int getViewTypeAdContent(){
         return mAdapter.getViewTypeCount() + VIEW_TYPE_AD_CONTENT;
     }

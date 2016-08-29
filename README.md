@@ -1,4 +1,4 @@
-Admob Adapter
+Admob Adapter                               <img src="https://travis-ci.org/clockbyte/admobadapter.svg">
 ======================
 
 We've finally released [v1.2](https://github.com/clockbyte/admobadapter/releases/tag/v1.2)! No flickering, no empty spaces!

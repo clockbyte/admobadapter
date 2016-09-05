@@ -163,51 +163,99 @@ public class AdmobAdapterCalculatorTest {
 
 
     @Test
-    public void testTranslateAdToAdapterWrapperPosition_1stAdAt0_Position0_Result0() throws Exception {
+    public void testTranslateAdToWrapperPosition_1stAdAt0_Position0_Result0() throws Exception {
         setupAdmobAdapterCalculatorHelper(10, 0, 10);
-        assertThat(admobAdapterCalculator.translateAdToAdapterWrapperPosition(0), is(0));
+        assertThat(admobAdapterCalculator.translateAdToWrapperPosition(0), is(0));
     }
 
     @Test
-    public void testTranslateAdToAdapterWrapperPosition_1stAdAt0_Position1_Result0() throws Exception {
+    public void testTranslateAdToWrapperPosition_1stAdAt0_Position1_Result11() throws Exception {
         setupAdmobAdapterCalculatorHelper(10, 0, 10);
-        assertThat(admobAdapterCalculator.translateAdToAdapterWrapperPosition(1), is(10));
+        assertThat(admobAdapterCalculator.translateAdToWrapperPosition(1), is(11));
     }
 
     @Test
-    public void testTranslateAdToAdapterWrapperPosition_1stAdAt0_Position10_Result100() throws Exception {
+    public void testTranslateAdToWrapperPosition_1stAdAt0_Position10_Result110() throws Exception {
         setupAdmobAdapterCalculatorHelper(10, 0, 10);
-        assertThat(admobAdapterCalculator.translateAdToAdapterWrapperPosition(10), is(100));
+        assertThat(admobAdapterCalculator.translateAdToWrapperPosition(10), is(110));
     }
 
     @Test
-    public void testTranslateAdToAdapterWrapperPosition_1stAdAt0_Position11_Result110() throws Exception {
+    public void testTranslateAdToWrapperPosition_1stAdAt0_Position11_Result121() throws Exception {
         setupAdmobAdapterCalculatorHelper(10, 0, 10);
-        assertThat(admobAdapterCalculator.translateAdToAdapterWrapperPosition(11), is(110));
+        assertThat(admobAdapterCalculator.translateAdToWrapperPosition(11), is(121));
     }
 
     @Test
-    public void testTranslateAdToAdapterWrapperPosition_1stAdAt5_Position0_Result5() throws Exception {
+    public void testTranslateAdToWrapperPosition_1stAdAt5_Position0_Result5() throws Exception {
         setupAdmobAdapterCalculatorHelper(10, 5, 10);
-        assertThat(admobAdapterCalculator.translateAdToAdapterWrapperPosition(0), is(5));
+        assertThat(admobAdapterCalculator.translateAdToWrapperPosition(0), is(5));
     }
 
     @Test
-    public void testTranslateAdToAdapterWrapperPosition_1stAdAt5_Position1_Result15() throws Exception {
+    public void testTranslateAdToWrapperPosition_1stAdAt5_Position1_Result16() throws Exception {
         setupAdmobAdapterCalculatorHelper(10, 5, 10);
-        assertThat(admobAdapterCalculator.translateAdToAdapterWrapperPosition(1), is(15));
+        assertThat(admobAdapterCalculator.translateAdToWrapperPosition(1), is(16));
     }
 
     @Test
-    public void testTranslateAdToAdapterWrapperPosition_1stAdAt5_Position10_Result105() throws Exception {
+    public void testTranslateAdToWrapperPosition_1stAdAt5_Position10_Result115() throws Exception {
         setupAdmobAdapterCalculatorHelper(10, 5, 10);
-        assertThat(admobAdapterCalculator.translateAdToAdapterWrapperPosition(10), is(105));
+        assertThat(admobAdapterCalculator.translateAdToWrapperPosition(10), is(115));
     }
 
     @Test
-    public void testTranslateAdToAdapterWrapperPosition_1stAdAt5_Position11_Result115() throws Exception {
+    public void testTranslateAdToWrapperPosition_1stAdAt5_Position11_Result126() throws Exception {
         setupAdmobAdapterCalculatorHelper(10, 5, 10);
-        assertThat(admobAdapterCalculator.translateAdToAdapterWrapperPosition(11), is(115));
+        assertThat(admobAdapterCalculator.translateAdToWrapperPosition(11), is(126));
+    }
+
+    @Test
+    public void testTranslateSourceIndexToWrapperPosition_Position0_Fetched3_Result1() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.translateSourceIndexToWrapperPosition(0, 3), is(1));
+    }
+
+    @Test
+    public void testTranslateSourceIndexToWrapperPosition_Position41_Fetched3_Result44() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.translateSourceIndexToWrapperPosition(41,3), is(44));
+    }
+
+    @Test
+    public void testTranslateSourceIndexToWrapperPosition_Position41_Fetched10_Result46() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.translateSourceIndexToWrapperPosition(41,10), is(46));
+    }
+
+    @Test
+    public void testTranslateSourceIndexToWrapperPosition_Position90_Fetched10_Result100() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.translateSourceIndexToWrapperPosition(90,10), is(100));
+    }
+
+    @Test
+    public void testTranslateSourceIndexToWrapperPosition_Position89_Fetched10_Result98() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 0, 10);
+        assertThat(admobAdapterCalculator.translateSourceIndexToWrapperPosition(89,10), is(98));
+    }
+
+    @Test
+    public void testTranslateSourceIndexToWrapperPosition_1stAdAt5_Position0_Fetched3_Result0() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 5, 10);
+        assertThat(admobAdapterCalculator.translateSourceIndexToWrapperPosition(0,3), is(0));
+    }
+
+    @Test
+    public void testTranslateSourceIndexToWrapperPosition_1stAdAt5_Position44_Fetched10_Result48() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 5, 10);
+        assertThat(admobAdapterCalculator.translateSourceIndexToWrapperPosition(44, 10), is(48));
+    }
+
+    @Test
+    public void testTranslateSourceIndexToWrapperPosition_1stAdAt5_Position45_Fetched10_Result50() throws Exception {
+        setupAdmobAdapterCalculatorHelper(10, 5, 10);
+        assertThat(admobAdapterCalculator.translateSourceIndexToWrapperPosition(45, 10), is(50));
     }
 
     @Test

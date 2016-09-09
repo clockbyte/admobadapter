@@ -22,6 +22,7 @@ dependencies {
 [Here](https://github.com/clockbyte/admobadapter/wiki/Installation) you could find more ways.
 
 #Apps which use Admobadapter
+
 [<img src="https://lh3.googleusercontent.com/GTSMuzAOtRSBjYHbMsjE0S0jVY5mHUlaD_IVKOmAnSBKrnueZtkgMoHx4xLgdhefnANd=w300-rw" width="70">](https://play.google.com/store/apps/details?id=com.clockbyte.vkgroupwatcher)
 
 **If you use/going to use the Admobadapter for your application and also you want your application's logo to be here please let us know with a new issue.**

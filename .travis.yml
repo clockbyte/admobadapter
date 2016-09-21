@@ -38,7 +38,7 @@ android:
 env:
   global:
    # install timeout in minutes (2 minutes by default)
-    - ADB_INSTALL_TIMEOUT=10
+    - ADB_INSTALL_TIMEOUT=30
         
 # Emulator Management: Create, Start and Wait
 before_script:

@@ -29,7 +29,7 @@ public class AdViewHelper {
         adView.setAdSize(adSize);
         adView.setAdUnitId(adsUnitId);
         adView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,
-                AbsListView.LayoutParams.WRAP_CONTENT));
+                adSize.getHeightInPixels(context)));
         return adView;
     }
 

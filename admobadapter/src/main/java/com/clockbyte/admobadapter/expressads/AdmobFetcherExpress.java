@@ -113,6 +113,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
                 // Handle the failure by logging, altering the UI, etc.
                 Log.i(TAG, "onAdFailedToLoad " + errorCode);
                 mFetchFailCount++;
+                mNoOfFetchedAds--;
             }
 
             @Override
@@ -121,6 +122,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
                 onAdFetched(adView);
             }
         });
+        notifyObserversOfAdSizeChange(mNoOfFetchedAds++);
     }
 
     /**
@@ -129,9 +131,6 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
      */
     private synchronized void onAdFetched(NativeExpressAdView adNative) {
         Log.i(TAG, "onAdFetched");
-        if (canUseThisAd(adNative)) {
-            notifyObserversOfAdSizeChange(mNoOfFetchedAds++);
-        }
         mFetchFailCount = 0;
     }
 

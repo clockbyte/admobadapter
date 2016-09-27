@@ -93,12 +93,26 @@ public class AdmobExpressRecyclerAdapterWrapper
     public void setAdapterCalculator(AdmobAdapterCalculator adapterCalculatordmob){AdapterCalculator = adapterCalculatordmob;}
 
 
-    private static final int VIEW_TYPE_AD_EXPRESS = 1;
+    private static final int VIEW_TYPE_AD_EXPRESS = 0;
 
     private final static int DEFAULT_NO_OF_DATA_BETWEEN_ADS = 10;
     private final static int DEFAULT_LIMIT_OF_ADS = 3;
     private static final AdSize DEFAULT_AD_SIZE = new AdSize(AdSize.FULL_WIDTH, 150);
     private static final String DEFAULT_AD_UNIT_ID = "ca-app-pub-3940256099942544/1072772517";
+    private final static int DEFAULT_VIEWTYPE_SOURCE_MAX = 0;
+
+    /**
+     * Gets the number of ads that have been fetched so far.
+     *
+     * @return the number of ads that have been fetched
+     */
+    public int getFetchedAdsCount() {
+        return adFetcher.getFetchedAdsCount();
+    }
+
+    private int getViewTypeAdExpress(){
+        return getViewTypeBiggestSource() + VIEW_TYPE_AD_EXPRESS + 1;
+    }
 
     /*
     * Gets the number of your data items between ad blocks, by default it equals to 10.
@@ -145,6 +159,21 @@ public class AdmobExpressRecyclerAdapterWrapper
         AdapterCalculator.setLimitOfAds(mLimitOfAds);
     }
 
+    private int viewTypeBiggestSource;
+    /*
+   * Gets the biggest value among all the view types in the underlying source adapter, by default it equals to 0.
+   */
+    public int getViewTypeBiggestSource() {
+        return viewTypeBiggestSource;
+    }
+
+    /*
+    * Sets the biggest value among all the view types in the underlying source adapter, by default it equals to 0.
+    */
+    public void setViewTypeBiggestSource(int viewTypeBiggestSource) {
+        this.viewTypeBiggestSource = viewTypeBiggestSource;
+    }
+
     private String mAdsUnitId;
     private AdSize mAdSize;
 
@@ -170,6 +199,39 @@ public class AdmobExpressRecyclerAdapterWrapper
      */
     public AdmobExpressRecyclerAdapterWrapper(Context context, String admobReleaseUnitId) {
         init(context, admobReleaseUnitId, null, null);
+    }
+
+    /**
+     * @param admobReleaseUnitId sets a release unit ID for admob banners.
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobExpressRecyclerAdapterWrapper(Context, String[])
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+     * @param testDevicesId sets a devices ID to test ads interaction.
+     * You could pass null but it's better to set ids for all your test devices
+     * including emulators. for emulator just use the
+     * @see {AdRequest.DEVICE_ID_EMULATOR}
+     */
+    public AdmobExpressRecyclerAdapterWrapper(Context context, String admobReleaseUnitId, String[] testDevicesId) {
+        init(context, admobReleaseUnitId, testDevicesId, null);
+    }
+
+    /**
+     * @param admobReleaseUnitId sets a release unit ID for admob banners.
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobExpressRecyclerAdapterWrapper(Context, String[])
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+     * @param testDevicesId sets a devices ID to test ads interaction.
+     * You could pass null but it's better to set ids for all your test devices
+     * including emulators. for emulator just use the
+     * @see {AdRequest.DEVICE_ID_EMULATOR}
+     * @param adSize sets ad size. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
+     */
+    public AdmobExpressRecyclerAdapterWrapper(Context context, String admobReleaseUnitId, String[] testDevicesId, AdSize adSize) {
+        init(context, admobReleaseUnitId, testDevicesId, adSize);
     }
 
     /**
@@ -199,6 +261,7 @@ public class AdmobExpressRecyclerAdapterWrapper
     }
 
     private void init(Context context, String admobReleaseUnitId, String[] testDevicesId, AdSize adSize) {
+        setViewTypeBiggestSource(DEFAULT_VIEWTYPE_SOURCE_MAX);
         setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
         setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
         this.mAdsUnitId = TextUtils.isEmpty(admobReleaseUnitId)? DEFAULT_AD_UNIT_ID : admobReleaseUnitId;
@@ -238,7 +301,7 @@ public class AdmobExpressRecyclerAdapterWrapper
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         if (viewHolder == null)
             return;
-        if(viewHolder.getItemViewType()!=VIEW_TYPE_AD_EXPRESS)
+        if(viewHolder.getItemViewType() != getViewTypeAdExpress())
         {
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
                     adFetcher.getFetchedAdsCount(), mAdapter.getItemCount());
@@ -248,14 +311,14 @@ public class AdmobExpressRecyclerAdapterWrapper
 
     @Override
     public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case VIEW_TYPE_AD_EXPRESS:
-                NativeExpressAdView item = adFetcher.getAdForIndex(mCntAdCreated++);
-                if(item==null)
-                    item = prefetchAds(1);
-                return new ViewWrapper<NativeExpressAdView>(item);
-            default:
-                return mAdapter.onCreateViewHolder(parent, viewType);
+        if (viewType == getViewTypeAdExpress()) {
+            NativeExpressAdView item = adFetcher.getAdForIndex(mCntAdCreated++);
+            if (item == null)
+                item = prefetchAds(1);
+            return new ViewWrapper<NativeExpressAdView>(item);
+        }
+        else{
+            return mAdapter.onCreateViewHolder(parent, viewType);
         }
     }
 
@@ -291,7 +354,7 @@ public class AdmobExpressRecyclerAdapterWrapper
     public int getItemViewType(int position) {
         checkNeedFetchAd(position);
         if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchedAdsCount())) {
-            return VIEW_TYPE_AD_EXPRESS;
+            return getViewTypeAdExpress();
         } else {
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
                     adFetcher.getFetchedAdsCount(), mAdapter.getItemCount());

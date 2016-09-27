@@ -2,8 +2,13 @@ package com.clockbyte.admobadapter.sampleapp;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.clockbyte.admobadapter.AdmobAdapterCalculator;
 import com.clockbyte.admobadapter.AdmobAdapterWrapper;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
@@ -71,6 +76,18 @@ public class MainActivity_ListView extends Activity {
         adapterWrapper.setFirstAdIndex(2);
 
         lvMessages.setAdapter(adapterWrapper); // setting an AdmobAdapterWrapper to a ListView
+        lvMessages.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final AdmobAdapterCalculator adapterCalc = adapterWrapper.getAdapterCalculator();
+                int fetchedAdsCnt = adapterWrapper.getFetchedAdsCount();
+                int sourceCnt = adapterWrapper.getAdapter().getCount();
+                int originalPos = adapterCalc.getOriginalContentPosition(position, fetchedAdsCnt, sourceCnt);
+                Toast.makeText(getApplicationContext(),
+                        "Click: " + String.valueOf(originalPos),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
 
         //preparing the collection of data
         final String sItem = "item #";

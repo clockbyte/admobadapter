@@ -72,11 +72,28 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
 
 
     private static final int VIEW_TYPE_COUNT = 2;
-    private static final int VIEW_TYPE_AD_CONTENT = 1;
-    private static final int VIEW_TYPE_AD_INSTALL = 2;
+    private static final int VIEW_TYPE_AD_CONTENT = 0;
+    private static final int VIEW_TYPE_AD_INSTALL = 1;
 
     private final static int DEFAULT_NO_OF_DATA_BETWEEN_ADS = 10;
     private final static int DEFAULT_LIMIT_OF_ADS = 3;
+
+    /**
+     * Gets the number of ads that have been fetched so far.
+     *
+     * @return the number of ads that have been fetched
+     */
+    public int getFetchedAdsCount() {
+        return adFetcher.getFetchedAdsCount();
+    }
+
+    private int getViewTypeAdContent(){
+        return mAdapter.getViewTypeCount() + VIEW_TYPE_AD_CONTENT;
+    }
+
+    private int getViewTypeAdInstall(){
+        return mAdapter.getViewTypeCount() + VIEW_TYPE_AD_INSTALL;
+    }
 
     /*
     * Gets the number of your data items between ad blocks, by default it equals to 10.
@@ -161,7 +178,7 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
      * You could pass null but it's better to set ids for all your test devices
      * including emulators. for emulator just use the
      * @see {AdRequest.DEVICE_ID_EMULATOR}
-    */
+     */
     public AdmobAdapterWrapper(Context context, String[] testDevicesId) {
         this(context, testDevicesId, EnumSet.allOf(EAdType.class));
     }
@@ -185,10 +202,10 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
      * You could pass null but it's better to set ids for all your test devices
      * including emulators. for emulator just use the
      * @see {AdRequest.DEVICE_ID_EMULATOR}
-    * @param adTypesToShow sets the types of ads to show in the list.
-    * By default all types are loaded by wrapper.
-    * i.e. pass EnumSet.of(EAdType.ADVANCED_INSTALLAPP) to show only install app ads
-    */
+     * @param adTypesToShow sets the types of ads to show in the list.
+     * By default all types are loaded by wrapper.
+     * i.e. pass EnumSet.of(EAdType.ADVANCED_INSTALLAPP) to show only install app ads
+     */
     public AdmobAdapterWrapper(Context context, String[] testDevicesId, EnumSet<EAdType> adTypesToShow) {
         init(context, null, testDevicesId, adTypesToShow);
     }
@@ -199,10 +216,10 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
      * ID should be active, please check it in your Admob's account.
      * Be careful: don't set it or set to null if you still haven't deployed a Release.
      * Otherwise your Admob account could be banned
-    * @param adTypesToShow sets the types of ads to show in the list.
-    * By default all types are loaded by wrapper.
-    * i.e. pass EnumSet.of(EAdType.ADVANCED_INSTALLAPP) to show only install app ads
-    */
+     * @param adTypesToShow sets the types of ads to show in the list.
+     * By default all types are loaded by wrapper.
+     * i.e. pass EnumSet.of(EAdType.ADVANCED_INSTALLAPP) to show only install app ads
+     */
     public AdmobAdapterWrapper(Context context, String admobReleaseUnitId, EnumSet<EAdType> adTypesToShow) {
         init(context, admobReleaseUnitId, null, adTypesToShow);
     }
@@ -229,32 +246,33 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-        switch (getItemViewType(position)) {
-            case VIEW_TYPE_AD_INSTALL:
-                NativeAppInstallAdView lvi1;
-                NativeAppInstallAd ad1 = (NativeAppInstallAd) getItem(position);
-                if (convertView == null) {
-                    lvi1 = (NativeAppInstallAdView) getInstallAdsLayoutContext().inflateView(parent);
-                } else {
-                    lvi1 = (NativeAppInstallAdView) convertView;
-                }
-                getInstallAdsLayoutContext().bind(lvi1, ad1);
-                return lvi1;
-            case VIEW_TYPE_AD_CONTENT:
-                NativeContentAdView lvi2;
-                NativeContentAd ad2 = (NativeContentAd) getItem(position);
-                if (convertView == null) {
-                    lvi2 = (NativeContentAdView) getContentAdsLayoutContext().inflateView(parent);
-                } else {
-                    lvi2 = (NativeContentAdView) convertView;
-                }
-                getContentAdsLayoutContext().bind(lvi2, ad2);
-                return lvi2;
-            default:
-                int origPos = AdapterCalculator.getOriginalContentPosition(position,
-                        adFetcher.getFetchedAdsCount(), mAdapter.getCount());
-                return mAdapter.getView(origPos, convertView, parent);
+        int itemViewType = getItemViewType(position);
+        if(itemViewType == getViewTypeAdInstall()) {
+            NativeAppInstallAdView lvi1;
+            NativeAppInstallAd ad1 = (NativeAppInstallAd) getItem(position);
+            if (convertView == null) {
+                lvi1 = (NativeAppInstallAdView) getInstallAdsLayoutContext().inflateView(parent);
+            } else {
+                lvi1 = (NativeAppInstallAdView) convertView;
+            }
+            getInstallAdsLayoutContext().bind(lvi1, ad1);
+            return lvi1;
+        }
+        else if(itemViewType == getViewTypeAdContent()) {
+            NativeContentAdView lvi2;
+            NativeContentAd ad2 = (NativeContentAd) getItem(position);
+            if (convertView == null) {
+                lvi2 = (NativeContentAdView) getContentAdsLayoutContext().inflateView(parent);
+            } else {
+                lvi2 = (NativeContentAdView) convertView;
+            }
+            getContentAdsLayoutContext().bind(lvi2, ad2);
+            return lvi2;
+        }
+        else{
+            int origPos = AdapterCalculator.getOriginalContentPosition(position,
+                    adFetcher.getFetchedAdsCount(), mAdapter.getCount());
+            return mAdapter.getView(origPos, convertView, parent);
         }
     }
 
@@ -318,7 +336,7 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchedAdsCount())) {
             int adPos = AdapterCalculator.getAdIndex(position);
             NativeAd ad = adFetcher.getAdForIndex(adPos);
-            return ad instanceof NativeAppInstallAd ? VIEW_TYPE_AD_INSTALL : VIEW_TYPE_AD_CONTENT;
+            return ad instanceof NativeAppInstallAd ? getViewTypeAdInstall() : getViewTypeAdContent();
         } else {
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
                     adFetcher.getFetchedAdsCount(), mAdapter.getCount());

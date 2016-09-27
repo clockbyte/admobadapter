@@ -58,7 +58,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
      * @see #getFetchedAdsCount()
      */
     public synchronized NativeExpressAdView getAdForIndex(int adPos) {
-        if(mPrefetchedAds.size() > adPos)
+        if(adPos >= 0 && mPrefetchedAds.size() > adPos)
             return mPrefetchedAds.get(adPos);
         return null;
     }

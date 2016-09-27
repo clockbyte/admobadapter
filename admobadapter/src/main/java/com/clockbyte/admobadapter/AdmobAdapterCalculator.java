@@ -79,7 +79,7 @@ public class AdmobAdapterCalculator {
      * @return the original position that the adapter position would have been without ads
      */
     public int getAdsCountToPublish(int fetchedAdsCount, int sourceItemsCount){
-        if(fetchedAdsCount == 0) return 0;
+        if(fetchedAdsCount == 0 || getNoOfDataBetweenAds() == 0) return 0;
         int expected = 0;
         if(sourceItemsCount > 0 && sourceItemsCount >= getOffsetValue()+1)
             expected = (sourceItemsCount - getOffsetValue()) / getNoOfDataBetweenAds() + 1;
@@ -112,8 +112,26 @@ public class AdmobAdapterCalculator {
      * @param adPos the ad's position in the fetched list
      * @return the position of the adapter wrapper item
      */
-    public int translateAdToAdapterWrapperPosition(int adPos) {
-        int wrappedPosition = adPos*getNoOfDataBetweenAds() + getOffsetValue();
+    public int translateAdToWrapperPosition(int adPos) {
+        int wrappedPosition = adPos*(getNoOfDataBetweenAds() + 1) + getOffsetValue();
+        return wrappedPosition;
+    }
+
+    /**
+     * Translates the source position to an actual position withing the adapter wrapper.
+     * @param fetchedAdsCount the count of completely fetched ads that are ready to be published
+     * @param sourcePos the source index
+     *
+     * @return the position of the adapter wrapper item
+     */
+    public int translateSourceIndexToWrapperPosition(int sourcePos, int fetchedAdsCount) {
+        int adSpacesCount = 0;
+        if(sourcePos >= getOffsetValue() && getNoOfDataBetweenAds() > 0)
+            adSpacesCount = (sourcePos - getOffsetValue())/getNoOfDataBetweenAds() + 1;
+        adSpacesCount = Math.min(fetchedAdsCount, adSpacesCount);
+        adSpacesCount = Math.max(0, adSpacesCount);
+        adSpacesCount = Math.min(adSpacesCount, getLimitOfAds());
+        int wrappedPosition = sourcePos + adSpacesCount;
         return wrappedPosition;
     }
 

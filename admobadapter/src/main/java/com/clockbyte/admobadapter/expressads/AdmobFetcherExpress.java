@@ -118,8 +118,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
                 //hide ad row or rollback its count if still not added to list
                 //best approach to work with custom adapters that cache their views
                 if(adView.getParent()==null){
-                    mNoOfFetchedAds--;
-                    notifyObserversOfAdSizeChange(mNoOfFetchedAds);
+                    notifyObserversOfAdSizeChange(--mNoOfFetchedAds);
                 }else {
                     ((View) adView.getParent()).setVisibility(View.GONE);
                 }
@@ -131,7 +130,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
                 onAdFetched(adView);
             }
         });
-        notifyObserversOfAdSizeChange(mNoOfFetchedAds++);
+        notifyObserversOfAdSizeChange(++mNoOfFetchedAds);
     }
 
     /**

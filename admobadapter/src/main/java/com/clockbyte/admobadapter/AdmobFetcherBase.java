@@ -123,16 +123,18 @@ public abstract class AdmobFetcherBase {
      */
     protected void notifyObserversOfAdSizeChange(final int adIdx) {
         Context context = mContext.get();
-        new Handler(context.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                for (AdmobListener listener : mAdNativeListeners)
-                    if(adIdx < 0)
-                        listener.onAdChanged();
-                    else listener.onAdChanged(adIdx);
-            }
-        });
-
+        //context may be null if activity is destroyed
+        if(context != null) {
+            new Handler(context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    for (AdmobListener listener : mAdNativeListeners)
+                        if(adIdx < 0)
+                            listener.onAdChanged();
+                        else listener.onAdChanged(adIdx);
+                }
+            });
+        }
     }
 
     /**

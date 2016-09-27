@@ -20,6 +20,7 @@ package com.clockbyte.admobadapter.expressads;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 
 import com.clockbyte.admobadapter.AdmobFetcherBase;
 import com.google.android.gms.ads.AdListener;
@@ -113,6 +114,14 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
                 // Handle the failure by logging, altering the UI, etc.
                 Log.i(TAG, "onAdFailedToLoad " + errorCode);
                 mFetchFailCount++;
+                //Since Fetch Ad is only called once without retries
+                //hide ad row or rollback its count if still not added to list
+                //best approach to work with custom adapters that cache their views
+                if(adView.getParent()==null){
+                    notifyObserversOfAdSizeChange(--mNoOfFetchedAds);
+                }else {
+                    ((View) adView.getParent()).setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -121,6 +130,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
                 onAdFetched(adView);
             }
         });
+        notifyObserversOfAdSizeChange(++mNoOfFetchedAds);
     }
 
     /**
@@ -129,9 +139,6 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
      */
     private synchronized void onAdFetched(NativeExpressAdView adNative) {
         Log.i(TAG, "onAdFetched");
-        if (canUseThisAd(adNative)) {
-            notifyObserversOfAdSizeChange(mNoOfFetchedAds++);
-        }
         mFetchFailCount = 0;
     }
 

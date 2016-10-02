@@ -21,6 +21,7 @@ import android.content.Context;
 import android.database.DataSetObserver;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -28,8 +29,14 @@ import android.widget.BaseAdapter;
 import com.clockbyte.admobadapter.AdViewHelper;
 import com.clockbyte.admobadapter.AdmobAdapterCalculator;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
+import com.clockbyte.admobadapter.UnitIdQueue;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.NativeExpressAdView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Adapter that has common functionality for any adapters that need to show ads in-between
@@ -137,7 +144,9 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
         AdapterCalculator.setLimitOfAds(mLimitOfAds);
     }
 
-    private String mAdsUnitId;
+    private Collection<String> mAdsUnitIds;
+    private UnitIdQueue mUnitIdQueue;
+
     private AdSize mAdSize;
 
     /**
@@ -161,13 +170,29 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
      * Otherwise your Admob account could be banned
      */
     public AdmobExpressAdapterWrapper(Context context, String admobReleaseUnitId) {
-        init(context, admobReleaseUnitId, null, null);
+        Collection<String> releaseUnitIds = admobReleaseUnitId==null
+                ? null
+                : new ArrayList<String>(Collections.singletonList(admobReleaseUnitId));
+        init(context, releaseUnitIds, null, null);
+    }
+
+    /**
+     * @param admobReleaseUnitIds sets a collection of release unit IDs for admob banners.
+     * It works like FIFO (first in = first out). Each ad block will get one from the queue.
+     * If the desired count of ad blocks is greater than this collection size
+     * then the last entry will be duplicated to remaining ad blocks.
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobExpressAdapterWrapper(Context, String[])
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+     */
+    public AdmobExpressAdapterWrapper(Context context, Collection<String> admobReleaseUnitIds) {
+        init(context, admobReleaseUnitIds, null, null);
     }
 
     /**
      * @param admobReleaseUnitId sets a release unit ID for admob banners.
-     * If you are testing the ads please use constructor for tests
-     * @see #AdmobExpressAdapterWrapper(Context, String[])
      * ID should be active, please check it in your Admob's account.
      * Be careful: don't set it or set to null if you still haven't deployed a Release.
      * Otherwise your Admob account could be banned
@@ -177,7 +202,27 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
      * @see {AdRequest.DEVICE_ID_EMULATOR}
      */
     public AdmobExpressAdapterWrapper(Context context, String admobReleaseUnitId, String[] testDevicesId) {
-        init(context, admobReleaseUnitId, testDevicesId, null);
+        Collection<String> releaseUnitIds = admobReleaseUnitId==null
+                ? null
+                : new ArrayList<String>(Collections.singletonList(admobReleaseUnitId));
+        init(context, releaseUnitIds, testDevicesId, null);
+    }
+
+    /**
+     * @param admobReleaseUnitIds sets a collection of release unit IDs for admob banners.
+     * It works like FIFO (first in = first out). Each ad block will get one from the queue.
+     * If the desired count of ad blocks is greater than this collection size
+     * then the last entry will be duplicated to remaining ad blocks.
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+     * @param testDevicesId sets a devices ID to test ads interaction.
+     * You could pass null but it's better to set ids for all your test devices
+     * including emulators. for emulator just use the
+     * @see {AdRequest.DEVICE_ID_EMULATOR}
+     */
+    public AdmobExpressAdapterWrapper(Context context, Collection<String> admobReleaseUnitIds, String[] testDevicesId) {
+        init(context, admobReleaseUnitIds, testDevicesId, null);
     }
 
     /**
@@ -194,7 +239,28 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
      * @param adSize sets ad size. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
      */
     public AdmobExpressAdapterWrapper(Context context, String admobReleaseUnitId, String[] testDevicesId, AdSize adSize) {
-        init(context, admobReleaseUnitId, testDevicesId, adSize);
+        Collection<String> releaseUnitIds = admobReleaseUnitId==null
+                ? null
+                : new ArrayList<String>(Collections.singletonList(admobReleaseUnitId));
+        init(context, releaseUnitIds, testDevicesId, adSize);
+    }
+
+    /**
+     * @param admobReleaseUnitIds sets a collection of release unit IDs for admob banners.
+     * It works like FIFO (first in = first out). Each ad block will get one from the queue.
+     * If the desired count of ad blocks is greater than this collection size
+     * then the last entry will be duplicated to remaining ad blocks.
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+     * @param testDevicesId sets a devices ID to test ads interaction.
+     * You could pass null but it's better to set ids for all your test devices
+     * including emulators. for emulator just use the
+     * @see {AdRequest.DEVICE_ID_EMULATOR}
+     * @param adSize sets ad size. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
+     */
+    public AdmobExpressAdapterWrapper(Context context, Collection<String> admobReleaseUnitIds, String[] testDevicesId, AdSize adSize) {
+        init(context, admobReleaseUnitIds, testDevicesId, adSize);
     }
 
     /**
@@ -220,13 +286,36 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
      * @param adSize sets ad size. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
      */
     public AdmobExpressAdapterWrapper(Context context, String admobReleaseUnitId, AdSize adSize) {
-        init(context, admobReleaseUnitId, null, adSize);
+        Collection<String> releaseUnitIds = admobReleaseUnitId==null
+                ? null
+                : new ArrayList<String>(Collections.singletonList(admobReleaseUnitId));
+        init(context, releaseUnitIds, null, adSize);
     }
 
-    private void init(Context context, String admobReleaseUnitId, String[] testDevicesId, AdSize adSize) {
+    /**
+     * @param admobReleaseUnitIds sets a collection of release unit IDs for admob banners.
+     * It works like FIFO (first in = first out). Each ad block will get one from the queue.
+     * If the desired count of ad blocks is greater than this collection size
+     * then the last entry will be duplicated to remaining ad blocks.
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobExpressAdapterWrapper(Context, String[], AdSize)
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+     * @param adSize sets ad size. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
+     */
+    public AdmobExpressAdapterWrapper(Context context, Collection<String> admobReleaseUnitIds, AdSize adSize) {
+        init(context, admobReleaseUnitIds, null, adSize);
+    }
+
+    private void init(Context context, Collection<String> admobReleaseUnitIds, String[] testDevicesId, AdSize adSize) {
         setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
         setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
-        this.mAdsUnitId = TextUtils.isEmpty(admobReleaseUnitId)? DEFAULT_AD_UNIT_ID : admobReleaseUnitId;
+        this.mAdsUnitIds = admobReleaseUnitIds == null || admobReleaseUnitIds.isEmpty()
+                ? new ArrayList<String>(Collections.singletonList(DEFAULT_AD_UNIT_ID))
+                : admobReleaseUnitIds;
+        this.mUnitIdQueue = new UnitIdQueue(mAdsUnitIds);
+
         this.mAdSize = adSize==null?DEFAULT_AD_SIZE:adSize;
         mContext = context;
 
@@ -238,6 +327,17 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
         prefetchAds(AdmobFetcherExpress.PREFETCHED_ADS_SIZE);
     }
 
+    private String takeUnitIdOrDefault(){
+        String unitId;
+        try {
+            unitId = this.mUnitIdQueue.take();
+        } catch (InterruptedException e) {
+            unitId = DEFAULT_AD_UNIT_ID;
+            Log.e(TAG, e.getMessage(), e);
+        }
+        return unitId;
+    }
+
     /**
      * Will start async prefetch of ad block to use its further
      * @return last created NativeExpressAdView
@@ -245,7 +345,8 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     private NativeExpressAdView prefetchAds(int cntToPrefetch){
         NativeExpressAdView last = null;
         for (int i = 0; i < cntToPrefetch; i++){
-            final NativeExpressAdView item = AdViewHelper.getExpressAdView(mContext, this.mAdSize, this.mAdsUnitId);
+            final NativeExpressAdView item = AdViewHelper.getExpressAdView(mContext, this.mAdSize,
+                    takeUnitIdOrDefault());
             adFetcher.setupAd(item);
             //2 sec throttling to prevent a high-load of server
             new Handler(mContext.getMainLooper()).postDelayed(new Runnable() {
@@ -349,6 +450,7 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
      */
     public void destroyAds() {
         adFetcher.destroyAllAds();
+        this.mUnitIdQueue = new UnitIdQueue(this.mAdsUnitIds);
     }
 
     /**

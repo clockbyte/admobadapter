@@ -34,6 +34,8 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
 
     private final String TAG = AdmobFetcherExpress.class.getCanonicalName();
 
+    protected static final String DEFAULT_AD_UNIT_ID = "ca-app-pub-3940256099942544/1072772517";
+
     /**
      * Maximum number of ads to prefetch.
      */
@@ -96,6 +98,11 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     private boolean canUseThisAd(NativeExpressAdView adNative) {
         if (adNative == null || adNative.isLoading()) return false;
         return true;
+    }
+
+    @Override
+    public String getDefaultUnitId() {
+        return DEFAULT_AD_UNIT_ID;
     }
 
     /**

@@ -192,13 +192,19 @@ public class AdmobFetcher extends AdmobFetcherBase{
         return false;
     }
 
+    @Override
+    public String getDefaultUnitId() {
+        return mContext.get().getResources().getString(R.string.test_admob_unit_id);
+    }
+
     /**
      * Subscribing to the native ads events
      */
     protected synchronized void setupAds() {
-        String admobUnitId = TextUtils.isEmpty(getAdmobReleaseUnitId()) ?
-                mContext.get().getResources().getString(R.string.test_admob_unit_id)
-                : getAdmobReleaseUnitId();
+        String unitId = dequeueUnitId();
+        String admobUnitId = TextUtils.isEmpty(unitId)
+                ? getDefaultUnitId()
+                : unitId;
         AdLoader.Builder adloaderBuilder = new AdLoader.Builder(mContext.get(), admobUnitId)
                 .withAdListener(new AdListener() {
                     @Override

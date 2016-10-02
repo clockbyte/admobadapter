@@ -86,7 +86,6 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     private final static int DEFAULT_NO_OF_DATA_BETWEEN_ADS = 10;
     private final static int DEFAULT_LIMIT_OF_ADS = 3;
     private static final AdSize DEFAULT_AD_SIZE = new AdSize(AdSize.FULL_WIDTH, 150);
-    private static final String DEFAULT_AD_UNIT_ID = "ca-app-pub-3940256099942544/1072772517";
 
     /**
      * Gets the number of ads that have been fetched so far.
@@ -143,9 +142,6 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     public void setLimitOfAds(int mLimitOfAds) {
         AdapterCalculator.setLimitOfAds(mLimitOfAds);
     }
-
-    private Collection<String> mAdsUnitIds;
-    private UnitIdQueue mUnitIdQueue;
 
     private AdSize mAdSize;
 
@@ -311,10 +307,6 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     private void init(Context context, Collection<String> admobReleaseUnitIds, String[] testDevicesId, AdSize adSize) {
         setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
         setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
-        this.mAdsUnitIds = admobReleaseUnitIds == null || admobReleaseUnitIds.isEmpty()
-                ? new ArrayList<String>(Collections.singletonList(DEFAULT_AD_UNIT_ID))
-                : admobReleaseUnitIds;
-        this.mUnitIdQueue = new UnitIdQueue(mAdsUnitIds);
 
         this.mAdSize = adSize==null?DEFAULT_AD_SIZE:adSize;
         mContext = context;
@@ -324,18 +316,9 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
             for (String testId: testDevicesId)
                 adFetcher.addTestDeviceId(testId);
         adFetcher.addListener(this);
-        prefetchAds(AdmobFetcherExpress.PREFETCHED_ADS_SIZE);
-    }
+        adFetcher.createUnitIdsQueue(admobReleaseUnitIds);
 
-    private String takeUnitIdOrDefault(){
-        String unitId;
-        try {
-            unitId = this.mUnitIdQueue.take();
-        } catch (InterruptedException e) {
-            unitId = DEFAULT_AD_UNIT_ID;
-            Log.e(TAG, e.getMessage(), e);
-        }
-        return unitId;
+        prefetchAds(AdmobFetcherExpress.PREFETCHED_ADS_SIZE);
     }
 
     /**
@@ -346,7 +329,7 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
         NativeExpressAdView last = null;
         for (int i = 0; i < cntToPrefetch; i++){
             final NativeExpressAdView item = AdViewHelper.getExpressAdView(mContext, this.mAdSize,
-                    takeUnitIdOrDefault());
+                    adFetcher.dequeueUnitId());
             adFetcher.setupAd(item);
             //2 sec throttling to prevent a high-load of server
             new Handler(mContext.getMainLooper()).postDelayed(new Runnable() {
@@ -450,7 +433,6 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
      */
     public void destroyAds() {
         adFetcher.destroyAllAds();
-        this.mUnitIdQueue = new UnitIdQueue(this.mAdsUnitIds);
     }
 
     /**

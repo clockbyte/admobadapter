@@ -19,11 +19,14 @@ package com.clockbyte.admobadapter;
 
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 
 import com.google.android.gms.ads.AdRequest;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -37,22 +40,44 @@ public abstract class AdmobFetcherBase {
     protected WeakReference<Context> mContext = new WeakReference<Context>(null);
     protected AtomicBoolean lockFetch = new AtomicBoolean();
 
-    protected String admobReleaseUnitId;
+    protected Collection<String> mAdsUnitIds;
+    private UnitIdQueue mUnitIdQueue;
+
     /*
-    *Gets a release unit ID for admob banners. ID should be active, please check it in your Admob's account.
+    * Gets and remove the 1st unit ID for admob banners from FIFO .
+    * It works like FIFO (first in = first out). Each ad block will get one from the queue.
+    * If the desired count of ad blocks is greater than this collection size
+    * then the last entry will be duplicated to remaining ad blocks.
+    * ID should be active, please check it in your Admob's account.
     * Be careful: don't set it or set to null if you still haven't deployed a Release.
     * Otherwise your Admob account could be banned
      */
-    public String getAdmobReleaseUnitId() {
-        return admobReleaseUnitId;
+    public String dequeueUnitId() {
+        String unitId;
+        try {
+            unitId = this.mUnitIdQueue.take();
+        } catch (InterruptedException e) {
+            unitId = getDefaultUnitId();
+            Log.e(TAG, e.getMessage(), e);
+        }
+        return unitId;
     }
+
+    public abstract String getDefaultUnitId();
     /*
-   *Sets a release unit ID for admob banners. ID should be active, please check it in your Admob's account.
+   * Sets an unit IDs for admob banners.
+   * It works like FIFO (first in = first out). Each ad block will get one from the queue.
+   * If the desired count of ad blocks is greater than this collection size
+   * then the last entry will be duplicated to remaining ad blocks.
+   * ID should be active, please check it in your Admob's account.
    * Be careful: don't set it or set to null if you still haven't deployed a Release.
    * Otherwise your Admob account could be banned
     */
-    public void setAdmobReleaseUnitId(String admobReleaseUnitId) {
-        this.admobReleaseUnitId = admobReleaseUnitId;
+    public void createUnitIdsQueue(Collection<String> adsUnitIds) {
+        this.mAdsUnitIds = adsUnitIds==null||adsUnitIds.size() == 0
+                ?new ArrayList<String>(Collections.singletonList(getDefaultUnitId()))
+                :adsUnitIds;
+        mUnitIdQueue = new UnitIdQueue(this.mAdsUnitIds);
     }
 
     protected ArrayList<String> testDeviceId = new ArrayList<String>();

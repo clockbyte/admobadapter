@@ -205,10 +205,7 @@ public class AdmobExpressRecyclerAdapterWrapper
      * Otherwise your Admob account could be banned
      */
     public AdmobExpressRecyclerAdapterWrapper(Context context, String admobReleaseUnitId) {
-        Collection<String> releaseUnitIds = admobReleaseUnitId==null
-                ? null
-                : new ArrayList<String>(Collections.singletonList(admobReleaseUnitId));
-        init(context, releaseUnitIds, null, null);
+        this(context, admobReleaseUnitId, null, null);
     }
 
     /**
@@ -223,7 +220,7 @@ public class AdmobExpressRecyclerAdapterWrapper
      * Otherwise your Admob account could be banned
      */
     public AdmobExpressRecyclerAdapterWrapper(Context context, Collection<String> admobReleaseUnitIds) {
-        init(context, admobReleaseUnitIds, null, null);
+        this(context, admobReleaseUnitIds, null, null);
     }
 
     /**
@@ -237,10 +234,7 @@ public class AdmobExpressRecyclerAdapterWrapper
      * @see {AdRequest.DEVICE_ID_EMULATOR}
      */
     public AdmobExpressRecyclerAdapterWrapper(Context context, String admobReleaseUnitId, String[] testDevicesId) {
-        Collection<String> releaseUnitIds = admobReleaseUnitId==null
-                ? null
-                : new ArrayList<String>(Collections.singletonList(admobReleaseUnitId));
-        init(context, releaseUnitIds, testDevicesId, null);
+        this(context, admobReleaseUnitId, testDevicesId, null);
     }
 
     /**
@@ -257,7 +251,7 @@ public class AdmobExpressRecyclerAdapterWrapper
      * @see {AdRequest.DEVICE_ID_EMULATOR}
      */
     public AdmobExpressRecyclerAdapterWrapper(Context context, Collection<String> admobReleaseUnitIds, String[] testDevicesId) {
-        init(context, admobReleaseUnitIds, testDevicesId, null);
+        this(context, admobReleaseUnitIds, testDevicesId, null);
     }
 
     /**
@@ -276,7 +270,7 @@ public class AdmobExpressRecyclerAdapterWrapper
     public AdmobExpressRecyclerAdapterWrapper(Context context, String admobReleaseUnitId, String[] testDevicesId, AdSize adSize) {
         Collection<String> releaseUnitIds = admobReleaseUnitId==null
                 ? null
-                : new ArrayList<String>(Collections.singletonList(admobReleaseUnitId));
+                : Collections.singletonList(admobReleaseUnitId);
         init(context, releaseUnitIds, testDevicesId, adSize);
     }
 
@@ -321,10 +315,7 @@ public class AdmobExpressRecyclerAdapterWrapper
      * @param adSize sets ad size. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
      */
     public AdmobExpressRecyclerAdapterWrapper(Context context, String admobReleaseUnitId, AdSize adSize) {
-        Collection<String> releaseUnitIds = admobReleaseUnitId==null
-                ? null
-                : new ArrayList<String>(Collections.singletonList(admobReleaseUnitId));
-        init(context, releaseUnitIds, null, adSize);
+        this(context, admobReleaseUnitId, null, adSize);
     }
 
     /**
@@ -340,7 +331,7 @@ public class AdmobExpressRecyclerAdapterWrapper
      * @param adSize sets ad size. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
      */
     public AdmobExpressRecyclerAdapterWrapper(Context context, Collection<String> admobReleaseUnitIds, AdSize adSize) {
-        init(context, admobReleaseUnitIds, null, adSize);
+        this(context, admobReleaseUnitIds, null, adSize);
     }
 
 

@@ -277,7 +277,7 @@ public class AdmobRecyclerAdapterWrapper
     public AdmobRecyclerAdapterWrapper(Context context, String admobReleaseUnitId, EnumSet<EAdType> adTypesToShow) {
         Collection<String> releaseUnitIds = admobReleaseUnitId==null
                 ? null
-                : new ArrayList<String>(Collections.singletonList(admobReleaseUnitId));
+                : Collections.singletonList(admobReleaseUnitId);
         init(context, releaseUnitIds, null, adTypesToShow);
     }
 

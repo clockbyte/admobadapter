@@ -75,7 +75,7 @@ public abstract class AdmobFetcherBase {
     */
     public void createUnitIdsQueue(Collection<String> adsUnitIds) {
         this.mAdsUnitIds = adsUnitIds==null||adsUnitIds.size() == 0
-                ?new ArrayList<String>(Collections.singletonList(getDefaultUnitId()))
+                ?Collections.singletonList(getDefaultUnitId())
                 :adsUnitIds;
         mUnitIdQueue = new UnitIdQueue(this.mAdsUnitIds);
     }

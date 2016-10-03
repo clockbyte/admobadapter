@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.clockbyte.admobadapter.AdmobFetcherBase;
+import com.clockbyte.admobadapter.R;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.NativeExpressAdView;
 
@@ -33,8 +34,6 @@ import java.util.List;
 public class AdmobFetcherExpress extends AdmobFetcherBase {
 
     private final String TAG = AdmobFetcherExpress.class.getCanonicalName();
-
-    protected static final String DEFAULT_AD_UNIT_ID = "ca-app-pub-3940256099942544/1072772517";
 
     /**
      * Maximum number of ads to prefetch.
@@ -102,7 +101,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
 
     @Override
     public String getDefaultUnitId() {
-        return DEFAULT_AD_UNIT_ID;
+        return mContext.get().getResources().getString(R.string.test_admob_express_unit_id);
     }
 
     /**

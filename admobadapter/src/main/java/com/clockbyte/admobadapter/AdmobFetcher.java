@@ -202,10 +202,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
      */
     protected synchronized void setupAds() {
         String unitId = dequeueUnitId();
-        String admobUnitId = TextUtils.isEmpty(unitId)
-                ? getDefaultUnitId()
-                : unitId;
-        AdLoader.Builder adloaderBuilder = new AdLoader.Builder(mContext.get(), admobUnitId)
+        AdLoader.Builder adloaderBuilder = new AdLoader.Builder(mContext.get(), unitId)
                 .withAdListener(new AdListener() {
                     @Override
                     public void onAdFailedToLoad(int errorCode) {

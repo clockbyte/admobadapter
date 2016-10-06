@@ -86,6 +86,7 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     private final static int DEFAULT_NO_OF_DATA_BETWEEN_ADS = 10;
     private final static int DEFAULT_LIMIT_OF_ADS = 3;
     private static final AdSize DEFAULT_AD_SIZE = new AdSize(AdSize.FULL_WIDTH, 150);
+    private static final String DEFAULT_AD_UNIT_ID = "ca-app-pub-3940256099942544/1072772517";
     
     public int getNativeAdUnitsCount(){
         return this.mNativeExpressAds.size();
@@ -147,6 +148,7 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
         AdapterCalculator.setLimitOfAds(mLimitOfAds);
     }
 
+    private String mAdsUnitId;
     private AdSize mAdSize;  
     
     private ArrayList<NativeExpressAd> mNativeExpressAds = new ArrayList<NativeExpressAd>();

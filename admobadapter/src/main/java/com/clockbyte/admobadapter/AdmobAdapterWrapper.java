@@ -26,6 +26,9 @@ import android.widget.BaseAdapter;
 
 import com.google.android.gms.ads.formats.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 
 /**
@@ -195,6 +198,21 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
     }
 
     /**
+     * @param admobReleaseUnitIds sets a release unit IDs for admob banners.
+     * It works like FIFO (first in = first out). Each ad block will get one from the queue.
+     * If the desired count of ad blocks is greater than this collection size
+     * then the last entry will be duplicated to remaining ad blocks.
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobAdapterWrapper(Context, String[])
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+     */
+    public AdmobAdapterWrapper(Context context, Collection<String> admobReleaseUnitIds) {
+        this(context, admobReleaseUnitIds, EnumSet.allOf(EAdType.class));
+    }
+
+    /**
      * Use this constructor for test purposes. if you are going to release the live version
      * please use the appropriate constructor
      * @see #AdmobAdapterWrapper(Context, String)
@@ -221,10 +239,31 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
      * i.e. pass EnumSet.of(EAdType.ADVANCED_INSTALLAPP) to show only install app ads
      */
     public AdmobAdapterWrapper(Context context, String admobReleaseUnitId, EnumSet<EAdType> adTypesToShow) {
-        init(context, admobReleaseUnitId, null, adTypesToShow);
+        Collection<String> releaseUnitIds = admobReleaseUnitId==null
+                ? null
+                : Collections.singletonList(admobReleaseUnitId);
+        init(context, releaseUnitIds, null, adTypesToShow);
     }
 
-    private void init(Context context, String admobReleaseUnitId, String[] testDevicesId, EnumSet<EAdType> adTypesToShow){
+    /**
+     * @param admobReleaseUnitIds sets a release unit ID for admob banners.
+     * It works like FIFO (first in = first out). Each ad block will get one from the queue.
+     * If the desired count of ad blocks is greater than this collection size
+     * then the last entry will be duplicated to remaining ad blocks.
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobAdapterWrapper(Context, String[])
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+     * @param adTypesToShow sets the types of ads to show in the list.
+     * By default all types are loaded by wrapper.
+     * i.e. pass EnumSet.of(EAdType.ADVANCED_INSTALLAPP) to show only install app ads
+     */
+    public AdmobAdapterWrapper(Context context, Collection<String> admobReleaseUnitIds, EnumSet<EAdType> adTypesToShow) {
+        init(context, admobReleaseUnitIds, null, adTypesToShow);
+    }
+
+    private void init(Context context, Collection<String> admobReleaseUnitIds, String[] testDevicesId, EnumSet<EAdType> adTypesToShow){
         setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
         setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
         setContentAdsLayoutContext(ContentAdLayoutContext.getDefault());
@@ -232,8 +271,7 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         mContext = context;
 
         adFetcher = new AdmobFetcher();
-        if(!TextUtils.isEmpty(admobReleaseUnitId))
-            adFetcher.setAdmobReleaseUnitId(admobReleaseUnitId);
+        adFetcher.createUnitIdsQueue(admobReleaseUnitIds);
         if(testDevicesId!=null)
             for (String testId: testDevicesId)
                 adFetcher.addTestDeviceId(testId);

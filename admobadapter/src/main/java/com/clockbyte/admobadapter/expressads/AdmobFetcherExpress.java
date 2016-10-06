@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.clockbyte.admobadapter.AdmobFetcherBase;
+import com.clockbyte.admobadapter.R;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.NativeExpressAdView;
 
@@ -96,6 +97,11 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     private boolean canUseThisAd(NativeExpressAdView adNative) {
         if (adNative == null || adNative.isLoading()) return false;
         return true;
+    }
+
+    @Override
+    public String getDefaultUnitId() {
+        return mContext.get().getResources().getString(R.string.test_admob_express_unit_id);
     }
 
     /**

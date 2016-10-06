@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.clockbyte.admobadapter.AdmobFetcherBase;
+import com.clockbyte.admobadapter.R;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.NativeExpressAdView;
 
@@ -98,6 +99,11 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
         return true;
     }
 
+    @Override
+    public String getDefaultUnitId() {
+        return mContext.get().getResources().getString(R.string.test_admob_express_unit_id);
+    }
+
     /**
      * Subscribing to the native ads events
      * @param adView
@@ -118,8 +124,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
                 //hide ad row or rollback its count if still not added to list
                 //best approach to work with custom adapters that cache their views
                 if(adView.getParent()==null){
-                    mNoOfFetchedAds--;
-                    notifyObserversOfAdSizeChange(mNoOfFetchedAds);
+                    notifyObserversOfAdSizeChange(--mNoOfFetchedAds);
                 }else {
                     ((View) adView.getParent()).setVisibility(View.GONE);
                 }
@@ -131,7 +136,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
                 onAdFetched(adView);
             }
         });
-        notifyObserversOfAdSizeChange(mNoOfFetchedAds++);
+        notifyObserversOfAdSizeChange(++mNoOfFetchedAds);
     }
 
     /**

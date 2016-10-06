@@ -86,6 +86,10 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     private final static int DEFAULT_NO_OF_DATA_BETWEEN_ADS = 10;
     private final static int DEFAULT_LIMIT_OF_ADS = 3;
     private static final AdSize DEFAULT_AD_SIZE = new AdSize(AdSize.FULL_WIDTH, 150);
+    
+    public int getNativeAdUnitsCount(){
+        return this.mNativeExpressAds.size();
+    }
 
     /**
      * Gets the number of ads that have been fetched so far.
@@ -143,7 +147,10 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
         AdapterCalculator.setLimitOfAds(mLimitOfAds);
     }
 
-    private AdSize mAdSize;
+    private AdSize mAdSize;  
+    
+    private ArrayList<NativeExpressAd> mNativeExpressAds = new ArrayList<NativeExpressAd>();
+    private boolean hasMultipleUnitsIds = false;
 
     /**
      * Use this constructor for test purposes. if you are going to release the live version
@@ -294,6 +301,23 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     public AdmobExpressAdapterWrapper(Context context, Collection<String> admobReleaseUnitIds, AdSize adSize) {
         this(context, admobReleaseUnitIds, null, adSize);
     }
+    
+    
+    /**
+     * @param admobNativeExpressAds sets a release unit ID for admob banners.
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobExpressAdapterWrapper(Context, String[])
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+     * @param testDevicesId sets a devices ID to test ads interaction.
+     * You could pass null but it's better to set ids for all your test devices
+     * including emulators. for emulator just use the
+     * @see {AdRequest.DEVICE_ID_EMULATOR}
+     */
+    public AdmobExpressAdapterWrapper(Context context, ArrayList<NativeExpressAd> admobNativeExpressAds, String[] testDevicesId) {
+        initMultiple(context, admobNativeExpressAds, testDevicesId);
+    }
 
     private void init(Context context, Collection<String> admobReleaseUnitIds, String[] testDevicesId, AdSize adSize) {
         setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
@@ -311,6 +335,42 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
 
         prefetchAds(AdmobFetcherExpress.PREFETCHED_ADS_SIZE);
     }
+    
+    
+    private void initMultiple(Context context, ArrayList<NativeExpressAd> nativeExpressAds, String[] testDevicesId) {
+        setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
+        setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
+
+        this.mNativeExpressAds.clear();
+        boolean hasAtLeastOneUnitId = false;
+        int admobReleaseUnitIdsListLength = nativeExpressAds.size();
+        if(admobReleaseUnitIdsListLength > 0){
+            for (int i=0; i < admobReleaseUnitIdsListLength; i++){
+                NativeExpressAd tmpNativeExpressAd = nativeExpressAds.get(i);
+                if(tmpNativeExpressAd.isValid() && !this.mNativeExpressAds.contains(tmpNativeExpressAd)){
+                    this.mNativeExpressAds.add(tmpNativeExpressAd);
+                    hasAtLeastOneUnitId = true;
+                    if(i > 0){
+                        this.hasMultipleUnitsIds = true;
+                    }
+                }
+            }
+        }
+        if(!hasAtLeastOneUnitId){
+            this.mAdsUnitId = DEFAULT_AD_UNIT_ID;
+            this.mAdSize = DEFAULT_AD_SIZE;
+        }
+
+        mContext = context;
+
+        adFetcher = new AdmobFetcherExpress(mContext);
+        if(testDevicesId!=null)
+            for (String testId: testDevicesId)
+                adFetcher.addTestDeviceId(testId);
+        adFetcher.addListener(this);
+        prefetchAds(AdmobFetcherExpress.PREFETCHED_ADS_SIZE);
+    }
+
 
     /**
      * Will start async prefetch of ad block to use its further
@@ -318,18 +378,34 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
      */
     private NativeExpressAdView prefetchAds(int cntToPrefetch){
         NativeExpressAdView last = null;
-        for (int i = 0; i < cntToPrefetch; i++){
-            final NativeExpressAdView item = AdViewHelper.getExpressAdView(mContext, this.mAdSize,
-                    adFetcher.dequeueUnitId());
-            adFetcher.setupAd(item);
-            //2 sec throttling to prevent a high-load of server
-            new Handler(mContext.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    adFetcher.fetchAd(item);
-                }
-            }, 2000*i);
-            last = item;
+        if(this.hasMultipleUnitsIds){
+            cntToPrefetch = getNativeAdUnitsCount();
+            for (int i = 0; i < cntToPrefetch; i++) {
+                final NativeExpressAdView item = AdViewHelper.getExpressAdView(mContext, mNativeExpressAds.get(i));
+                adFetcher.setupAd(item);
+                //2 sec throttling to prevent a high-load of server
+                new Handler(mContext.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        adFetcher.fetchAd(item);
+                    }
+                }, 2000 * i);
+                last = item;
+            }
+        }else {
+            for (int i = 0; i < cntToPrefetch; i++){
+                final NativeExpressAdView item = AdViewHelper.getExpressAdView(mContext, this.mAdSize,
+                        adFetcher.dequeueUnitId());
+                adFetcher.setupAd(item);
+                //2 sec throttling to prevent a high-load of server
+                new Handler(mContext.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        adFetcher.fetchAd(item);
+                    }
+                }, 2000*i);
+                last = item;
+            }
         }
         return last;
     }

@@ -319,6 +319,10 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
      */
     public AdmobExpressAdapterWrapper(Context context, ArrayList<NativeExpressAd> admobNativeExpressAds, String[] testDevicesId) {
         initMultiple(context, admobNativeExpressAds, testDevicesId);
+    }    
+    
+    public AdmobExpressAdapterWrapper(Context context, ArrayList<NativeExpressAd> admobNativeExpressAds) {
+        initMultiple(context, admobNativeExpressAds, null);
     }
 
     private void init(Context context, Collection<String> admobReleaseUnitIds, String[] testDevicesId, AdSize adSize) {

@@ -75,9 +75,6 @@ public class NativeExpressAd {
         int hash = 17;
         hash = hash * 31 + adUnitId.hashCode();
         hash = hash * 31 + adSize.hashCode();
-        if(adListener != null){
-            hash = hash * 31 + adListener.hashCode();
-        }
         return hash;
     }
 

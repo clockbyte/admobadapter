@@ -183,6 +183,9 @@ public class AdmobExpressRecyclerAdapterWrapper
     private UnitIdQueue mUnitIdQueue;
 
     private AdSize mAdSize;
+    
+    private ArrayList<NativeExpressAd> mNativeExpressAds = new ArrayList<NativeExpressAd>();
+    private boolean hasMultipleUnitsIds = false;
 
     /**
      * Use this constructor for test purposes. if you are going to release the live version
@@ -235,6 +238,21 @@ public class AdmobExpressRecyclerAdapterWrapper
      */
     public AdmobExpressRecyclerAdapterWrapper(Context context, String admobReleaseUnitId, String[] testDevicesId) {
         this(context, admobReleaseUnitId, testDevicesId, null);
+    }
+    
+    
+    /**
+     * @param admobNativeExpressAds sets a Arraylist of NativeExpressAd.
+     * @param testDevicesId sets a devices ID to test ads interaction.
+     * You could pass null but it's better to set ids for all your test devices
+     * including emulators. for emulator just use the
+     * @see {AdRequest.DEVICE_ID_EMULATOR}
+     */
+    public AdmobExpressRecyclerAdapterWrapper(Context context, ArrayList<NativeExpressAd> admobNativeExpressAds, String[] testDevicesId) {
+        initMultiple(context, admobNativeExpressAds, testDevicesId);
+    }
+    public AdmobExpressRecyclerAdapterWrapper(Context context, ArrayList<NativeExpressAd> admobNativeExpressAds) {
+        initMultiple(context, admobNativeExpressAds, null);
     }
 
     /**
@@ -351,6 +369,35 @@ public class AdmobExpressRecyclerAdapterWrapper
 
         prefetchAds(AdmobFetcherExpress.PREFETCHED_ADS_SIZE);
     }
+    
+    private void initMultiple(Context context, ArrayList<NativeExpressAd> nativeExpressAds, String[] testDevicesId) {
+        setViewTypeBiggestSource(DEFAULT_VIEWTYPE_SOURCE_MAX);
+        setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
+        setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
+        mContext = context;
+
+        this.mNativeExpressAds.clear();
+        int admobReleaseUnitIdsListLength = nativeExpressAds.size();
+        if(admobReleaseUnitIdsListLength > 0){
+            for (int i=0; i < admobReleaseUnitIdsListLength; i++){
+                NativeExpressAd tmpNativeExpressAd = nativeExpressAds.get(i);
+                if(tmpNativeExpressAd.isValid()){
+                    this.mNativeExpressAds.add(tmpNativeExpressAd);
+                    if(i > 0){
+                        this.hasMultipleUnitsIds = true;
+                    }
+                }
+            }
+        }
+
+        adFetcher = new AdmobFetcherExpress(mContext);
+        if(testDevicesId!=null)
+            for (String testId: testDevicesId)
+                adFetcher.addTestDeviceId(testId);
+        adFetcher.addListener(this);
+
+        prefetchAds(AdmobFetcherExpress.PREFETCHED_ADS_SIZE);
+    }
 
     /**
      * Will start async prefetch of ad block to use its further
@@ -358,18 +405,33 @@ public class AdmobExpressRecyclerAdapterWrapper
      */
     private NativeExpressAdView prefetchAds(int cntToPrefetch){
         NativeExpressAdView last = null;
-        for (int i = 0; i < cntToPrefetch; i++){
-            final NativeExpressAdView item = AdViewHelper.getExpressAdView(mContext, this.mAdSize,
-                    adFetcher.dequeueUnitId());
-            adFetcher.setupAd(item);
-            //2 sec throttling to prevent a high-load of server
-            new Handler(mContext.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    adFetcher.fetchAd(item);
-                }
-            }, 2000*i);
-            last = item;
+        if(this.hasMultipleUnitsIds){
+            for (int i = 0; i < cntToPrefetch; i++) {
+                final NativeExpressAdView item = AdViewHelper.getExpressAdView(mContext, mNativeExpressAds.get(i));
+                adFetcher.setupAd(item);
+                //2 sec throttling to prevent a high-load of server
+                new Handler(mContext.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        adFetcher.fetchAd(item);
+                    }
+                }, 2000 * i);
+                last = item;
+            }
+        }else {
+            for (int i = 0; i < cntToPrefetch; i++) {
+                final NativeExpressAdView item = AdViewHelper.getExpressAdView(mContext, this.mAdSize,
+                        adFetcher.dequeueUnitId());
+                adFetcher.setupAd(item);
+                //2 sec throttling to prevent a high-load of server
+                new Handler(mContext.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        adFetcher.fetchAd(item);
+                    }
+                }, 2000 * i);
+                last = item;
+            }
         }
         return last;
     }

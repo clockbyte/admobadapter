@@ -19,7 +19,6 @@ package com.clockbyte.admobadapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.ViewGroup;
 
 import com.google.android.gms.ads.formats.NativeAd;
@@ -29,7 +28,6 @@ import com.google.android.gms.ads.formats.NativeAppInstallAdView;
 import com.google.android.gms.ads.formats.NativeContentAd;
 import com.google.android.gms.ads.formats.NativeContentAdView;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -80,6 +78,8 @@ public class AdmobRecyclerAdapterWrapper
             }
 
         });
+
+        notifyDataSetChanged();
     }
 
     private AdmobFetcher adFetcher;

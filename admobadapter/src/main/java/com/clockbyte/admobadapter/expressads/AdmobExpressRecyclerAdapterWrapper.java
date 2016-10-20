@@ -20,8 +20,6 @@ package com.clockbyte.admobadapter.expressads;
 import android.content.Context;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.ViewGroup;
 
 import com.clockbyte.admobadapter.AdViewHelper;
@@ -32,7 +30,6 @@ import com.clockbyte.admobadapter.ViewWrapper;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.NativeExpressAdView;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -82,6 +79,8 @@ public class AdmobExpressRecyclerAdapterWrapper
             }
 
         });
+        
+        notifyDataSetChanged();
     }
 
     private AdmobFetcherExpress adFetcher;

@@ -392,11 +392,22 @@ public class AdmobExpressRecyclerAdapterWrapper
             NativeExpressAdView item = adFetcher.getAdForIndex(mCntAdCreated++);
             if (item == null)
                 item = prefetchAds(1);
-            return new ViewWrapper<NativeExpressAdView>(item);
+            View wrappedView = wrapAdView(item,parent,viewType);
+            return new ViewWrapper(wrappedView);
         }
         else{
             return mAdapter.onCreateViewHolder(parent, viewType);
         }
+    }
+
+    /**
+     * This method can be overrided to wrap the created nativeAdView with a custom ViewGroup.<br/>
+     * For example if you need to wrap the ad with a CardView
+     * @param nativeAdView Ad view to be wrapped
+     * @return The wrapped view, by default nativeAdView is returned
+     */
+    protected View wrapAdView(NativeExpressAdView nativeAdView,ViewGroup parent, int viewType) {
+        return nativeAdView;
     }
 
     /**

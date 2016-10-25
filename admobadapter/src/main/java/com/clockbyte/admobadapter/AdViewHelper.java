@@ -19,6 +19,7 @@ package com.clockbyte.admobadapter;
 import android.content.Context;
 import android.widget.AbsListView;
 
+import com.clockbyte.admobadapter.expressads.NativeExpressAd;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.NativeExpressAdView;
 
@@ -30,6 +31,17 @@ public class AdViewHelper {
         adView.setAdUnitId(adsUnitId);
         adView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,
                 adSize.getHeightInPixels(context)));
+        return adView;
+    }
+    
+    
+    public static NativeExpressAdView getExpressAdView(Context context, NativeExpressAd nativeExpressAd) {
+        NativeExpressAdView adView = new NativeExpressAdView(context);
+        AdSize adSize = nativeExpressAd.getAdSize();
+        adView.setAdSize(adSize);
+        adView.setAdUnitId(nativeExpressAd.getAdUnitId());
+        adView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,
+        adSize.getHeightInPixels(context)));
         return adView;
     }
 

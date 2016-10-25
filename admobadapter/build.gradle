@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.1'
+        classpath 'com.android.tools.build:gradle:2.2.2'
     }
 }
 apply plugin: 'com.android.library'
@@ -14,12 +14,12 @@ repositories {
 }
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 25
+    buildToolsVersion "24.0.3"
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
     }
@@ -38,9 +38,9 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.google.android.gms:play-services-ads:9.6.1'
-    compile 'com.android.support:recyclerview-v7:24.2.1'
+    compile 'com.android.support:appcompat-v7:25.0.0'
+    compile 'com.google.android.gms:play-services-ads:9.8.0'
+    compile 'com.android.support:recyclerview-v7:25.0.0'
     compile 'com.google.firebase:firebase-ads:9.6.1'
 
     testCompile 'junit:junit:4.12'

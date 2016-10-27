@@ -6,12 +6,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.clockbyte.admobadapter.expressads.AdmobExpressAdapterWrapper;
+import com.clockbyte.admobadapter.expressads.ExpressAdPreset;
 import com.clockbyte.admobadapter.sampleapp.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -45,8 +48,12 @@ public class MainActivity_ListView_Express extends Activity {
 
         //your test devices' ids
         String[] testDevicesIds = new String[]{getString(R.string.testDeviceID),AdRequest.DEVICE_ID_EMULATOR};
+        ExpressAdPreset[] presets = new ExpressAdPreset[]{
+                ExpressAdPreset.DEFAULT,
+                new ExpressAdPreset("ca-app-pub-1350942189985181/4333089150")
+        };
         //when you'll be ready for release please use another ctor with admobReleaseUnitId instead.
-        adapterWrapper = new AdmobExpressAdapterWrapper(this, testDevicesIds);
+        adapterWrapper = new AdmobExpressAdapterWrapper(this, Arrays.asList(presets), testDevicesIds);
         //By default the ad size is set to FULL_WIDTHx150
         //To set a custom size you should use an appropriate ctor
         //adapterWrapper = new AdmobExpressAdapterWrapper(this, testDevicesIds, new AdSize(AdSize.FULL_WIDTH, 150));
@@ -54,7 +61,7 @@ public class MainActivity_ListView_Express extends Activity {
         adapterWrapper.setAdapter(adapter); //wrapping your adapter with a AdmobExpressAdapterWrapper.
 
         //Sets the max count of ad blocks per dataset, by default it equals to 3 (according to the Admob's policies and rules)
-        adapterWrapper.setLimitOfAds(3);
+        adapterWrapper.setLimitOfAds(10);
 
         //Sets the number of your data items between ad blocks, by default it equals to 10.
         //You should set it according to the Admob's policies and rules which says not to

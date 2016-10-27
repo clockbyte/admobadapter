@@ -22,13 +22,15 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 
+import com.clockbyte.admobadapter.AdPresetCyclingList;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
-import com.clockbyte.admobadapter.R;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.NativeExpressAdView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class AdmobFetcherExpress extends AdmobFetcherBase {
@@ -51,6 +53,39 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     }
 
     private List<NativeExpressAdView> mPrefetchedAds = new ArrayList<NativeExpressAdView>();
+    private AdPresetCyclingList mAdPresetCyclingList = new AdPresetCyclingList();
+
+    /*
+* Gets next ad preset for Admob banners from FIFO .
+* It works like cycling FIFO (first in = first out, cycling from end to start).
+* Each ad block will get one from the queue.
+* If the desired count of ad blocks is greater than this collection size
+* then it will go again to the first item and iterate as much as it required.
+* ID should be active, please check it in your Admob's account.
+ */
+    public ExpressAdPreset takeNextAdPreset() {
+        return this.mAdPresetCyclingList.get();
+    }
+
+    /*
+   * Sets an unit IDs for admob banners.
+* It works like cycling FIFO (first in = first out, cycling from end to start).
+* Each ad block will get one from the queue.
+* If the desired count of ad blocks is greater than this collection size
+* then it will go again to the first item and iterate as much as it required.
+* ID should be active, please check it in your Admob's account.
+ */
+    public void setAdPresets(Collection<ExpressAdPreset> adPresets) {
+        Collection<ExpressAdPreset> mAdPresets = adPresets==null||adPresets.size() == 0
+                ? Collections.singletonList(ExpressAdPreset.DEFAULT)
+                :adPresets;
+        mAdPresetCyclingList.clear();
+        mAdPresetCyclingList.addAll(mAdPresets);
+    }
+
+    public int getAdPresetsCount(){
+        return this.mAdPresetCyclingList.size();
+    }
 
     /**
      * Gets native ad at a particular index in the fetched ads list.
@@ -99,11 +134,6 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
         return true;
     }
 
-    @Override
-    public String getDefaultUnitId() {
-        return mContext.get().getResources().getString(R.string.test_admob_express_unit_id);
-    }
-
     /**
      * Subscribing to the native ads events
      * @param adView
@@ -124,7 +154,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
                 //hide ad row or rollback its count if still not added to list
                 //best approach to work with custom adapters that cache their views
                 if(adView.getParent()==null){
-                    notifyObserversOfAdSizeChange(--mNoOfFetchedAds);
+                    notifyObserversOfAdSizeChange(--mNoOfFetchedAds - 1);
                 }else {
                     ((View) adView.getParent()).setVisibility(View.GONE);
                 }
@@ -134,9 +164,10 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
             public void onAdLoaded() {
                 super.onAdLoaded();
                 onAdFetched(adView);
+                notifyObserversOfAdSizeChange(mNoOfFetchedAds - 1);
             }
         });
-        notifyObserversOfAdSizeChange(++mNoOfFetchedAds);
+        ++mNoOfFetchedAds;
     }
 
     /**

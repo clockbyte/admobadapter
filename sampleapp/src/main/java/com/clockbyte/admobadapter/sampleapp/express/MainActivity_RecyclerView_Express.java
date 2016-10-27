@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.clockbyte.admobadapter.expressads.AdmobExpressRecyclerAdapterWrapper;
+import com.clockbyte.admobadapter.expressads.ExpressAdPreset;
 import com.clockbyte.admobadapter.sampleapp.R;
 import com.clockbyte.admobadapter.sampleapp.RecyclerExampleAdapter;
 import com.google.android.gms.ads.AdRequest;
@@ -13,6 +14,7 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -55,7 +57,7 @@ public class MainActivity_RecyclerView_Express extends Activity {
         adapterWrapper.setAdapter(adapter); //wrapping your adapter with a AdmobExpressRecyclerAdapterWrapper.
 
         //Sets the max count of ad blocks per dataset, by default it equals to 3 (according to the Admob's policies and rules)
-        adapterWrapper.setLimitOfAds(3);
+        adapterWrapper.setLimitOfAds(10);
 
         //Sets the number of your data items between ad blocks, by default it equals to 10.
         //You should set it according to the Admob's policies and rules which says not to

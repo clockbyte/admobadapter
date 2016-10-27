@@ -22,23 +22,31 @@ import android.text.TextUtils;
 
 import com.google.android.gms.ads.AdSize;
 
-public class NativeExpressAd {
+import java.util.Locale;
+
+public class ExpressAdPreset {
+    private static final String UNIT_ID_DEFAULT_EXPRESS = "ca-app-pub-3940256099942544/1072772517";
+    private static final AdSize SIZE_DEFAULT_EXPRESS = new AdSize(AdSize.FULL_WIDTH, 150);
+    public static final ExpressAdPreset DEFAULT = new ExpressAdPreset(UNIT_ID_DEFAULT_EXPRESS, SIZE_DEFAULT_EXPRESS);
+
     private String adUnitId;
     private AdSize adSize;
 
-    public NativeExpressAd(){
-        this.adUnitId = "ca-app-pub-3940256099942544/1072772517";
-        this.adSize = new AdSize(AdSize.FULL_WIDTH, 150);
+    public ExpressAdPreset(){
+        this.adUnitId = UNIT_ID_DEFAULT_EXPRESS;
+        this.adSize = SIZE_DEFAULT_EXPRESS;
     }
 
-    public NativeExpressAd(String adUnitId){
-        this.adUnitId = adUnitId;
-        this.adSize = new AdSize(AdSize.FULL_WIDTH, 150);
+    public ExpressAdPreset(String adUnitId){
+        this();
+        if(!TextUtils.isEmpty(adUnitId))
+            this.adUnitId = adUnitId;
     }
 
-    public NativeExpressAd(String adUnitId, AdSize adSize){
-        this.adUnitId = adUnitId;
-        this.adSize = adSize;
+    public ExpressAdPreset(String adUnitId, AdSize adSize){
+        this(adUnitId);
+        if(adSize != null)
+            this.adSize = adSize;
     }
 
     public String getAdUnitId(){
@@ -63,9 +71,11 @@ public class NativeExpressAd {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof NativeExpressAd) {
-            NativeExpressAd other = (NativeExpressAd) o;
-            return (this.adUnitId == other.adUnitId && this.adSize.getHeight() == other.adSize.getHeight() && this.adSize.getWidth() == other.adSize.getWidth());
+        if (o instanceof ExpressAdPreset) {
+            ExpressAdPreset other = (ExpressAdPreset) o;
+            return (this.adUnitId.equals(other.adUnitId)
+                    && this.adSize.getHeight() == other.adSize.getHeight()
+                    && this.adSize.getWidth() == other.adSize.getWidth());
         }
         return false;
     }
@@ -78,4 +88,8 @@ public class NativeExpressAd {
         return hash;
     }
 
+    @Override
+    public String toString() {
+        return String.format(Locale.getDefault(), "%s | %s", adUnitId, adSize);
+    }
 }

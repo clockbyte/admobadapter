@@ -48,12 +48,8 @@ public class MainActivity_ListView_Express extends Activity {
 
         //your test devices' ids
         String[] testDevicesIds = new String[]{getString(R.string.testDeviceID),AdRequest.DEVICE_ID_EMULATOR};
-        ExpressAdPreset[] presets = new ExpressAdPreset[]{
-                ExpressAdPreset.DEFAULT,
-                new ExpressAdPreset("ca-app-pub-1350942189985181/4333089150")
-        };
         //when you'll be ready for release please use another ctor with admobReleaseUnitId instead.
-        adapterWrapper = new AdmobExpressAdapterWrapper(this, Arrays.asList(presets), testDevicesIds);
+        adapterWrapper = new AdmobExpressAdapterWrapper(this, testDevicesIds);
         //By default the ad size is set to FULL_WIDTHx150
         //To set a custom size you should use an appropriate ctor
         //adapterWrapper = new AdmobExpressAdapterWrapper(this, testDevicesIds, new AdSize(AdSize.FULL_WIDTH, 150));

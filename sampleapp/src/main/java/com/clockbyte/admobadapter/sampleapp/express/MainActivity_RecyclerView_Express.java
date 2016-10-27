@@ -1,9 +1,16 @@
 package com.clockbyte.admobadapter.sampleapp.express;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.TextView;
 
 import com.clockbyte.admobadapter.expressads.AdmobExpressRecyclerAdapterWrapper;
 import com.clockbyte.admobadapter.expressads.ExpressAdPreset;
@@ -12,6 +19,7 @@ import com.clockbyte.admobadapter.sampleapp.RecyclerExampleAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.NativeExpressAdView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +57,24 @@ public class MainActivity_RecyclerView_Express extends Activity {
         //your test devices' ids
         String[] testDevicesIds = new String[]{getString(R.string.testDeviceID),AdRequest.DEVICE_ID_EMULATOR};
         //when you'll be ready for release please use another ctor with admobReleaseUnitId instead.
-        adapterWrapper = new AdmobExpressRecyclerAdapterWrapper(this, testDevicesIds);
+        adapterWrapper = new AdmobExpressRecyclerAdapterWrapper(this, testDevicesIds){
+            @Override
+            protected ViewGroup wrapAdView(NativeExpressAdView nativeAdView, ViewGroup parent, int viewType) {
+                RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,
+                        RecyclerView.LayoutParams.WRAP_CONTENT);
+                CardView cardView = new CardView(MainActivity_RecyclerView_Express.this);
+                cardView.setLayoutParams(lp);
+
+                TextView textView = new TextView(MainActivity_RecyclerView_Express.this);
+                textView.setLayoutParams(lp);
+                textView.setText("Ad is loading...");
+                textView.setTextColor(Color.RED);
+
+                cardView.addView(textView);
+                cardView.addView(nativeAdView);
+                return cardView;
+            }
+        };
         //By default the ad size is set to FULL_WIDTHx150
         //To set a custom size you should use an appropriate ctor
         //adapterWrapper = new AdmobExpressRecyclerAdapterWrapper(this, testDevicesIds, new AdSize(AdSize.FULL_WIDTH, 150));

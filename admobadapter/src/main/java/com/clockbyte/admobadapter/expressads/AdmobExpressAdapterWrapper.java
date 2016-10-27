@@ -319,13 +319,23 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
             NativeExpressAdView item = adFetcher.getAdForIndex(adPos);
             if (item == null)
                 item = prefetchAds(1);
-            return item;
+            return wrapAdView(item,parent,position);
         }
         else{
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
                     adFetcher.getFetchedAdsCount(), mAdapter.getCount());
             return mAdapter.getView(origPos, convertView, parent);
         }
+    }
+
+    /**
+     * This method can be overriden to wrap the created nativeAdView with a custom {@link ViewGroup}.<br/>
+     * For example if you need to wrap the ad with a {@link android.widget.LinearLayout}
+     * @param nativeAdView Ad view to be wrapped
+     * @return The wrapped {@link ViewGroup}, by default {@link NativeExpressAdView} is returned itself (without wrap)
+     */
+    protected ViewGroup wrapAdView(NativeExpressAdView nativeAdView,ViewGroup parent, int position) {
+        return nativeAdView;
     }
 
     /**

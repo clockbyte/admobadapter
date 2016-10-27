@@ -20,6 +20,7 @@ package com.clockbyte.admobadapter.expressads;
 import android.content.Context;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.clockbyte.admobadapter.AdViewHelper;
@@ -368,8 +369,8 @@ public class AdmobExpressRecyclerAdapterWrapper
             NativeExpressAdView item = adFetcher.getAdForIndex(mCntAdCreated++);
             if (item == null)
                 item = prefetchAds(1);
-            View wrappedView = wrapAdView(item,parent,viewType);
-            return new ViewWrapper(wrappedView);
+            ViewGroup wrappedView = wrapAdView(item,parent,viewType);
+            return new ViewWrapper<ViewGroup>(wrappedView);
         }
         else{
             return mAdapter.onCreateViewHolder(parent, viewType);
@@ -377,12 +378,12 @@ public class AdmobExpressRecyclerAdapterWrapper
     }
 
     /**
-     * This method can be overrided to wrap the created nativeAdView with a custom ViewGroup.<br/>
+     * This method can be overriden to wrap the created nativeAdView with a custom {@link ViewGroup}.<br/>
      * For example if you need to wrap the ad with a CardView
      * @param nativeAdView Ad view to be wrapped
-     * @return The wrapped view, by default nativeAdView is returned
+     * @return The wrapped {@link ViewGroup}, by default {@link NativeExpressAdView} is returned itself (without wrap)
      */
-    protected View wrapAdView(NativeExpressAdView nativeAdView,ViewGroup parent, int viewType) {
+    protected ViewGroup wrapAdView(NativeExpressAdView nativeAdView,ViewGroup parent, int viewType) {
         return nativeAdView;
     }
 

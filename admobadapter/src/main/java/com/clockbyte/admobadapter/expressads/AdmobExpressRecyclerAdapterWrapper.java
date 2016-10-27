@@ -78,6 +78,8 @@ public class AdmobExpressRecyclerAdapterWrapper
             }
 
         });
+        
+        notifyDataSetChanged();
     }
 
     private AdmobFetcherExpress adFetcher;

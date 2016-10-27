@@ -412,7 +412,7 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     }
 
     @Override
-    public void onAdChanged(int adIdx) {notifyDataSetChanged();}
+    public void onAdChanged(int adIdx) {}
 
     /**
      * Raised when the number of ads have changed. Adapters that implement this class

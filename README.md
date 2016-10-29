@@ -1,6 +1,7 @@
 Admob Adapter                               
 
-[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)  [![Build Status](https://travis-ci.org/clockbyte/admobadapter.svg?branch=master)](https://travis-ci.org/clockbyte/admobadapter)  [![Gitter](https://badges.gitter.im/clockbyte/admobadapter.svg)](https://gitter.im/clockbyte/admobadapter?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)  [![Build Status](https://travis-ci.org/clockbyte/admobadapter.svg?branch=master)](https://travis-ci.org/clockbyte/admobadapter)  [![Gitter](https://badges.gitter.im/clockbyte/admobadapter.svg)](https://gitter.im/clockbyte/admobadapter?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.clockbyte/admobadapter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.clockbyte/admobadapter)
+
 ======================
 
 We've finally released [v1.2](https://github.com/clockbyte/admobadapter/releases/tag/v1.2)! No flickering, no empty spaces!

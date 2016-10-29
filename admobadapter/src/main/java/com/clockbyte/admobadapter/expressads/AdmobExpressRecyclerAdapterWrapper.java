@@ -20,7 +20,6 @@ package com.clockbyte.admobadapter.expressads;
 import android.content.Context;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.clockbyte.admobadapter.AdViewHelper;
@@ -331,14 +330,14 @@ public class AdmobExpressRecyclerAdapterWrapper
     }
 
     /**
-     * Creates N instances {@link NativeExpressAdViewEx} from the next N taken instances {@link ExpressAdPreset}
+     * Creates N instances {@link NativeExpressAdViewHolder} from the next N taken instances {@link ExpressAdPreset}
      * Will start async prefetch of ad blocks to use its further
      * @return last created NativeExpressAdView
      */
-    private NativeExpressAdViewEx prefetchAds(int cntToPrefetch){
-        NativeExpressAdViewEx last = null;
+    private NativeExpressAdViewHolder prefetchAds(int cntToPrefetch){
+        NativeExpressAdViewHolder last = null;
         for (int i = 0; i < cntToPrefetch; i++) {
-            final NativeExpressAdViewEx item = AdViewHelper.getExpressAdViewEx(mContext, adFetcher.takeNextAdPreset());
+            final NativeExpressAdViewHolder item = AdViewHelper.getExpressAdViewEx(mContext, adFetcher.takeNextAdPreset());
             adFetcher.setupAd(item);
             //2 sec throttling to prevent a high-load of server
             new Handler(mContext.getMainLooper()).postDelayed(new Runnable() {
@@ -366,11 +365,16 @@ public class AdmobExpressRecyclerAdapterWrapper
     @Override
     public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == getViewTypeAdExpress()) {
-            NativeExpressAdViewEx item = adFetcher.getAdForIndex(mCntAdCreated++);
+            NativeExpressAdViewHolder item = adFetcher.getAdForIndex(mCntAdCreated++);
             if (item == null)
                 item = prefetchAds(1);
-            ViewGroup wrap = wrapAdView(item.get(), parent, viewType);
-            return new ViewWrapper<ViewGroup>(wrap);
+
+            //don't need to save some extra state for parent wrapper here,
+            // because RecyclerView calls this once per ad block
+            ViewGroup wrapper = wrapAdView(item, parent, viewType);
+            if(wrapper == null)
+                wrapper = item.getAdView();
+            return new ViewWrapper<ViewGroup>(wrapper);
         }
         else{
             return mAdapter.onCreateViewHolder(parent, viewType);
@@ -378,13 +382,14 @@ public class AdmobExpressRecyclerAdapterWrapper
     }
 
     /**
-     * This method can be overriden to wrap the created nativeAdView with a custom {@link ViewGroup}.<br/>
+     * This method can be overriden to wrap the created ad view with a custom {@link ViewGroup}.<br/>
      * For example if you need to wrap the ad with a CardView
-     * @param nativeAdView Ad view to be wrapped
+     * @param adViewHolder holder which contains an ad view to be wrapped. Also contains some states which could be useful
+     * @see NativeExpressAdViewHolder#getAdView()
      * @return The wrapped {@link ViewGroup}, by default {@link NativeExpressAdView} is returned itself (without wrap)
      */
-    protected ViewGroup wrapAdView(NativeExpressAdView nativeAdView,ViewGroup parent, int viewType) {
-        return nativeAdView;
+    protected ViewGroup wrapAdView(NativeExpressAdViewHolder adViewHolder, ViewGroup parent, int viewType) {
+        return adViewHolder.getAdView();
     }
 
     /**
@@ -433,17 +438,11 @@ public class AdmobExpressRecyclerAdapterWrapper
     }
 
     /**
-     * Destroys all currently fetched ads
-     */
-    public void destroyAds() {
-        adFetcher.destroyAllAds();
-    }
-
-    /**
      * Clears all currently displaying ads and reinits the list
      */
     public void reinitialize() {
-        destroyAds();
+        adFetcher.destroyAllAds();
+        mCntAdCreated = 0;
         prefetchAds(AdmobFetcherExpress.PREFETCHED_ADS_SIZE);
         notifyDataSetChanged();
     }
@@ -457,8 +456,10 @@ public class AdmobExpressRecyclerAdapterWrapper
 
     @Override
     public void onAdChanged(int adIdx) {
+        //raise ad's neighbour item changed.
+        // cheap, quick and dirty solution to avoid ad's redraw and flickering.
         int pos = getAdapterCalculator().translateAdToWrapperPosition(adIdx);
-        notifyItemChanged(pos);
+        notifyItemChanged(pos==0? 1: Math.max(0, pos-1));
     }
 
     /**

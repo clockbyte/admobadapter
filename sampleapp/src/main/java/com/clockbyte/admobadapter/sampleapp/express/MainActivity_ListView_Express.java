@@ -3,7 +3,6 @@ package com.clockbyte.admobadapter.sampleapp.express;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
@@ -12,18 +11,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.clockbyte.admobadapter.expressads.AdmobExpressAdapterWrapper;
-import com.clockbyte.admobadapter.expressads.ExpressAdPreset;
+import com.clockbyte.admobadapter.expressads.NativeExpressAdViewHolder;
 import com.clockbyte.admobadapter.sampleapp.R;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.NativeExpressAdView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainActivity_ListView_Express extends Activity {
 
@@ -58,7 +52,11 @@ public class MainActivity_ListView_Express extends Activity {
         //when you'll be ready for release please use another ctor with admobReleaseUnitId instead.
         adapterWrapper = new AdmobExpressAdapterWrapper(this, testDevicesIds){
             @Override
-            protected ViewGroup wrapAdView(NativeExpressAdView nativeAdView, ViewGroup parent, int viewType) {
+            protected ViewGroup wrapAdView(NativeExpressAdViewHolder adViewHolder, ViewGroup parent, int viewType) {
+
+                //get ad view
+                NativeExpressAdView adView = adViewHolder.getAdView();
+
                 AbsListView.LayoutParams lp = new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,
                         AbsListView.LayoutParams.WRAP_CONTENT);
                 RelativeLayout container = new RelativeLayout(MainActivity_ListView_Express.this);
@@ -70,7 +68,9 @@ public class MainActivity_ListView_Express extends Activity {
                 textView.setTextColor(Color.RED);
 
                 container.addView(textView);
-                container.addView(nativeAdView);
+                //wrapping
+                container.addView(adView);
+                //return wrapper view
                 return container;
             }
         };
@@ -110,6 +110,6 @@ public class MainActivity_ListView_Express extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        adapterWrapper.destroyAds();
+        adapterWrapper.release();
     }
 }

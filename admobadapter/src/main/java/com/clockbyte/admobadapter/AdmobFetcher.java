@@ -192,7 +192,6 @@ public class AdmobFetcher extends AdmobFetcherBase{
         return false;
     }
 
-    @Override
     public String getDefaultUnitId() {
         return mContext.get().getResources().getString(R.string.test_admob_unit_id);
     }
@@ -201,7 +200,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
      * Subscribing to the native ads events
      */
     protected synchronized void setupAds() {
-        String unitId = dequeueUnitId();
+        String unitId = getDefaultUnitId();
         AdLoader.Builder adloaderBuilder = new AdLoader.Builder(mContext.get(), unitId)
                 .withAdListener(new AdListener() {
                     @Override

@@ -101,7 +101,7 @@ public class AdmobAdapterCalculator {
         // No of spaces for ads in the dataset, according to ad placement rules
         int adSpacesCount = (getAdIndex(position) + 1);
         int originalPosition = position - Math.min(adSpacesCount, noOfAds);
-        Log.d("POSITION", position + " is originally " + originalPosition);
+        //Log.d("POSITION", position + " is originally " + originalPosition);
 
         return originalPosition;
     }
@@ -161,7 +161,7 @@ public class AdmobAdapterCalculator {
         int index = -1;
         if(position >= getOffsetValue())
             index = (position - getOffsetValue()) / (getNoOfDataBetweenAds()+1);
-        Log.d("POSITION", "index " + index + " for position " + position);
+        //Log.d("POSITION", "index " + index + " for position " + position);
         return index;
     }
 

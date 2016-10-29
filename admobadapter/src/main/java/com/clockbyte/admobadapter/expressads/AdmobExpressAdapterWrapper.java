@@ -291,14 +291,14 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     }
 
     /**
-     * Creates N instances {@link NativeExpressAdView} from the next N taken instances {@link ExpressAdPreset}
+     * Creates N instances {@link NativeExpressAdViewEx} from the next N taken instances {@link ExpressAdPreset}
      * Will start async prefetch of ad blocks to use its further
      * @return last created NativeExpressAdView
      */
-    private NativeExpressAdView prefetchAds(int cntToPrefetch){
-        NativeExpressAdView last = null;
+    private NativeExpressAdViewEx prefetchAds(int cntToPrefetch){
+        NativeExpressAdViewEx last = null;
         for (int i = 0; i < cntToPrefetch; i++){
-            final NativeExpressAdView item = AdViewHelper.getExpressAdView(mContext, adFetcher.takeNextAdPreset());
+            final NativeExpressAdViewEx item = AdViewHelper.getExpressAdViewEx(mContext, adFetcher.takeNextAdPreset());
             adFetcher.setupAd(item);
             //2 sec throttling to prevent a high-load of server
             new Handler(mContext.getMainLooper()).postDelayed(new Runnable() {
@@ -316,14 +316,14 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     public View getView(int position, View convertView, ViewGroup parent) {
         if(getItemViewType(position) == getViewTypeAdExpress()) {
             int adPos = AdapterCalculator.getAdIndex(position);
-            NativeExpressAdView item = adFetcher.getAdForIndex(adPos);
+            NativeExpressAdViewEx item = adFetcher.getAdForIndex(adPos);
             if (item == null)
                 item = prefetchAds(1);
-            return wrapAdView(item,parent,position);
+            return wrapAdView(item.get(), parent, position);
         }
         else{
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
-                    adFetcher.getFetchedAdsCount(), mAdapter.getCount());
+                    adFetcher.getFetchingAdsCount(), mAdapter.getCount());
             return mAdapter.getView(origPos, convertView, parent);
         }
     }
@@ -354,7 +354,7 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
         if (mAdapter != null) {
             /* Cnt of currently fetched ads, as long as it isn't more than no of max ads that can
             fit dataset. */
-            int noOfAds = AdapterCalculator.getAdsCountToPublish(adFetcher.getFetchedAdsCount(), mAdapter.getCount());
+            int noOfAds = AdapterCalculator.getAdsCountToPublish(adFetcher.getFetchingAdsCount(), mAdapter.getCount());
             return mAdapter.getCount() > 0 ? mAdapter.getCount() + noOfAds : 0;
         } else {
             return 0;
@@ -370,12 +370,12 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
      */
     @Override
     public Object getItem(int position) {
-        if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchedAdsCount())) {
+        if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchingAdsCount())) {
             int adPos = AdapterCalculator.getAdIndex(position);
             return adFetcher.getAdForIndex(adPos);
         } else {
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
-                    adFetcher.getFetchedAdsCount(), mAdapter.getCount());
+                    adFetcher.getFetchingAdsCount(), mAdapter.getCount());
             return mAdapter.getItem(origPos);
         }
     }
@@ -393,11 +393,11 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     @Override
     public int getItemViewType(int position) {
         checkNeedFetchAd(position);
-        if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchedAdsCount())) {
+        if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchingAdsCount())) {
             return getViewTypeAdExpress();
         } else {
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
-                    adFetcher.getFetchedAdsCount(), mAdapter.getCount());
+                    adFetcher.getFetchingAdsCount(), mAdapter.getCount());
             return mAdapter.getItemViewType(origPos);
         }
     }
@@ -415,14 +415,25 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     }
 
     /**
-     * Clears all currently displaying ads to update them
+     * Clears all currently displaying ads and reinits the list
      */
-    public void requestUpdateAd() {
-        adFetcher.updateFetchedAds();
+    public void reinitialize() {
+        destroyAds();
+        prefetchAds(AdmobFetcherExpress.PREFETCHED_ADS_SIZE);
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Free all resources, weak-refs
+     */
+    public void release(){
+        adFetcher.release();
     }
 
     @Override
-    public void onAdChanged(int adIdx) {}
+    public void onAdChanged(int adIdx) {
+        notifyDataSetChanged();
+    }
 
     /**
      * Raised when the number of ads have changed. Adapters that implement this class

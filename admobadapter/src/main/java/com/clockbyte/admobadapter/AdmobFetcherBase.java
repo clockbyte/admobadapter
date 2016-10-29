@@ -97,6 +97,13 @@ public abstract class AdmobFetcherBase {
         mFetchFailCount = 0;
         mNoOfFetchedAds = 0;
         notifyObserversOfAdSizeChange(-1);
+    }
+
+    /**
+     * Frees all weak refs and collections
+     */
+    public void release(){
+        destroyAllAds();
         mContext.clear();
     }
 
@@ -104,7 +111,7 @@ public abstract class AdmobFetcherBase {
      * Notifies all registered {@link AdmobListener} on a change of ad count.
      */
     protected void notifyObserversOfAdSizeChange(final int adIdx) {
-        Context context = mContext.get();
+        final Context context = mContext.get();
         //context may be null if activity is destroyed
         if(context != null) {
             new Handler(context.getMainLooper()).post(new Runnable() {

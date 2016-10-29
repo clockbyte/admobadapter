@@ -331,14 +331,14 @@ public class AdmobExpressRecyclerAdapterWrapper
     }
 
     /**
-     * Creates N instances {@link NativeExpressAdView} from the next N taken instances {@link ExpressAdPreset}
+     * Creates N instances {@link NativeExpressAdViewEx} from the next N taken instances {@link ExpressAdPreset}
      * Will start async prefetch of ad blocks to use its further
      * @return last created NativeExpressAdView
      */
-    private NativeExpressAdView prefetchAds(int cntToPrefetch){
-        NativeExpressAdView last = null;
+    private NativeExpressAdViewEx prefetchAds(int cntToPrefetch){
+        NativeExpressAdViewEx last = null;
         for (int i = 0; i < cntToPrefetch; i++) {
-            final NativeExpressAdView item = AdViewHelper.getExpressAdView(mContext, adFetcher.takeNextAdPreset());
+            final NativeExpressAdViewEx item = AdViewHelper.getExpressAdViewEx(mContext, adFetcher.takeNextAdPreset());
             adFetcher.setupAd(item);
             //2 sec throttling to prevent a high-load of server
             new Handler(mContext.getMainLooper()).postDelayed(new Runnable() {
@@ -358,7 +358,7 @@ public class AdmobExpressRecyclerAdapterWrapper
             return;
         if(viewHolder.getItemViewType() != getViewTypeAdExpress()) {
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
-                    adFetcher.getFetchedAdsCount(), mAdapter.getItemCount());
+                    adFetcher.getFetchingAdsCount(), mAdapter.getItemCount());
             mAdapter.onBindViewHolder(viewHolder, origPos);
         }
     }
@@ -366,11 +366,11 @@ public class AdmobExpressRecyclerAdapterWrapper
     @Override
     public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == getViewTypeAdExpress()) {
-            NativeExpressAdView item = adFetcher.getAdForIndex(mCntAdCreated++);
+            NativeExpressAdViewEx item = adFetcher.getAdForIndex(mCntAdCreated++);
             if (item == null)
                 item = prefetchAds(1);
-            ViewGroup wrappedView = wrapAdView(item,parent,viewType);
-            return new ViewWrapper<ViewGroup>(wrappedView);
+            ViewGroup wrap = wrapAdView(item.get(), parent, viewType);
+            return new ViewWrapper<ViewGroup>(wrap);
         }
         else{
             return mAdapter.onCreateViewHolder(parent, viewType);
@@ -403,7 +403,7 @@ public class AdmobExpressRecyclerAdapterWrapper
         if (mAdapter != null) {
             /*No of currently fetched ads, as long as it isn't more than no of max ads that can
             fit dataset.*/
-            int noOfAds = AdapterCalculator.getAdsCountToPublish(adFetcher.getFetchedAdsCount(), mAdapter.getItemCount());
+            int noOfAds = AdapterCalculator.getAdsCountToPublish(adFetcher.getFetchingAdsCount(), mAdapter.getItemCount());
             return mAdapter.getItemCount() > 0 ? mAdapter.getItemCount() + noOfAds : 0;
         } else {
             return 0;
@@ -418,11 +418,11 @@ public class AdmobExpressRecyclerAdapterWrapper
     @Override
     public int getItemViewType(int position) {
         checkNeedFetchAd(position);
-        if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchedAdsCount())) {
+        if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchingAdsCount())) {
             return getViewTypeAdExpress();
         } else {
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
-                    adFetcher.getFetchedAdsCount(), mAdapter.getItemCount());
+                    adFetcher.getFetchingAdsCount(), mAdapter.getItemCount());
             return mAdapter.getItemViewType(origPos);
         }
     }
@@ -440,16 +440,25 @@ public class AdmobExpressRecyclerAdapterWrapper
     }
 
     /**
-     * Clears all currently displaying ads to update them
+     * Clears all currently displaying ads and reinits the list
      */
-    public void requestUpdateAd() {
-        adFetcher.updateFetchedAds();
+    public void reinitialize() {
+        destroyAds();
+        prefetchAds(AdmobFetcherExpress.PREFETCHED_ADS_SIZE);
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Free all resources, weak-refs
+     */
+    public void release(){
+        adFetcher.release();
     }
 
     @Override
     public void onAdChanged(int adIdx) {
-/*        int pos = getAdapterCalculator().translateAdToWrapperPosition(adIdx);
-        notifyItemChanged(pos);*/
+        int pos = getAdapterCalculator().translateAdToWrapperPosition(adIdx);
+        notifyItemChanged(pos);
     }
 
     /**
@@ -458,7 +467,7 @@ public class AdmobExpressRecyclerAdapterWrapper
      */
     @Override
     public void onAdChanged() {
-        /*notifyDataSetChanged();*/
+        notifyDataSetChanged();
     }
 
 }

@@ -52,7 +52,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
         mContext = new WeakReference<Context>(context);
     }
 
-    private List<NativeExpressAdView> mPrefetchedAds = new ArrayList<NativeExpressAdView>();
+    private List<NativeExpressAdViewEx> mPrefetchedAds = new ArrayList<NativeExpressAdViewEx>();
     private AdPresetCyclingList mAdPresetCyclingList = new AdPresetCyclingList();
 
     /*
@@ -94,7 +94,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
      * @return the native ad in the list
      * @see #getFetchedAdsCount()
      */
-    public synchronized NativeExpressAdView getAdForIndex(int adPos) {
+    public synchronized NativeExpressAdViewEx getAdForIndex(int adPos) {
         if(adPos >= 0 && mPrefetchedAds.size() > adPos)
             return mPrefetchedAds.get(adPos);
         return null;
@@ -103,7 +103,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     /**
      * Fetches a new native ad.
      */
-    protected synchronized void fetchAd(final NativeExpressAdView adView) {
+    protected synchronized void fetchAd(final NativeExpressAdViewEx adViewEx) {
         if(mFetchFailCount > MAX_FETCH_ATTEMPT)
             return;
 
@@ -114,7 +114,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
             new Handler(context.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    adView.loadAd(getAdRequest()); //Fetching the ads item
+                    adViewEx.get().loadAd(getAdRequest()); //Fetching the ads item
                 }
             });
         } else {
@@ -124,59 +124,57 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     }
 
     /**
-     * Determines if the native ad can be used.
-     *
-     * @param adNative the native ad object
-     * @return <code>true</code> if the ad object can be used, false otherwise
-     */
-    private boolean canUseThisAd(NativeExpressAdView adNative) {
-        if (adNative == null || adNative.isLoading()) return false;
-        return true;
-    }
-
-    /**
      * Subscribing to the native ads events
-     * @param adView
+     * @param adViewEx
      */
-    protected synchronized void setupAd(final NativeExpressAdView adView) {
+    protected synchronized void setupAd(final NativeExpressAdViewEx adViewEx) {
         if(mFetchFailCount > MAX_FETCH_ATTEMPT)
             return;
 
-        if(!mPrefetchedAds.contains(adView))
-            mPrefetchedAds.add(adView);
-        adView.setAdListener(new AdListener() {
+        if(!mPrefetchedAds.contains(adViewEx))
+            mPrefetchedAds.add(adViewEx);
+        adViewEx.get().setAdListener(new AdListener() {
             @Override
             public void onAdFailedToLoad(int errorCode) {
+                super.onAdFailedToLoad(errorCode);
                 // Handle the failure by logging, altering the UI, etc.
-                Log.i(TAG, "onAdFailedToLoad " + errorCode);
-                mFetchFailCount++;
-                //Since Fetch Ad is only called once without retries
-                //hide ad row or rollback its count if still not added to list
-                //best approach to work with custom adapters that cache their views
-                if(adView.getParent()==null){
-                    notifyObserversOfAdSizeChange(--mNoOfFetchedAds - 1);
-                }else {
-                    ((View) adView.getParent()).setVisibility(View.GONE);
-                }
+                onFailedToLoad(adViewEx, errorCode);
             }
-
             @Override
             public void onAdLoaded() {
                 super.onAdLoaded();
-                onAdFetched(adView);
-                notifyObserversOfAdSizeChange(mNoOfFetchedAds - 1);
+                onFetched(adViewEx);
             }
         });
-        ++mNoOfFetchedAds;
     }
 
     /**
      * A handler for received native ads
-     * @param adNative
+     * @param adViewEx
      */
-    private synchronized void onAdFetched(NativeExpressAdView adNative) {
+    private synchronized void onFetched(NativeExpressAdViewEx adViewEx) {
         Log.i(TAG, "onAdFetched");
+        adViewEx.setFailedToLoad(false);
         mFetchFailCount = 0;
+        mNoOfFetchedAds++;
+        notifyObserversOfAdSizeChange(mNoOfFetchedAds - 1);
+    }
+
+    /**
+     * A handler for failed native ads
+     * @param adViewEx
+     */
+    private synchronized void onFailedToLoad(NativeExpressAdViewEx adViewEx, int errorCode) {
+        Log.i(TAG, "onAdFailedToLoad " + errorCode);
+        mFetchFailCount++;
+        //Since Fetch Ad is only called once without retries
+        //hide ad row / rollback its count if still not added to list
+        adViewEx.setFailedToLoad(true);
+        mPrefetchedAds.remove(adViewEx);
+        mNoOfFetchedAds = Math.max(mNoOfFetchedAds - 1, -1);
+        notifyObserversOfAdSizeChange(mNoOfFetchedAds - 1);
+        if(adViewEx.get().getParent()!=null)
+            ((View) adViewEx.get().getParent()).setVisibility(View.GONE);
     }
 
     @Override
@@ -187,24 +185,15 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     @Override
     public synchronized void destroyAllAds() {
         super.destroyAllAds();
-        for(NativeExpressAdView ad:mPrefetchedAds){
-            ad.destroy();
+        for(NativeExpressAdViewEx ad:mPrefetchedAds){
+            ad.get().destroy();
         }
         mPrefetchedAds.clear();
     }
 
-    public synchronized void updateFetchedAds() {
-        final Context context = mContext.get();
-        //use throttling to prevent high-load of server
-        for(int i = 0;i<mPrefetchedAds.size();i++){
-            final NativeExpressAdView finalItem = mPrefetchedAds.get(i);
-            new Handler(context.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    fetchAd(finalItem);
-                }
-            }, 20000*i);
-        }
-        Log.i(TAG, "onAdsUpdate");
+    @Override
+    public void release() {
+        super.release();
+        mAdPresetCyclingList.clear();
     }
 }

@@ -43,12 +43,12 @@ public class AdmobAdapterCalculatorTest {
 
     @Test
     public void testGetAdsCountToPublish_fetchedCntIs3_Result3() throws Exception {
-        assertThat(testGetAdsCountToPublishHelper(10, 0, 10, 3, 100), is(10));
+        assertThat(testGetAdsCountToPublishHelper(10, 0, 10, 3, 100), is(3));
     }
 
     @Test
     public void testGetAdsCountToPublish_fetchedCntIs0_Result0() throws Exception {
-        assertThat(testGetAdsCountToPublishHelper(10, 0, 10, 0, 100), is(10));
+        assertThat(testGetAdsCountToPublishHelper(10, 0, 10, 0, 100), is(0));
     }
 
     @Test

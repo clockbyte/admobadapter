@@ -271,7 +271,6 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         mContext = context;
 
         adFetcher = new AdmobFetcher();
-        adFetcher.createUnitIdsQueue(admobReleaseUnitIds);
         if(testDevicesId!=null)
             for (String testId: testDevicesId)
                 adFetcher.addTestDeviceId(testId);

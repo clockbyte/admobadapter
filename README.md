@@ -28,7 +28,7 @@ dependencies {
 
 [**Snoop VK**](https://play.google.com/store/apps/details?id=com.clockbyte.vkgroupwatcher) | [**Mourjan.com**](https://play.google.com/store/apps/details?id=com.mourjan.classifieds)
 --- | ---
-[<img src="https://lh3.googleusercontent.com/GTSMuzAOtRSBjYHbMsjE0S0jVY5mHUlaD_IVKOmAnSBKrnueZtkgMoHx4xLgdhefnANd=w300-rw" width="70">](https://play.google.com/store/apps/details?id=com.clockbyte.vkgroupwatcher) | [<img src="https://lh6.ggpht.com/nWNwYHXynUmI-8zVF9RozbMtiyaW__2cvXOdx9Y_ggpiP8P3pe-XGdPpOUyCHIhFFGM=w300-rw" width="70">](https://play.google.com/store/apps/details?id=com.mourjan.classifieds)
+[<img src="https://lh3.googleusercontent.com/v5AhDqwCs1L9x4KA4mIsSbxXZ0jdUwFPf1ne2u6Ya7GRy2e1Ia97StLWTPVBV1b4rkw=w300-rw" width="70">](https://play.google.com/store/apps/details?id=com.clockbyte.vkgroupwatcher) | [<img src="https://lh6.ggpht.com/nWNwYHXynUmI-8zVF9RozbMtiyaW__2cvXOdx9Y_ggpiP8P3pe-XGdPpOUyCHIhFFGM=w300-rw" width="70">](https://play.google.com/store/apps/details?id=com.mourjan.classifieds)
 
 **If you use/going to use the Admobadapter for your application and also you want your application's logo to be here please let us know with a new issue.**
 

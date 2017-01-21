@@ -34,7 +34,7 @@ public class NativeExpressAdViewHolder {
     }
 
     /**
-     * This field is for internal use
+     * This field is for internal use, could be null, especially for RecyclerView
      * @return some {@link ViewGroup} which wraps current ad view
      * @see NativeExpressAdViewHolder#getAdView()
      */

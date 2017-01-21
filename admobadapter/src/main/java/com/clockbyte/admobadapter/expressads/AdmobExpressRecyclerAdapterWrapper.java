@@ -121,6 +121,15 @@ public class AdmobExpressRecyclerAdapterWrapper
         return adFetcher.getFetchedAdsCount();
     }
 
+    /**
+     * Gets the number of ads have been fetched so far + currently fetching ads
+     *
+     * @return the number of already fetched ads + currently fetching ads
+     */
+    public int getFetchingAdsCount(){
+        return adFetcher.getFetchingAdsCount();
+    }
+
     private int getViewTypeAdExpress(){
         return getViewTypeBiggestSource() + VIEW_TYPE_AD_EXPRESS + 1;
     }

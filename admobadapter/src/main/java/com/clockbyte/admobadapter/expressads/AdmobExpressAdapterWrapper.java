@@ -99,6 +99,16 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
         return adFetcher.getFetchedAdsCount();
     }
 
+
+    /**
+     * Gets the number of ads have been fetched so far + currently fetching ads
+     *
+     * @return the number of already fetched ads + currently fetching ads
+     */
+    public int getFetchingAdsCount(){
+        return adFetcher.getFetchingAdsCount();
+    }
+
     private int getViewTypeAdExpress(){
         return mAdapter.getViewTypeCount() + VIEW_TYPE_AD_EXPRESS;
     }

@@ -102,12 +102,11 @@ public class AdmobAdapterCalculator {
         int adSpacesCount = (getAdIndex(position) + 1);
         int originalPosition = position - Math.min(adSpacesCount, noOfAds);
         //Log.d("POSITION", position + " is originally " + originalPosition);
-
         return originalPosition;
     }
 
     /**
-     * Translates an ad position to an actual position withing the adapter wrapper.
+     * Translates an ad position to an actual position within the adapter wrapper.
      *
      * @param adPos the ad's position in the fetched list
      * @return the position of the adapter wrapper item
@@ -118,7 +117,7 @@ public class AdmobAdapterCalculator {
     }
 
     /**
-     * Translates the source position to an actual position withing the adapter wrapper.
+     * Translates the source position to an actual position within the adapter wrapper.
      * @param fetchedAdsCount the count of completely fetched ads that are ready to be published
      * @param sourcePos the source index
      *

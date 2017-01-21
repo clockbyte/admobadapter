@@ -277,7 +277,7 @@ public class AdmobAdapterCalculatorTest {
     }
 
     @Test
-    public void testCanShowAdAtPosition_fetchedCntIs0_Fail() throws Exception {
+    public void testCanShowAdAtPosition0_fetchedCntIs0_Fail() throws Exception {
         setupAdmobAdapterCalculatorHelper(10, 0, 10);
         assertThat(admobAdapterCalculator.canShowAdAtPosition(0, 0), is(false));
     }

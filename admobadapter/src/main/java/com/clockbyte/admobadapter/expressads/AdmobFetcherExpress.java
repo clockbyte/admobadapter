@@ -19,8 +19,11 @@ package com.clockbyte.admobadapter.expressads;
 
 import android.content.Context;
 import android.os.Handler;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewParent;
+import android.widget.ListView;
 
 import com.clockbyte.admobadapter.AdPresetCyclingList;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
@@ -166,14 +169,19 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     private synchronized void onFailedToLoad(NativeExpressAdViewHolder adViewEx, int errorCode) {
         Log.i(TAG, "onAdFailedToLoad " + errorCode);
         mFetchFailCount++;
+        mNoOfFetchedAds = Math.max(mNoOfFetchedAds - 1, -1);
         //Since Fetch Ad is only called once without retries
         //hide ad row / rollback its count if still not added to list
         adViewEx.setFailedToLoad(true);
         mPrefetchedAds.remove(adViewEx);
-        mNoOfFetchedAds = Math.max(mNoOfFetchedAds - 1, -1);
         notifyObserversOfAdSizeChange(mNoOfFetchedAds - 1);
-        if(adViewEx.getAdView().getParent()!=null)
+        ViewParent parent = adViewEx.getAdView().getParent();
+        //parent is not empty and not an instance of ListView/RecyclerView
+        if(parent!=null
+                && !(parent instanceof RecyclerView
+                        || parent instanceof ListView))
             ((View) adViewEx.getAdView().getParent()).setVisibility(View.GONE);
+        else adViewEx.getAdView().setVisibility(View.GONE);
     }
 
     @Override

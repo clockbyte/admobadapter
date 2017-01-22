@@ -4,7 +4,7 @@ Admob Adapter
 
 ======================
 
-We've finally released [v1.3.1](https://github.com/clockbyte/admobadapter/releases/tag/v1.3.1)! A couple of things was fixed (see release info)
+We've finally released [v1.3.1](https://github.com/clockbyte/admobadapter/releases/tag/v1.3.1)! A couple of things was fixed (see [release info](https://github.com/clockbyte/admobadapter/wiki/Release-history))
 
 The reference to the [COOK RECIPES](https://github.com/clockbyte/admobadapter/wiki/Cookbook) for people who are in hurry!
 

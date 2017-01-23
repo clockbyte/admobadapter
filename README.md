@@ -4,7 +4,7 @@ Admob Adapter
 
 ======================
 
-We've finally released [v1.3.1](https://github.com/clockbyte/admobadapter/releases/tag/v1.3.1)! A couple of things was fixed (see [Release history](https://github.com/clockbyte/admobadapter/wiki/Release-history))
+We've finally released [v1.3.2](https://github.com/clockbyte/admobadapter/releases/tag/v1.3.2)! A couple of things was fixed (see [Release history](https://github.com/clockbyte/admobadapter/wiki/Release-history))
 
 The reference to the [COOK RECIPES](https://github.com/clockbyte/admobadapter/wiki/Cookbook) for people who are in hurry!
 
@@ -19,7 +19,7 @@ Now you are able to link Admobadapter via Gradle like this
 ```shell
 dependencies {
 //link other libs
-    compile 'com.github.clockbyte:admobadapter:1.3.1'
+    compile 'com.github.clockbyte:admobadapter:1.3.2'
 }
 ```
 [Here](https://github.com/clockbyte/admobadapter/wiki/Installation) you could find more ways.

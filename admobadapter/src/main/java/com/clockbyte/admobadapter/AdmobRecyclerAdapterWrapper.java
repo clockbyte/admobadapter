@@ -21,6 +21,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
+import com.clockbyte.admobadapter.expressads.NativeHolder;
 import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.ads.formats.NativeAdView;
 import com.google.android.gms.ads.formats.NativeAppInstallAd;
@@ -352,7 +353,7 @@ public class AdmobRecyclerAdapterWrapper
     @Override
     public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == getViewTypeAdContent() || viewType == getViewTypeAdInstall()) {
-            return new ViewWrapper<NativeAdView>(onCreateItemView(parent, viewType));
+            return new NativeHolder(onCreateItemView(parent, viewType));
         }
         else{
             return mAdapter.onCreateViewHolder(parent, viewType);

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--got from https://github.com/googleads/googleads-mobile-android-examples-->
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ad_card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    card_view:cardCornerRadius="@dimen/cardview_default_radius"
+    card_view:cardElevation="@dimen/cardview_default_elevation" >
+
+</android.support.v7.widget.CardView>

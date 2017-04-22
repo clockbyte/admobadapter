@@ -20,6 +20,8 @@ package com.clockbyte.admobadapter.expressads;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -27,8 +29,11 @@ import android.widget.BaseAdapter;
 import com.clockbyte.admobadapter.AdViewHelper;
 import com.clockbyte.admobadapter.AdmobAdapterCalculator;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
+import com.clockbyte.admobadapter.R;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.NativeExpressAdView;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -300,22 +305,22 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     }
 
     /**
-     * Creates N instances {@link NativeExpressAdViewHolder} from the next N taken instances {@link ExpressAdPreset}
+     * Creates N instances {@link NativeExpressAdView} from the next N taken instances {@link ExpressAdPreset}
      * Will start async prefetch of ad blocks to use its further
      * @return last created NativeExpressAdView
      */
-    private NativeExpressAdViewHolder prefetchAds(int cntToPrefetch){
-        NativeExpressAdViewHolder last = null;
+    private NativeExpressAdView prefetchAds(int cntToPrefetch){
+        NativeExpressAdView last = null;
         for (int i = 0; i < cntToPrefetch; i++){
-            final NativeExpressAdViewHolder item = AdViewHelper.getExpressAdViewEx(mContext, adFetcher.takeNextAdPreset());
+            final NativeExpressAdView item = AdViewHelper.getExpressAdView(mContext, adFetcher.takeNextAdPreset());
             adFetcher.setupAd(item);
-            //2 sec throttling to prevent a high-load of server
+            //50 ms throttling to prevent a high-load of server
             new Handler(mContext.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     adFetcher.fetchAd(item);
                 }
-            }, 2000*i);
+            }, 50 * i);
             last = item;
         }
         return last;
@@ -325,19 +330,34 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     public View getView(int position, View convertView, ViewGroup parent) {
         if(getItemViewType(position) == getViewTypeAdExpress()) {
             int adPos = AdapterCalculator.getAdIndex(position);
-            NativeExpressAdViewHolder item = adFetcher.getAdForIndex(adPos);
-            if (item == null)
-                item = prefetchAds(1);
-
-            ViewGroup wrapper = item.getAdViewWrapper();
-            if(wrapper == null) {
-                wrapper = wrapAdView(item, parent, position);
-                // set adview itself as a parent wrapper to miss it for this certain item in future
-                if(wrapper == null)
-                    wrapper = item.getAdView();
-                item.setAdViewWrapper(wrapper);
+            NativeExpressAdView ad = adFetcher.getAdForIndex(adPos);
+            if (ad == null)
+                ad = prefetchAds(1);
+            if(convertView == null) {
+                ViewGroup wrapper = getAdViewWrapper(parent);
+                wrapper.addView(ad);
+                return wrapper;
             }
-            return wrapper;
+            else{
+                ViewGroup wrapper = (ViewGroup)convertView;
+                // The NativeExpressHolder recycled by the ListView may be a different
+                // instance than the one used previously for this position. Clear the
+                // NativeExpressHolder of any subviews in case it has a different
+                // AdView associated with it, and make sure the AdView for this position doesn't
+                // already have a parent of a different recycled NativeExpressHolder.
+                for (int i = 0; i < wrapper.getChildCount(); i++) {
+                    View v = wrapper.getChildAt(i);
+                    if (v instanceof NativeExpressAdView) {
+                        wrapper.removeViewAt(i);
+                        break;
+                    }
+                }
+                if (ad.getParent() != null)
+                    ((ViewGroup) ad.getParent()).removeView(ad);
+                // Add the Native Express ad to the native express ad view.
+                wrapper.addView(ad);
+                return convertView;
+            }
         }
         else{
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
@@ -348,13 +368,14 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
 
     /**
      * This method can be overriden to wrap the created ad view with a custom {@link ViewGroup}.<br/>
-     * For example if you need to wrap the ad with a CardView
-     * @param adViewHolder holder which contains an ad view to be wrapped. Also contains some states which could be useful
-     * @see NativeExpressAdViewHolder#getAdView()
-     * @return The wrapped {@link ViewGroup}, by default {@link NativeExpressAdView} is returned itself (without wrap)
+     * For example if you need to wrap the ad with your custom CardView
+     * @return The wrapper {@link ViewGroup} for ad, by default {@link NativeExpressAdView} ad would be wrapped with a CardView which is returned by this method
      */
-    protected ViewGroup wrapAdView(NativeExpressAdViewHolder adViewHolder, ViewGroup parent, int position) {
-        return adViewHolder.getAdView();
+    @NonNull
+    @NotNull
+    protected ViewGroup getAdViewWrapper(ViewGroup parent) {
+        return (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.native_express_ad_container,
+                parent, false);
     }
 
     /**

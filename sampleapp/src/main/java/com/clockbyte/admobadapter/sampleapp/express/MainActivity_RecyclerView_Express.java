@@ -3,6 +3,7 @@ package com.clockbyte.admobadapter.sampleapp.express;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,12 +11,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.clockbyte.admobadapter.expressads.AdmobExpressRecyclerAdapterWrapper;
-import com.clockbyte.admobadapter.expressads.NativeExpressAdViewHolder;
 import com.clockbyte.admobadapter.sampleapp.R;
 import com.clockbyte.admobadapter.sampleapp.RecyclerExampleAdapter;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.NativeExpressAdView;
 
 import java.util.ArrayList;
 
@@ -51,12 +51,9 @@ public class MainActivity_RecyclerView_Express extends Activity {
         String[] testDevicesIds = new String[]{getString(R.string.testDeviceID),AdRequest.DEVICE_ID_EMULATOR};
         //when you'll be ready for release please use another ctor with admobReleaseUnitId instead.
         adapterWrapper = new AdmobExpressRecyclerAdapterWrapper(this, testDevicesIds){
+            @NonNull
             @Override
-            protected ViewGroup wrapAdView(NativeExpressAdViewHolder adViewHolder, ViewGroup parent, int viewType) {
-
-                //get ad view
-                NativeExpressAdView adView = adViewHolder.getAdView();
-
+            protected ViewGroup getAdViewWrapper(ViewGroup parent) {
                 RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,
                         RecyclerView.LayoutParams.WRAP_CONTENT);
                 CardView cardView = new CardView(MainActivity_RecyclerView_Express.this);
@@ -68,8 +65,6 @@ public class MainActivity_RecyclerView_Express extends Activity {
                 textView.setTextColor(Color.RED);
 
                 cardView.addView(textView);
-                //wrapping
-                cardView.addView(adView);
                 //return wrapper view
                 return cardView;
             }

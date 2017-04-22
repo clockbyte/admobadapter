@@ -1,4 +1,4 @@
-package com.clockbyte.admobadapter;
+package com.clockbyte.admobadapter.sampleapp.express;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

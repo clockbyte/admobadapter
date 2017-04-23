@@ -4,7 +4,7 @@ Admob Adapter
 
 ======================
 
-> We're about to release [v1.4.0](https://github.com/clockbyte/admobadapter/tree/experimental). It could be tried in the Experimental branch. You're very welcome to test it! This is a quite major release which handles recycling in ListView/RecyclerView(see [Release history](https://github.com/clockbyte/admobadapter/wiki/Release-history))
+> We're about to release [v1.4.0](https://github.com/clockbyte/admobadapter/tree/experimental). It could be got in the Experimental branch. You're very welcome to test it! This is a quite major release which handles recycling in ListView/RecyclerView(see [Release history](https://github.com/clockbyte/admobadapter/wiki/Release-history))
 
 > We've finally released [v1.3.2](https://github.com/clockbyte/admobadapter/releases/tag/v1.3.2)! A couple of things was fixed (see [Release history](https://github.com/clockbyte/admobadapter/wiki/Release-history))
 

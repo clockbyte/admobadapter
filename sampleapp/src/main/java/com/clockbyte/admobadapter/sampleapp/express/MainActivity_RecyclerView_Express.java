@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
@@ -89,6 +90,17 @@ public class MainActivity_RecyclerView_Express extends Activity {
         //adapterWrapper.setViewTypeBiggestSource(100);
 
         rvMessages.setAdapter(adapterWrapper); // setting an AdmobExpressRecyclerAdapterWrapper to a RecyclerView
+        //use the following commented block to use a grid layout with spanning ad blocks
+       /* GridLayoutManager mLayoutManager = new GridLayoutManager(this, 2);
+        mLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if(adapterWrapper.getItemViewType(position) == adapterWrapper.getViewTypeAdExpress())
+                    return 2;
+                else return 1;
+            }
+        });
+        rvMessages.setLayoutManager(mLayoutManager);*/
 
         //preparing the collection of data
         final String sItem = "item #";

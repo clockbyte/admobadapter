@@ -131,7 +131,7 @@ public class AdmobExpressRecyclerAdapterWrapper
         return adFetcher.getFetchingAdsCount();
     }
 
-    private int getViewTypeAdExpress(){
+    public int getViewTypeAdExpress(){
         return getViewTypeBiggestSource() + VIEW_TYPE_AD_EXPRESS + 1;
     }
 

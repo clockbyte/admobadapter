@@ -3,19 +3,18 @@ package com.clockbyte.admobadapter.sampleapp.express;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.clockbyte.admobadapter.expressads.AdmobExpressAdapterWrapper;
-import com.clockbyte.admobadapter.expressads.NativeExpressAdViewHolder;
 import com.clockbyte.admobadapter.sampleapp.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.NativeExpressAdView;
 
 import java.util.ArrayList;
 
@@ -51,34 +50,29 @@ public class MainActivity_ListView_Express extends Activity {
         String[] testDevicesIds = new String[]{getString(R.string.testDeviceID),AdRequest.DEVICE_ID_EMULATOR};
         //when you'll be ready for release please use another ctor with admobReleaseUnitId instead.
         adapterWrapper = new AdmobExpressAdapterWrapper(this, testDevicesIds){
+            @NonNull
             @Override
-            protected ViewGroup wrapAdView(NativeExpressAdViewHolder adViewHolder, ViewGroup parent, int viewType) {
-
-                //get ad view
-                NativeExpressAdView adView = adViewHolder.getAdView();
-
-                AbsListView.LayoutParams lp = new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,
-                        AbsListView.LayoutParams.WRAP_CONTENT);
-                RelativeLayout container = new RelativeLayout(MainActivity_ListView_Express.this);
-                container.setLayoutParams(lp);
+            protected ViewGroup getAdViewWrapper(ViewGroup parent) {
+                RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,
+                        RecyclerView.LayoutParams.WRAP_CONTENT);
+                CardView cardView = new CardView(MainActivity_ListView_Express.this);
+                cardView.setLayoutParams(lp);
 
                 TextView textView = new TextView(MainActivity_ListView_Express.this);
                 textView.setLayoutParams(lp);
                 textView.setText("Ad is loading...");
                 textView.setTextColor(Color.RED);
 
-                container.addView(textView);
-                //wrapping
-                container.addView(adView);
+                cardView.addView(textView);
                 //return wrapper view
-                return container;
+                return cardView;
             }
         };
         //By default the ad size is set to FULL_WIDTHx150
         //To set a custom size you should use an appropriate ctor
         //adapterWrapper = new AdmobExpressAdapterWrapper(this, testDevicesIds, new AdSize(AdSize.FULL_WIDTH, 150));
 
-        adapterWrapper.setAdapter(adapter); //wrapping your adapter with a AdmobExpressAdapterWrapper.
+        adapterWrapper.setAdapter(adapter); //wrapping your adapter with a AmobExpressAdapterWrapper.
 
         //Sets the max count of ad blocks per dataset, by default it equals to 3 (according to the Admob's policies and rules)
         adapterWrapper.setLimitOfAds(10);

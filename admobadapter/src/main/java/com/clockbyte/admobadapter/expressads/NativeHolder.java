@@ -12,12 +12,23 @@
  * limitations under the License.
  */
 
-package com.clockbyte.admobadapter;
+package com.clockbyte.admobadapter.expressads;
+
+import android.support.v7.widget.RecyclerView;
+import android.view.ViewGroup;
 
 /**
- * Created by FILM on 07.08.2016.
+ * Created by FILM on 28.10.2016.
  */
-public enum EAdType {
-    ADVANCED_INSTALLAPP,
-    ADVANCED_CONTENT
+
+public class NativeHolder extends RecyclerView.ViewHolder {
+
+    public NativeHolder(ViewGroup adViewWrapper){
+        super(adViewWrapper);
+    }
+
+    public ViewGroup getAdViewWrapper() {
+        return (ViewGroup)itemView;
+    }
+
 }

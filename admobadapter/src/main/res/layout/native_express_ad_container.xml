@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright (c) 2017 Clockbyte LLC. All rights reserved.
   ~
@@ -12,8 +13,14 @@
   ~ limitations under the License.
   -->
 
-<resources>
-    <string name="app_name">admobadapter</string>
-    <string name="test_admob_unit_id">ca-app-pub-3940256099942544/3986624511</string>
-    <string name="test_admob_express_unit_id">ca-app-pub-3940256099942544/1072772517</string>
-</resources>
+<!--got from https://github.com/googleads/googleads-mobile-android-examples-->
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ad_card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    card_view:cardCornerRadius="@dimen/cardview_default_radius"
+    card_view:cardElevation="@dimen/cardview_default_elevation" >
+
+</android.support.v7.widget.CardView>

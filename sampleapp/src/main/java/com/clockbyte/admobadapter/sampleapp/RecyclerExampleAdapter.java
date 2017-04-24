@@ -3,9 +3,8 @@ package com.clockbyte.admobadapter.sampleapp;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
-import com.clockbyte.admobadapter.ViewWrapper;
+import com.clockbyte.admobadapter.sampleapp.express.ViewWrapper;
 
 import java.util.ArrayList;
 import java.util.List;

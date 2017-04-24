@@ -1,13 +1,10 @@
 /*
- *  Copyright 2015 Yahoo Inc. All rights reserved.
- * Copyright 2015 Clockbyte LLC. All rights reserved.
+ * Copyright (c) 2017 Clockbyte LLC. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,15 +16,20 @@ package com.clockbyte.admobadapter.expressads;
 
 import android.content.Context;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.clockbyte.admobadapter.AdViewHelper;
 import com.clockbyte.admobadapter.AdmobAdapterCalculator;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
-import com.clockbyte.admobadapter.ViewWrapper;
+import com.clockbyte.admobadapter.R;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.NativeExpressAdView;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -85,7 +87,6 @@ public class AdmobExpressRecyclerAdapterWrapper
     private AdmobFetcherExpress adFetcher;
     private Context mContext;
     private AdmobAdapterCalculator AdapterCalculator = new AdmobAdapterCalculator();
-    private int mCntAdCreated = 0;
     /*
     * Gets an object which incapsulates transformation of the source and ad blocks indices
     */
@@ -130,7 +131,7 @@ public class AdmobExpressRecyclerAdapterWrapper
         return adFetcher.getFetchingAdsCount();
     }
 
-    private int getViewTypeAdExpress(){
+    public int getViewTypeAdExpress(){
         return getViewTypeBiggestSource() + VIEW_TYPE_AD_EXPRESS + 1;
     }
 
@@ -339,22 +340,22 @@ public class AdmobExpressRecyclerAdapterWrapper
     }
 
     /**
-     * Creates N instances {@link NativeExpressAdViewHolder} from the next N taken instances {@link ExpressAdPreset}
+     * Creates N instances {@link NativeExpressAdView} from the next N taken instances {@link ExpressAdPreset}
      * Will start async prefetch of ad blocks to use its further
      * @return last created NativeExpressAdView
      */
-    private NativeExpressAdViewHolder prefetchAds(int cntToPrefetch){
-        NativeExpressAdViewHolder last = null;
+    private NativeExpressAdView prefetchAds(int cntToPrefetch){
+        NativeExpressAdView last = null;
         for (int i = 0; i < cntToPrefetch; i++) {
-            final NativeExpressAdViewHolder item = AdViewHelper.getExpressAdViewEx(mContext, adFetcher.takeNextAdPreset());
+            final NativeExpressAdView item = AdViewHelper.getExpressAdView(mContext, adFetcher.takeNextAdPreset());
             adFetcher.setupAd(item);
-            //2 sec throttling to prevent a high-load of server
+            //50 ms throttling to prevent a high-load of server
             new Handler(mContext.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     adFetcher.fetchAd(item);
                 }
-            }, 2000 * i);
+            }, 50 * i);
             last = item;
         }
         return last;
@@ -364,7 +365,31 @@ public class AdmobExpressRecyclerAdapterWrapper
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         if (viewHolder == null)
             return;
-        if(viewHolder.getItemViewType() != getViewTypeAdExpress()) {
+        if(viewHolder.getItemViewType() == getViewTypeAdExpress()) {
+            NativeHolder nativeExpressHolder =
+                    (NativeHolder) viewHolder;
+            ViewGroup wrapper = nativeExpressHolder.getAdViewWrapper();
+            int adPos = AdapterCalculator.getAdIndex(position);
+            NativeExpressAdView adView = adFetcher.getAdForIndex(adPos);
+            if (adView == null)
+                adView = prefetchAds(1);
+            // The NativeExpressHolder recycled by the RecyclerView may be a different
+            // instance than the one used previously for this position. Clear the
+            // NativeExpressHolder of any subviews in case it has a different
+            // AdView associated with it, and make sure the AdView for this position doesn't
+            // already have a parent of a different recycled NativeExpressHolder.
+            for (int i = 0; i < wrapper.getChildCount(); i++) {
+                View v = wrapper.getChildAt(i);
+                if (v instanceof NativeExpressAdView) {
+                    wrapper.removeViewAt(i);
+                    break;
+                }
+            }
+            if (adView.getParent() != null)
+                ((ViewGroup) adView.getParent()).removeView(adView);
+            // Add the Native Express ad to the native express ad view.
+            wrapper.addView(adView);
+        } else {
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
                     adFetcher.getFetchingAdsCount(), mAdapter.getItemCount());
             mAdapter.onBindViewHolder(viewHolder, origPos);
@@ -374,16 +399,8 @@ public class AdmobExpressRecyclerAdapterWrapper
     @Override
     public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == getViewTypeAdExpress()) {
-            NativeExpressAdViewHolder item = adFetcher.getAdForIndex(mCntAdCreated++);
-            if (item == null)
-                item = prefetchAds(1);
-
-            //don't need to save some extra state for parent wrapper here,
-            // because RecyclerView calls this once per ad block
-            ViewGroup wrapper = wrapAdView(item, parent, viewType);
-            if(wrapper == null)
-                wrapper = item.getAdView();
-            return new ViewWrapper<ViewGroup>(wrapper);
+            ViewGroup wrapper = getAdViewWrapper(parent);
+            return new NativeHolder(wrapper);
         }
         else{
             return mAdapter.onCreateViewHolder(parent, viewType);
@@ -392,13 +409,14 @@ public class AdmobExpressRecyclerAdapterWrapper
 
     /**
      * This method can be overriden to wrap the created ad view with a custom {@link ViewGroup}.<br/>
-     * For example if you need to wrap the ad with a CardView
-     * @param adViewHolder holder which contains an ad view to be wrapped. Also contains some states which could be useful
-     * @see NativeExpressAdViewHolder#getAdView()
-     * @return The wrapped {@link ViewGroup}, by default {@link NativeExpressAdView} is returned itself (without wrap)
+     * For example if you need to wrap the ad with your custom CardView
+     * @return The wrapper {@link ViewGroup} for ad, by default {@link NativeExpressAdView} ad would be wrapped with a CardView which is returned by this method
      */
-    protected ViewGroup wrapAdView(NativeExpressAdViewHolder adViewHolder, ViewGroup parent, int viewType) {
-        return adViewHolder.getAdView();
+    @NonNull
+    @NotNull
+    protected ViewGroup getAdViewWrapper(ViewGroup parent) {
+        return (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.native_express_ad_container,
+                parent, false);
     }
 
     /**
@@ -451,7 +469,6 @@ public class AdmobExpressRecyclerAdapterWrapper
      */
     public void reinitialize() {
         adFetcher.destroyAllAds();
-        mCntAdCreated = 0;
         prefetchAds(AdmobFetcherExpress.PREFETCHED_ADS_SIZE);
         notifyDataSetChanged();
     }

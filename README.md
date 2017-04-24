@@ -1,6 +1,6 @@
 Admob Adapter                               
 
-[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)  [![Build Status](https://travis-ci.org/clockbyte/admobadapter.svg?branch=master)](https://travis-ci.org/clockbyte/admobadapter)  [![Gitter](https://badges.gitter.im/clockbyte/admobadapter.svg)](https://gitter.im/clockbyte/admobadapter?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.clockbyte/admobadapter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.clockbyte/admobadapter)
+[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)  [![Build Status](https://travis-ci.org/clockbyte/admobadapter.svg?branch=master)](https://travis-ci.org/clockbyte/admobadapter)  [![Gitter](https://badges.gitter.im/clockbyte/admobadapter.svg)](https://gitter.im/clockbyte/admobadapter?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ======================
 

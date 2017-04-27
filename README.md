@@ -19,7 +19,7 @@ Now you are able to link Admobadapter via Gradle like this
 ```shell
 dependencies {
 //link other libs
-    compile 'com.github.clockbyte:admobadapter:1.3.2'
+    compile 'com.github.clockbyte:admobadapter:1.4.0'
 }
 ```
 [Here](https://github.com/clockbyte/admobadapter/wiki/Installation) you could find more ways.

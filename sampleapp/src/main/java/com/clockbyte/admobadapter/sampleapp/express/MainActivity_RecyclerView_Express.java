@@ -8,6 +8,8 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -17,6 +19,9 @@ import com.clockbyte.admobadapter.sampleapp.RecyclerExampleAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.NativeExpressAdView;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -55,19 +60,30 @@ public class MainActivity_RecyclerView_Express extends Activity {
             @NonNull
             @Override
             protected ViewGroup getAdViewWrapper(ViewGroup parent) {
-                RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,
-                        RecyclerView.LayoutParams.WRAP_CONTENT);
-                CardView cardView = new CardView(MainActivity_RecyclerView_Express.this);
-                cardView.setLayoutParams(lp);
+                return (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.native_express_ad_container,
+                        parent, false);
+            }
 
-                TextView textView = new TextView(MainActivity_RecyclerView_Express.this);
-                textView.setLayoutParams(lp);
-                textView.setText("Ad is loading...");
-                textView.setTextColor(Color.RED);
+            @Override
+            protected void recycleAdViewWrapper(@NonNull ViewGroup wrapper, @NotNull NativeExpressAdView ad) {
+                //get the view which directly will contain ad
+                ViewGroup container = (ViewGroup) wrapper.findViewById(R.id.ad_container);
+                /**iterating through all children of the container view and remove the first occured {@link NativeExpressAdView}. It could be different with {@param ad}!!!*/
+                for (int i = 0; i < container.getChildCount(); i++) {
+                    View v = container.getChildAt(i);
+                    if (v instanceof NativeExpressAdView) {
+                        container.removeViewAt(i);
+                        break;
+                    }
+                }
+            }
 
-                cardView.addView(textView);
-                //return wrapper view
-                return cardView;
+            @Override
+            protected void addAdViewToWrapper(@NonNull ViewGroup wrapper, @NotNull NativeExpressAdView ad) {
+                //get the view which directly will contain ad
+                ViewGroup container = (ViewGroup) wrapper.findViewById(R.id.ad_container);
+                /**add the {@param ad} directly to the end of container*/
+                container.addView(ad);
             }
         };
         //By default the ad size is set to FULL_WIDTHx150

@@ -337,22 +337,11 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
             }
             else{
                 ViewGroup wrapper = (ViewGroup)convertView;
-                // The NativeExpressHolder recycled by the ListView may be a different
-                // instance than the one used previously for this position. Clear the
-                // NativeExpressHolder of any subviews in case it has a different
-                // AdView associated with it, and make sure the AdView for this position doesn't
-                // already have a parent of a different recycled NativeExpressHolder.
-                for (int i = 0; i < wrapper.getChildCount(); i++) {
-                    View v = wrapper.getChildAt(i);
-                    if (v instanceof NativeExpressAdView) {
-                        wrapper.removeViewAt(i);
-                        break;
-                    }
-                }
+                recycleAdViewWrapper(wrapper, ad);
+                //make sure the AdView for this position doesn't already have a parent of a different recycled NativeExpressHolder.
                 if (ad.getParent() != null)
                     ((ViewGroup) ad.getParent()).removeView(ad);
-                // Add the Native Express ad to the native express ad view.
-                wrapper.addView(ad);
+                addAdViewToWrapper(wrapper, ad);
                 return convertView;
             }
         }
@@ -364,11 +353,37 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     }
 
     /**
+     * Add the Native Express {@param ad} to {@param wrapper}.
+     * See the super's implementation for instance.
+     */
+    protected void addAdViewToWrapper(@NonNull ViewGroup wrapper, @NotNull NativeExpressAdView ad) {
+        wrapper.addView(ad);
+    }
+
+    /**
+     * This method can be overriden to recycle (remove) {@param ad} from {@param wrapper} view before adding to wrap.
+     * By default it will look for {@param ad} in the direct children of {@param wrapper} and remove the first occurence.
+     * See the super's implementation for instance.
+     * The NativeExpressHolder recycled by the RecyclerView may be a different
+     * instance than the one used previously for this position. Clear the
+     * wrapper of any subviews in case it has a different
+     * AdView associated with it
+     */
+    protected void recycleAdViewWrapper(@NonNull ViewGroup wrapper, @NotNull NativeExpressAdView ad) {
+        for (int i = 0; i < wrapper.getChildCount(); i++) {
+            View v = wrapper.getChildAt(i);
+            if (v instanceof NativeExpressAdView) {
+                wrapper.removeViewAt(i);
+                break;
+            }
+        }
+    }
+
+    /**
      * This method can be overriden to wrap the created ad view with a custom {@link ViewGroup}.<br/>
      * For example if you need to wrap the ad with your custom CardView
      * @return The wrapper {@link ViewGroup} for ad, by default {@link NativeExpressAdView} ad would be wrapped with a CardView which is returned by this method
      */
-    @NonNull
     @NotNull
     protected ViewGroup getAdViewWrapper(ViewGroup parent) {
         return (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.native_express_ad_container,

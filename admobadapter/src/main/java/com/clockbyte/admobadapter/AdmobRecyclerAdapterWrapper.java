@@ -440,16 +440,17 @@ public class AdmobRecyclerAdapterWrapper
     }
 
     @Override
-    public void onAdChanged(int adIdx) {
+    public void onAdLoaded(int adIdx) {
         notifyDataSetChanged();
     }
 
-    /**
-     * Raised when the number of ads have changed. Adapters that implement this class
-     * should notify their data views that the dataset has changed.
-     */
     @Override
-    public void onAdChanged() {
+    public void onAdsCountChanged() {
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void onAdFailed(int adIdx, int errorCode, Object adPayload) {
         notifyDataSetChanged();
     }
 

@@ -21,7 +21,9 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 
 import com.clockbyte.admobadapter.AdViewHelper;
 import com.clockbyte.admobadapter.AdmobAdapterCalculator;
@@ -473,16 +475,25 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     }
 
     @Override
-    public void onAdChanged(int adIdx) {
+    public void onAdLoaded(int adIdx) {
         notifyDataSetChanged();
     }
 
-    /**
-     * Raised when the number of ads have changed. Adapters that implement this class
-     * should notify their data views that the dataset has changed.
-     */
     @Override
-    public void onAdChanged() {
+    public void onAdsCountChanged() {
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void onAdFailed(int adIdx, int errorCode, Object adPayload) {
+        NativeExpressAdView adView = (NativeExpressAdView)adPayload;
+        if (adView != null) {
+            ViewParent parent = adView.getParent();
+            //parent is not empty and not an instance of ListView/RecyclerView
+            if (parent != null && !(parent instanceof ListView))
+                ((View) adView.getParent()).setVisibility(View.GONE);
+            else adView.setVisibility(View.GONE);
+        }
         notifyDataSetChanged();
     }
 

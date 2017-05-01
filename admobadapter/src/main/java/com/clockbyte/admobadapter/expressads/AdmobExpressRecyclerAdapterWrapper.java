@@ -21,6 +21,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.widget.ListView;
 
 import com.clockbyte.admobadapter.AdViewHelper;
 import com.clockbyte.admobadapter.AdmobAdapterCalculator;
@@ -497,20 +499,30 @@ public class AdmobExpressRecyclerAdapterWrapper
     }
 
     @Override
-    public void onAdChanged(int adIdx) {
+    public void onAdLoaded(int adIdx) {
         //raise ad's neighbour item changed.
         // cheap, quick and dirty solution to avoid ad's redraw and flickering.
         int pos = getAdapterCalculator().translateAdToWrapperPosition(adIdx);
         notifyItemChanged(pos==0? 1: Math.max(0, pos-1));
     }
 
-    /**
-     * Raised when the number of ads have changed. Adapters that implement this class
-     * should notify their data views that the dataset has changed.
-     */
     @Override
-    public void onAdChanged() {
+    public void onAdsCountChanged() {
         notifyDataSetChanged();
+    }
+
+    @Override
+    public void onAdFailed(int adIdx, int errorCode, Object adPayload) {
+        NativeExpressAdView adView = (NativeExpressAdView)adPayload;
+        if (adView != null) {
+            ViewParent parent = adView.getParent();
+            //parent is not empty and not an instance of ListView/RecyclerView
+            if (parent != null && !(parent instanceof RecyclerView))
+                ((View) adView.getParent()).setVisibility(View.GONE);
+            else adView.setVisibility(View.GONE);
+        }
+        int pos = getAdapterCalculator().translateAdToWrapperPosition(adIdx);
+        notifyItemRemoved(pos);
     }
 
 }

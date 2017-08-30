@@ -68,7 +68,7 @@ public class MainActivity_RecyclerView_Express extends Activity {
             protected void recycleAdViewWrapper(@NonNull ViewGroup wrapper, @NotNull NativeExpressAdView ad) {
                 //get the view which directly will contain ad
                 ViewGroup container = (ViewGroup) wrapper.findViewById(R.id.ad_container);
-                /**iterating through all children of the container view and remove the first occured {@link NativeExpressAdView}. It could be different with {@param ad}!!!*/
+                /*iterating through all children of the container view and remove the first occured {@link NativeExpressAdView}. It could be different with {@param ad}!!!*/
                 for (int i = 0; i < container.getChildCount(); i++) {
                     View v = container.getChildAt(i);
                     if (v instanceof NativeExpressAdView) {
@@ -82,7 +82,7 @@ public class MainActivity_RecyclerView_Express extends Activity {
             protected void addAdViewToWrapper(@NonNull ViewGroup wrapper, @NotNull NativeExpressAdView ad) {
                 //get the view which directly will contain ad
                 ViewGroup container = (ViewGroup) wrapper.findViewById(R.id.ad_container);
-                /**add the {@param ad} directly to the end of container*/
+                /*add the {@param ad} directly to the end of container*/
                 container.addView(ad);
             }
         };

@@ -311,7 +311,7 @@ public class AdmobExpressRecyclerAdapterWrapper
     public AdmobExpressRecyclerAdapterWrapper(Context context, String[] testDevicesId, AdSize adSize) {
         Collection<ExpressAdPreset> releaseUnitIds = Collections.singletonList(
                 new ExpressAdPreset(null, adSize));
-        init(context, null, testDevicesId);
+        init(context, releaseUnitIds, testDevicesId);
     }
     /**
      * @param admobReleaseUnitId sets a release unit ID for admob banners.

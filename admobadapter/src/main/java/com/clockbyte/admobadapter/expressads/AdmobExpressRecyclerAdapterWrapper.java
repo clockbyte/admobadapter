@@ -62,7 +62,19 @@ public class AdmobExpressRecyclerAdapterWrapper
 
             @Override
             public void onItemRangeChanged(int positionStart, int itemCount) {
-                notifyItemRangeChanged(positionStart, itemCount);
+                this.onItemRangeChanged(positionStart, itemCount, null);
+            }
+
+            @Override
+            public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
+                int fetchedAdsCount = getFetchedAdsCount();
+                //getting the position in a final presentation
+                int wrapperIndexFirst = getAdapterCalculator().translateSourceIndexToWrapperPosition(positionStart, fetchedAdsCount);
+                int wrapperIndexLast = getAdapterCalculator().translateSourceIndexToWrapperPosition(positionStart + itemCount - 1, fetchedAdsCount);
+                if(itemCount == 1)
+                    notifyItemRangeChanged(wrapperIndexFirst, 1, payload);
+                else notifyItemRangeChanged(wrapperIndexFirst, wrapperIndexLast - wrapperIndexFirst + 1, payload);
+
             }
 
             @Override

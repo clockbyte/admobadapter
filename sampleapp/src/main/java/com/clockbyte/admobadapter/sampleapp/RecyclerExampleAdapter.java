@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 
 import com.clockbyte.admobadapter.sampleapp.express.ViewWrapper;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,5 +47,17 @@ public class RecyclerExampleAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     public void addAll(List<String> lst){
         items.addAll(lst);
+    }
+
+    public void setItem(int index, String item){
+        items.set(index, item);
+        notifyItemChanged(index);
+    }
+
+    public void setItems(int startPosition, int count, String item){
+        int last = startPosition+count;
+        for (int i = startPosition; i < last; i++)
+            items.set(i, item);
+        notifyItemRangeChanged(startPosition, count);
     }
 }

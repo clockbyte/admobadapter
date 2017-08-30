@@ -61,6 +61,11 @@ public class AdmobRecyclerAdapterWrapper
             }
 
             @Override
+            public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
+                notifyItemRangeChanged(positionStart, itemCount, payload);
+            }
+
+            @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 notifyItemRangeInserted(positionStart, itemCount);
             }

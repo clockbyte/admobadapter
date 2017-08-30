@@ -22,9 +22,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.widget.ListView;
 
 import com.clockbyte.admobadapter.AdViewHelper;
+import com.clockbyte.admobadapter.AdapterWrapperObserver;
 import com.clockbyte.admobadapter.AdmobAdapterCalculator;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
 import com.clockbyte.admobadapter.R;
@@ -54,47 +54,7 @@ public class AdmobExpressRecyclerAdapterWrapper
 
     public void setAdapter(RecyclerView.Adapter<RecyclerView.ViewHolder> adapter) {
         mAdapter = adapter;
-        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                notifyDataSetChanged();
-            }
-
-            @Override
-            public void onItemRangeChanged(int positionStart, int itemCount) {
-                this.onItemRangeChanged(positionStart, itemCount, null);
-            }
-
-            @Override
-            public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
-                int fetchedAdsCount = getFetchedAdsCount();
-                //getting the position in a final presentation
-                int wrapperIndexFirst = getAdapterCalculator().translateSourceIndexToWrapperPosition(positionStart, fetchedAdsCount);
-                int wrapperIndexLast = getAdapterCalculator().translateSourceIndexToWrapperPosition(positionStart + itemCount - 1, fetchedAdsCount);
-                if(itemCount == 1)
-                    notifyItemRangeChanged(wrapperIndexFirst, 1, payload);
-                else notifyItemRangeChanged(wrapperIndexFirst, wrapperIndexLast - wrapperIndexFirst + 1, payload);
-
-            }
-
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount) {
-                notifyItemRangeInserted(positionStart, itemCount);
-            }
-
-            @Override
-            public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
-                for(int i = 0; i<itemCount; itemCount++)
-                    notifyItemMoved(fromPosition+i, toPosition+i);
-            }
-
-            @Override
-            public void onItemRangeRemoved(int positionStart, int itemCount) {
-                notifyItemRangeRemoved(positionStart, itemCount);
-            }
-
-        });
-        
+        mAdapter.registerAdapterDataObserver(new AdapterWrapperObserver(this, getAdapterCalculator(), adFetcher));
         notifyDataSetChanged();
     }
 

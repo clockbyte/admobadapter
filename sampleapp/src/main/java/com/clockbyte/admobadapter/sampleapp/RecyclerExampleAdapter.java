@@ -6,8 +6,6 @@ import android.view.ViewGroup;
 
 import com.clockbyte.admobadapter.sampleapp.express.ViewWrapper;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 

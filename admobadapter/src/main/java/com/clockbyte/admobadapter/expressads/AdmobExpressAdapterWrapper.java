@@ -32,8 +32,6 @@ import com.clockbyte.admobadapter.R;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.NativeExpressAdView;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Collection;
 import java.util.Collections;
 
@@ -358,7 +356,7 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
      * Add the Native Express {@param ad} to {@param wrapper}.
      * See the super's implementation for instance.
      */
-    protected void addAdViewToWrapper(@NonNull ViewGroup wrapper, @NotNull NativeExpressAdView ad) {
+    protected void addAdViewToWrapper(@NonNull ViewGroup wrapper, @NonNull NativeExpressAdView ad) {
         wrapper.addView(ad);
     }
 
@@ -371,7 +369,7 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
      * wrapper of any subviews in case it has a different
      * AdView associated with it
      */
-    protected void recycleAdViewWrapper(@NonNull ViewGroup wrapper, @NotNull NativeExpressAdView ad) {
+    protected void recycleAdViewWrapper(@NonNull ViewGroup wrapper, @NonNull NativeExpressAdView ad) {
         for (int i = 0; i < wrapper.getChildCount(); i++) {
             View v = wrapper.getChildAt(i);
             if (v instanceof NativeExpressAdView) {
@@ -386,7 +384,7 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
      * For example if you need to wrap the ad with your custom CardView
      * @return The wrapper {@link ViewGroup} for ad, by default {@link NativeExpressAdView} ad would be wrapped with a CardView which is returned by this method
      */
-    @NotNull
+    @NonNull
     protected ViewGroup getAdViewWrapper(ViewGroup parent) {
         return (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.native_express_ad_container,
                 parent, false);

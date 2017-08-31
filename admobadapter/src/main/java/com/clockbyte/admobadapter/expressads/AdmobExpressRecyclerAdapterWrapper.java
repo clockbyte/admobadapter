@@ -14,12 +14,10 @@
 
 package com.clockbyte.admobadapter.expressads;
 
-import android.accounts.Account;
 import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -28,11 +26,8 @@ import com.clockbyte.admobadapter.AdViewHelper;
 import com.clockbyte.admobadapter.AdapterWrapperObserver;
 import com.clockbyte.admobadapter.AdmobAdapterCalculator;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
-import com.clockbyte.admobadapter.R;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.NativeExpressAdView;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -53,25 +48,19 @@ public class AdmobExpressRecyclerAdapterWrapper
         return mAdapter;
     }
 
-    public void setAdapter(RecyclerView.Adapter<RecyclerView.ViewHolder> adapter) {
-        mAdapter = adapter;
-        mAdapter.registerAdapterDataObserver(new AdapterWrapperObserver(this, getAdapterCalculator(), adFetcher));
-        notifyDataSetChanged();
-    }
-
     private AdmobFetcherExpress adFetcher;
     private Context mContext;
     private AdmobAdapterCalculator AdapterCalculator = new AdmobAdapterCalculator();
-    /*
+    /**
     * Gets an object which incapsulates transformation of the source and ad blocks indices
     */
     public AdmobAdapterCalculator getAdapterCalculator(){return AdapterCalculator;}
-    /*
-* Injects an object which incapsulates transformation of the source and ad blocks indices. You could override calculations
-* by inheritance of AdmobAdapterCalculator class
-*/
-    public void setAdapterCalculator(AdmobAdapterCalculator adapterCalculatordmob){AdapterCalculator = adapterCalculatordmob;}
 
+    private AdViewWrappingStrategyBase AdViewWrappingStrategy = new AdViewWrappingStrategy();
+    /**
+    * Gets an object which incapsulates a wrapping logic for AdViews
+    */
+    public AdViewWrappingStrategyBase getAdViewWrappingStrategy(){return AdViewWrappingStrategy;}
 
     private static final int VIEW_TYPE_AD_EXPRESS = 0;
 
@@ -172,7 +161,7 @@ public class AdmobExpressRecyclerAdapterWrapper
 
     private AdmobExpressRecyclerAdapterWrapper(){}
 
-    public static Builder builder(@NotNull Context context) {
+    public static Builder builder(@NonNull Context context) {
         return new AdmobExpressRecyclerAdapterWrapper().new Builder(context);
     }
 
@@ -181,6 +170,7 @@ public class AdmobExpressRecyclerAdapterWrapper
             mContext = context;
 
             viewTypeBiggestSource = DEFAULT_VIEWTYPE_SOURCE_MAX;
+
             AdapterCalculator.setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
             AdapterCalculator.setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
 
@@ -189,12 +179,47 @@ public class AdmobExpressRecyclerAdapterWrapper
         }
 
         /**
+        * Sets the first ad block index (zero-based) in the adapter, by default it equals to 0
+        */
+        public Builder setFirstAdIndex(int firstAdIndex) {
+            AdapterCalculator.setFirstAdIndex(firstAdIndex);
+            return this;
+        }
+
+        /**
+        * Sets the max count of ad blocks per dataset, by default it equals to 3 (according to the Admob's policies and rules)
+        */
+        public Builder setLimitOfAds(int mLimitOfAds) {
+            AdapterCalculator.setLimitOfAds(mLimitOfAds);
+            return this;
+        }
+
+        /**
+        * Sets the number of your data items between ad blocks, by default it equals to 10.
+        * You should set it according to the Admob's policies and rules which says not to
+        * display more than one ad block at the visible part of the screen
+        * so you should choose this parameter carefully and according to your item's height and screen resolution of a target devices
+        */
+        public Builder setNoOfDataBetweenAds(int mNoOfDataBetweenAds) {
+            AdapterCalculator.setNoOfDataBetweenAds(mNoOfDataBetweenAds);
+            return this;
+        }
+
+        /**
+         * Sets the biggest value among all the view types in the underlying source adapter, by default it equals to 0.
+         */
+        public Builder setViewTypeBiggestSource(int viewTypeBiggestSource) {
+            AdmobExpressRecyclerAdapterWrapper.this.viewTypeBiggestSource = viewTypeBiggestSource;
+            return this;
+        }
+
+        /**
          * Sets a devices ID to test ads interaction.
          * You could pass null but it's better to set ids for all your test devices
          * including emulators. for emulator just use the
          * @see {AdRequest.DEVICE_ID_EMULATOR}
          */
-        public Builder setTestDeviceIds(@NotNull String[] testDevicesId){
+        public Builder setTestDeviceIds(@NonNull String[] testDevicesId){
             adFetcher.getTestDeviceIds().clear();
             for (String testId: testDevicesId)
                 adFetcher.addTestDeviceId(testId);
@@ -211,7 +236,7 @@ public class AdmobExpressRecyclerAdapterWrapper
          * Be careful: don't pass release unit id without setting the testDevicesId if you still haven't deployed a Release.
          * Otherwise your Admob account could be banned
          */
-        public Builder setAdPresets(@NotNull Collection<ExpressAdPreset> adPresets){
+        public Builder setAdPresets(@NonNull Collection<ExpressAdPreset> adPresets){
             adFetcher.setAdPresets(adPresets);
             return this;
         }
@@ -220,7 +245,7 @@ public class AdmobExpressRecyclerAdapterWrapper
          * Sets a single unit ID for each ad block.
          * If you are testing ads please don't set it to the release id
          */
-        public Builder setSingleAdUnitId(@NotNull String admobUnitId){
+        public Builder setSingleAdUnitId(@NonNull String admobUnitId){
             ExpressAdPreset adPreset = adFetcher.getAdPresetSingleOr(new ExpressAdPreset());
             adPreset.setAdUnitId(admobUnitId);
             adFetcher.setAdPresets(Collections.singletonList(adPreset));
@@ -230,10 +255,48 @@ public class AdmobExpressRecyclerAdapterWrapper
         /**
          * Sets a single ad size for each ad block. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
          */
-        public Builder setSingleAdSize(@NotNull AdSize adSize){
+        public Builder setSingleAdSize(@NonNull AdSize adSize){
             ExpressAdPreset adPreset = adFetcher.getAdPresetSingleOr(new ExpressAdPreset(null, null));
             adPreset.setAdSize(adSize);
             adFetcher.setAdPresets(Collections.singletonList(adPreset));
+            return this;
+        }
+
+        /**
+        * Injects an object which incapsulates transformation of the source and ad blocks indices. You could override calculations
+        * by inheritance from {@link AdmobAdapterCalculator} class
+        */
+        public Builder setAdapterCalculator(@NonNull AdmobAdapterCalculator adapterCalculator){
+            AdapterCalculator = adapterCalculator;
+            return setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS).setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
+        }
+
+        /**
+         * Injects an object which incapsulates a wrapping logic for AdViews. You could inject your own implementation
+         * by inheritance from {@link AdViewWrappingStrategyBase} class
+         */
+        public Builder setAdViewWrappingStrategy(@NonNull AdViewWrappingStrategyBase adViewWrappingStrategy){
+            AdViewWrappingStrategy = adViewWrappingStrategy;
+            return this;
+        }
+
+        /**
+         * Injects an object which incapsulates transformation of the source and ad blocks indices. You could override calculations
+         * by inheritance of {@link AdmobAdapterCalculator} class
+         */
+        public Builder setAdapterCalculator(@NonNull AdmobAdapterCalculator adapterCalculator, int noOfDataBetweenAds, int limitOfAds, int firstAdIndex){
+            AdapterCalculator = adapterCalculator;
+            return setNoOfDataBetweenAds(noOfDataBetweenAds).setLimitOfAds(limitOfAds).setFirstAdIndex(firstAdIndex);
+        }
+
+        /**
+         * Sets underlying adapter with your data collection.
+         * If you want to inject your implementation of {@link AdmobAdapterCalculator} please set it before this call
+         */
+        public Builder setAdapter(RecyclerView.Adapter<RecyclerView.ViewHolder> adapter) {
+            mAdapter = adapter;
+            mAdapter.registerAdapterDataObserver(new AdapterWrapperObserver(AdmobExpressRecyclerAdapterWrapper.this, AdapterCalculator, adFetcher));
+            notifyDataSetChanged();
             return this;
         }
 
@@ -272,18 +335,17 @@ public class AdmobExpressRecyclerAdapterWrapper
         if (viewHolder == null)
             return;
         if(viewHolder.getItemViewType() == getViewTypeAdExpress()) {
-            NativeHolder nativeExpressHolder =
-                    (NativeHolder) viewHolder;
+            NativeHolder nativeExpressHolder = (NativeHolder) viewHolder;
             ViewGroup wrapper = nativeExpressHolder.getAdViewWrapper();
             int adPos = AdapterCalculator.getAdIndex(position);
             NativeExpressAdView adView = adFetcher.getAdForIndex(adPos);
             if (adView == null)
                 adView = prefetchAds(1);
-            recycleAdViewWrapper(wrapper, adView);
+            AdViewWrappingStrategy.recycleAdViewWrapper(wrapper, adView);
             //make sure the AdView for this position doesn't already have a parent of a different recycled NativeExpressHolder.
             if (adView.getParent() != null)
                 ((ViewGroup) adView.getParent()).removeView(adView);
-            addAdViewToWrapper(wrapper, adView);
+            AdViewWrappingStrategy.addAdViewToWrapper(wrapper, adView);
 
         } else {
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
@@ -292,53 +354,15 @@ public class AdmobExpressRecyclerAdapterWrapper
         }
     }
 
-    /**
-     * Add the Native Express {@param ad} to {@param wrapper}.
-     * See the super's implementation for instance.
-     */
-    protected void addAdViewToWrapper(@NonNull ViewGroup wrapper, @NotNull NativeExpressAdView ad) {
-        wrapper.addView(ad);
-    }
-
-    /**
-     * This method can be overriden to recycle (remove) {@param ad} from {@param wrapper} view before adding to wrap.
-     * By default it will look for {@param ad} in the direct children of {@param wrapper} and remove the first occurence.
-     * See the super's implementation for instance.
-     * The NativeExpressHolder recycled by the RecyclerView may be a different
-     * instance than the one used previously for this position. Clear the
-     * wrapper of any subviews in case it has a different
-     * AdView associated with it
-     */
-    protected void recycleAdViewWrapper(@NonNull ViewGroup wrapper, @NotNull NativeExpressAdView ad) {
-        for (int i = 0; i < wrapper.getChildCount(); i++) {
-            View v = wrapper.getChildAt(i);
-            if (v instanceof NativeExpressAdView) {
-                wrapper.removeViewAt(i);
-                break;
-            }
-        }
-    }
-
     @Override
     public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == getViewTypeAdExpress()) {
-            ViewGroup wrapper = getAdViewWrapper(parent);
+            ViewGroup wrapper = AdViewWrappingStrategy.getAdViewWrapper(parent);
             return new NativeHolder(wrapper);
         }
         else{
             return mAdapter.onCreateViewHolder(parent, viewType);
         }
-    }
-
-    /**
-     * This method can be overriden to wrap the created ad view with a custom {@link ViewGroup}.<br/>
-     * For example if you need to wrap the ad with your custom CardView
-     * @return The wrapper {@link ViewGroup} for ad, by default {@link NativeExpressAdView} ad would be wrapped with a CardView which is returned by this method
-     */
-    @NotNull
-    protected ViewGroup getAdViewWrapper(ViewGroup parent) {
-        return (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.native_express_ad_container,
-                parent, false);
     }
 
     /**

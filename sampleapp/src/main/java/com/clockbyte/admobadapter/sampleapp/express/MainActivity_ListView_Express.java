@@ -1,25 +1,19 @@
 package com.clockbyte.admobadapter.sampleapp.express;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.clockbyte.admobadapter.expressads.AdmobExpressAdapterWrapper;
 import com.clockbyte.admobadapter.sampleapp.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.NativeExpressAdView;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -63,7 +57,7 @@ public class MainActivity_ListView_Express extends Activity {
             }
 
             @Override
-            protected void recycleAdViewWrapper(@NonNull ViewGroup wrapper, @NotNull NativeExpressAdView ad) {
+            protected void recycleAdViewWrapper(@NonNull ViewGroup wrapper, @NonNull NativeExpressAdView ad) {
                 //get the view which directly will contain ad
                 ViewGroup container = (ViewGroup) wrapper.findViewById(R.id.ad_container);
                 /**iterating through all children of the container view and remove the first occured {@link NativeExpressAdView}. It could be different with {@param ad}!!!*/
@@ -77,7 +71,7 @@ public class MainActivity_ListView_Express extends Activity {
             }
 
             @Override
-            protected void addAdViewToWrapper(@NonNull ViewGroup wrapper, @NotNull NativeExpressAdView ad) {
+            protected void addAdViewToWrapper(@NonNull ViewGroup wrapper, @NonNull NativeExpressAdView ad) {
                 //get the view which directly will contain ad
                 ViewGroup container = (ViewGroup) wrapper.findViewById(R.id.ad_container);
                 /**add the {@param ad} directly to the end of container*/

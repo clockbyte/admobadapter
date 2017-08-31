@@ -14,9 +14,8 @@
 
 package com.clockbyte.admobadapter;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by FILM on 30.08.2017.
@@ -28,9 +27,9 @@ public class AdapterWrapperObserver extends RecyclerView.AdapterDataObserver {
     private AdmobAdapterCalculator adapterCalculator;
     private AdmobFetcherBase fetcher;
 
-    public AdapterWrapperObserver(@NotNull RecyclerView.Adapter<RecyclerView.ViewHolder> adapterWrapper,
-                                  @NotNull AdmobAdapterCalculator admobAdapterCalculator,
-                                  @NotNull AdmobFetcherBase admobFetcher) {
+    public AdapterWrapperObserver(@NonNull RecyclerView.Adapter<RecyclerView.ViewHolder> adapterWrapper,
+                                  @NonNull AdmobAdapterCalculator admobAdapterCalculator,
+                                  @NonNull AdmobFetcherBase admobFetcher) {
         this.adapterWrapper = adapterWrapper;
         this.adapterCalculator = admobAdapterCalculator;
         this.fetcher = admobFetcher;

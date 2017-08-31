@@ -58,7 +58,7 @@ public class ExpressAdPreset {
         return this.adSize;
     }
 
-    public void setAdUnitId(AdSize adSize){
+    public void setAdSize(AdSize adSize){
         this.adSize = adSize;
     }
 

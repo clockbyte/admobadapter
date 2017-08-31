@@ -84,6 +84,10 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
         return this.mAdPresetCyclingList.size();
     }
 
+    public ExpressAdPreset getAdPresetSingleOr(ExpressAdPreset defaultValue){
+        return this.mAdPresetCyclingList.size() == 1 ? this.mAdPresetCyclingList.get() : defaultValue;
+    }
+
     /**
      * Gets native ad at a particular index in the fetched ads list.
      *

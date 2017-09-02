@@ -53,6 +53,5 @@ public class AdViewWrappingStrategy extends AdViewWrappingStrategyBase {
         return (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.native_express_ad_container,
                 parent, false);
     }
-
 }
 

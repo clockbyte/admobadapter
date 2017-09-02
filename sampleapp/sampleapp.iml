@@ -127,8 +127,7 @@
     <orderEntry type="library" exported="" name="firebase-common-11.2.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-tasks-11.2.0" level="project" />
     <orderEntry type="library" exported="" name="firebase-analytics-impl-11.2.0" level="project" />
-    <orderEntry type="module" module-name="admobadapter-admobadapter" exported="" />
-    <orderEntry type="library" exported="" name="android-android-26" level="project" />
+    <orderEntry type="module" module-name="admobadapter" exported="" />
     <orderEntry type="library" exported="" scope="TEST" name="powermock-api-mockito-common-1.6.5" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="javassist-3.20.0-GA" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="powermock-module-junit4-common-1.6.5" level="project" />

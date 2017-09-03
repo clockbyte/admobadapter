@@ -19,6 +19,7 @@ import android.content.Context;
 import android.os.Handler;
 
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.NativeExpressAdView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -74,6 +75,10 @@ public abstract class AdmobFetcherBase {
      */
     public abstract int getFetchingAdsCount();
 
+    public int getFetchFailCount() {
+        return mFetchFailCount;
+    }
+
     /**
      * Fetches a new native ad.
      *
@@ -94,7 +99,7 @@ public abstract class AdmobFetcherBase {
     public synchronized void destroyAllAds() {
         mFetchFailCount = 0;
         mNoOfFetchedAds = 0;
-        notifyObserversOfAdSizeChange(-1);
+        onAdsCountChanged();
     }
 
     /**
@@ -108,7 +113,7 @@ public abstract class AdmobFetcherBase {
     /**
      * Notifies all registered {@link AdmobListener} on a change of ad count.
      */
-    protected void notifyObserversOfAdSizeChange(final int adIdx) {
+    protected void onAdsCountChanged() {
         final Context context = mContext.get();
         //context may be null if activity is destroyed
         if(context != null) {
@@ -116,11 +121,38 @@ public abstract class AdmobFetcherBase {
                 @Override
                 public void run() {
                     for (AdmobListener listener : mAdNativeListeners)
-                        if(adIdx < 0)
-                            listener.onAdChanged();
-                        else listener.onAdChanged(adIdx);
+                        listener.onAdsCountChanged();
                 }
             });
+        }
+    }
+
+    /**
+     * Notifies all registered {@link AdmobListener} on a loaded ad.
+     */
+    protected void onAdLoaded(final int adIdx) {
+        final Context context = mContext.get();
+        //context may be null if activity is destroyed
+        if(context != null) {
+            new Handler(context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    for (AdmobListener listener : mAdNativeListeners)
+                        listener.onAdLoaded(adIdx);
+                }
+            });
+        }
+    }
+
+    /**
+     * Notifies all registered {@link AdmobListener} on a failed ad.
+     */
+    protected void onAdFailed(final int adIdx, final int errorCode, final Object adPayload) {
+        final Context context = mContext.get();
+        //context may be null if activity is destroyed
+        if(context != null) {
+            for (AdmobListener listener : mAdNativeListeners)
+                listener.onAdFailed(adIdx, errorCode, adPayload);
         }
     }
 
@@ -140,15 +172,25 @@ public abstract class AdmobFetcherBase {
      */
     public interface AdmobListener {
         /**
-         * Raised when the ad have changed. Adapters that implement this class
+         * Raised when the ad has loaded. Adapters that implement this class
          * should notify their data views that the dataset has changed.
-         * @param adIdx the index of ad block which state was changed
+         * @param adIdx the index of ad block which state was changed.
+         * See {@link AdmobAdapterCalculator} for methods to transform {@param adIdx} to adapter wrapper's indices
          */
-        void onAdChanged(int adIdx);
+        void onAdLoaded(int adIdx);
         /**
          * Raised when the number of ads have changed. Adapters that implement this class
          * should notify their data views that the dataset has changed.
          */
-        void onAdChanged();
+        void onAdsCountChanged();
+
+        /**
+         * Raised when the ad has failed to load.
+         * @param adIdx the index of ad block which state was changed.
+         * @param adPayload filled with some specific for current platform payload
+         * (for Admob Native Express it is {@link NativeExpressAdView})
+         * See {@link AdmobAdapterCalculator} for methods to transform {@param adIdx} to adapter wrapper's indices
+         */
+        void onAdFailed(int adIdx, int errorCode, Object adPayload);
     }
 }

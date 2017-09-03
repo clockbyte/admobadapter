@@ -49,35 +49,7 @@ public class AdmobRecyclerAdapterWrapper
 
     public void setAdapter(RecyclerView.Adapter<RecyclerView.ViewHolder> adapter) {
         mAdapter = adapter;
-        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                notifyDataSetChanged();
-            }
-
-            @Override
-            public void onItemRangeChanged(int positionStart, int itemCount) {
-                notifyItemRangeChanged(positionStart, itemCount);
-            }
-
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount) {
-                notifyItemRangeInserted(positionStart, itemCount);
-            }
-
-            @Override
-            public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
-                for(int i = 0; i<itemCount; itemCount++)
-                    notifyItemMoved(fromPosition+i, toPosition+i);
-            }
-
-            @Override
-            public void onItemRangeRemoved(int positionStart, int itemCount) {
-                notifyItemRangeRemoved(positionStart, itemCount);
-            }
-
-        });
-
+        mAdapter.registerAdapterDataObserver(new AdapterWrapperObserver(this, getAdapterCalculator(), adFetcher));
         notifyDataSetChanged();
     }
 
@@ -440,16 +412,17 @@ public class AdmobRecyclerAdapterWrapper
     }
 
     @Override
-    public void onAdChanged(int adIdx) {
+    public void onAdLoaded(int adIdx) {
         notifyDataSetChanged();
     }
 
-    /**
-     * Raised when the number of ads have changed. Adapters that implement this class
-     * should notify their data views that the dataset has changed.
-     */
     @Override
-    public void onAdChanged() {
+    public void onAdsCountChanged() {
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void onAdFailed(int adIdx, int errorCode, Object adPayload) {
         notifyDataSetChanged();
     }
 

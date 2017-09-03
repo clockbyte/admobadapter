@@ -18,18 +18,16 @@ import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import com.clockbyte.admobadapter.AdViewHelper;
+import com.clockbyte.admobadapter.AdapterWrapperObserver;
 import com.clockbyte.admobadapter.AdmobAdapterCalculator;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
-import com.clockbyte.admobadapter.R;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.NativeExpressAdView;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -50,53 +48,19 @@ public class AdmobExpressRecyclerAdapterWrapper
         return mAdapter;
     }
 
-    public void setAdapter(RecyclerView.Adapter<RecyclerView.ViewHolder> adapter) {
-        mAdapter = adapter;
-        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                notifyDataSetChanged();
-            }
-
-            @Override
-            public void onItemRangeChanged(int positionStart, int itemCount) {
-                notifyItemRangeChanged(positionStart, itemCount);
-            }
-
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount) {
-                notifyItemRangeInserted(positionStart, itemCount);
-            }
-
-            @Override
-            public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
-                for(int i = 0; i<itemCount; itemCount++)
-                    notifyItemMoved(fromPosition+i, toPosition+i);
-            }
-
-            @Override
-            public void onItemRangeRemoved(int positionStart, int itemCount) {
-                notifyItemRangeRemoved(positionStart, itemCount);
-            }
-
-        });
-        
-        notifyDataSetChanged();
-    }
-
     private AdmobFetcherExpress adFetcher;
     private Context mContext;
     private AdmobAdapterCalculator AdapterCalculator = new AdmobAdapterCalculator();
-    /*
+    /**
     * Gets an object which incapsulates transformation of the source and ad blocks indices
     */
     public AdmobAdapterCalculator getAdapterCalculator(){return AdapterCalculator;}
-    /*
-* Injects an object which incapsulates transformation of the source and ad blocks indices. You could override calculations
-* by inheritance of AdmobAdapterCalculator class
-*/
-    public void setAdapterCalculator(AdmobAdapterCalculator adapterCalculatordmob){AdapterCalculator = adapterCalculatordmob;}
 
+    private AdViewWrappingStrategyBase AdViewWrappingStrategy = new AdViewWrappingStrategy();
+    /**
+    * Gets an object which incapsulates a wrapping logic for AdViews
+    */
+    public AdViewWrappingStrategyBase getAdViewWrappingStrategy(){return AdViewWrappingStrategy;}
 
     private static final int VIEW_TYPE_AD_EXPRESS = 0;
 
@@ -195,148 +159,153 @@ public class AdmobExpressRecyclerAdapterWrapper
         this.viewTypeBiggestSource = viewTypeBiggestSource;
     }
 
-    /**
-     * Creates adapter wrapper with the test unit id and default adSize for all ad blocks
-     * Use this constructor for test purposes. if you are going to release the live version
-     * please use the appropriate constructor
-     * @see #AdmobExpressRecyclerAdapterWrapper(Context, String)
-     * @param testDevicesId sets a devices ID to test ads interaction.
-     * You could pass null but it's better to set ids for all your test devices
-     * including emulators. for emulator just use the
-     * @see {AdRequest.DEVICE_ID_EMULATOR}
-     */
-    public AdmobExpressRecyclerAdapterWrapper(Context context, String[] testDevicesId) {
-        init(context, null, testDevicesId);
-    }
-    /**
-     * Creates adapter wrapper with the same unit id and default adSize for all ad blocks
-     * @param admobReleaseUnitId sets a release unit ID for admob banners.
-     * If you are testing the ads please use constructor which expects test device ids
-     * @see #AdmobExpressRecyclerAdapterWrapper(Context, String[])
-     * ID should be active, please check it in your Admob's account.
-     * Be careful: don't set it or set to null if you still haven't deployed a Release.
-     * Otherwise your Admob account could be banned
-     */
-    public AdmobExpressRecyclerAdapterWrapper(Context context, String admobReleaseUnitId) {
-        this(context, admobReleaseUnitId, null, null);
+    private AdmobExpressRecyclerAdapterWrapper(){}
+
+    public static Builder builder(@NonNull Context context) {
+        return new AdmobExpressRecyclerAdapterWrapper().new Builder(context);
     }
 
-    /**
-     * Creates adapter wrapper with multiple unit ids
-     * @param adPresets sets a collection of ad presets ( object which contains unit ID and AdSize for banner).
-     * It works like cycling FIFO (first in = first out, cycling from end to start).
-     * Each ad block will get one from the queue.
-     * If the desired count of ad blocks is greater than this collection size
-     * then it will go again to the first item and iterate as much as it required.
-     * ID should be active, please check it in your Admob's account.
-     * Be careful: don't pass release unit id without setting the testDevicesId if you still haven't deployed a Release.
-     * Otherwise your Admob account could be banned
-     * If you are testing the ads please use constructor which expects test device ids
-     * @see #AdmobExpressRecyclerAdapterWrapper(Context, String[])
-     * ID should be active, please check it in your Admob's account.
-     * Be careful: don't set it or set to null if you still haven't deployed a Release.
-     * Otherwise your Admob account could be banned
-     */
-    public AdmobExpressRecyclerAdapterWrapper(Context context, Collection<ExpressAdPreset> adPresets) {
-        this(context, adPresets, null);
-    }
+    public class Builder{
+        private Builder(Context context){
+            mContext = context;
 
-    /**
-     * Creates adapter wrapper with the same unit id and default adSize for all ad blocks, also registers your test devices
-     * @param admobReleaseUnitId sets a release unit ID for admob banners.
-     * ID should be active, please check it in your Admob's account.
-     * Be careful: don't set it or set to null if you still haven't deployed a Release.
-     * Otherwise your Admob account could be banned
-     * @param testDevicesId sets a devices ID to test ads interaction.
-     * You could pass null but it's better to set ids for all your test devices
-     * including emulators. for emulator just use the
-     * @see {AdRequest.DEVICE_ID_EMULATOR}
-     */
-    public AdmobExpressRecyclerAdapterWrapper(Context context, String admobReleaseUnitId, String[] testDevicesId) {
-        this(context, admobReleaseUnitId, testDevicesId, null);
-    }
+            viewTypeBiggestSource = DEFAULT_VIEWTYPE_SOURCE_MAX;
 
-    /**
-     * Creates adapter wrapper with the same unit id and adSize for all ad blocks, also registers your test devices
-     * @param admobReleaseUnitId sets a release unit ID for admob banners.
-     * If you are testing the ads please use constructor for tests
-     * @see #AdmobExpressRecyclerAdapterWrapper(Context, String[])
-     * ID should be active, please check it in your Admob's account.
-     * Be careful: don't set it or set to null if you still haven't deployed a Release.
-     * Otherwise your Admob account could be banned
-     * @param testDevicesId sets a devices ID to test ads interaction.
-     * You could pass null but it's better to set ids for all your test devices
-     * including emulators. for emulator just use the
-     * @see {AdRequest.DEVICE_ID_EMULATOR}
-     * @param adSize sets ad size. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
-     */
-    public AdmobExpressRecyclerAdapterWrapper(Context context, String admobReleaseUnitId, String[] testDevicesId, AdSize adSize) {
-        Collection<ExpressAdPreset> releaseUnitIds = Collections.singletonList(
-                new ExpressAdPreset(admobReleaseUnitId, adSize));
-        init(context, releaseUnitIds, testDevicesId);
-    }
+            AdapterCalculator.setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
+            AdapterCalculator.setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
 
-    /**
-     * Creates adapter wrapper with multiple unit ids, also registers your test devices
-     * @param adPresets sets a collection of ad presets ( object which contains unit ID and AdSize for banner).
-     * It works like cycling FIFO (first in = first out, cycling from end to start).
-     * Each ad block will get one from the queue.
-     * If the desired count of ad blocks is greater than this collection size
-     * then it will go again to the first item and iterate as much as it required.
-     * ID should be active, please check it in your Admob's account.
-     * Be careful: don't pass release unit id without setting the testDevicesId if you still haven't deployed a Release.
-     * Otherwise your Admob account could be banned
-     * @param testDevicesId sets a devices ID to test ads interaction.
-     * You could pass null but it's better to set ids for all your test devices
-     * including emulators. for emulator just use the
-     * @see {AdRequest.DEVICE_ID_EMULATOR}
-     */
-    public AdmobExpressRecyclerAdapterWrapper(Context context, Collection<ExpressAdPreset> adPresets, String[] testDevicesId) {
-        init(context, adPresets, testDevicesId);
-    }
+            adFetcher = new AdmobFetcherExpress(mContext);
+            adFetcher.addListener(AdmobExpressRecyclerAdapterWrapper.this);
+        }
 
-    /**
-     * Creates adapter wrapper with default unit id and the same adSize for all ad blocks
-     * Use this constructor for test purposes. If you are going to release the live version
-     * please use the appropriate constructor
-     * @see #AdmobExpressRecyclerAdapterWrapper(Context, String, AdSize)
-     * @param testDevicesId sets a devices ID to test ads interaction.
-     * You could pass null but it's better to set ids for all your test devices
-     * including emulators. for emulator just use the
-     * @see {AdRequest.DEVICE_ID_EMULATOR}
-     * @param adSize sets ad size. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
-     */
-    public AdmobExpressRecyclerAdapterWrapper(Context context, String[] testDevicesId, AdSize adSize) {
-        Collection<ExpressAdPreset> releaseUnitIds = Collections.singletonList(
-                new ExpressAdPreset(null, adSize));
-        init(context, null, testDevicesId);
-    }
-    /**
-     * @param admobReleaseUnitId sets a release unit ID for admob banners.
-     * If you are testing the ads please use constructor for tests
-     * @see #AdmobExpressRecyclerAdapterWrapper(Context, String[], AdSize)
-     * ID should be active, please check it in your Admob's account.
-     * Be careful: don't set it or set to null if you still haven't deployed a Release.
-     * Otherwise your Admob account could be banned
-     * @param adSize sets ad size. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
-     */
-    public AdmobExpressRecyclerAdapterWrapper(Context context, String admobReleaseUnitId, AdSize adSize) {
-        this(context, admobReleaseUnitId, null, adSize);
-    }
+        /**
+        * Sets the first ad block index (zero-based) in the adapter, by default it equals to 0
+        */
+        public Builder setFirstAdIndex(int firstAdIndex) {
+            AdapterCalculator.setFirstAdIndex(firstAdIndex);
+            return this;
+        }
 
-    private void init(Context context, Collection<ExpressAdPreset> expressAdPresets, String[] testDevicesId) {
-        setViewTypeBiggestSource(DEFAULT_VIEWTYPE_SOURCE_MAX);
-        setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
-        setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
-        mContext = context;
-        adFetcher = new AdmobFetcherExpress(mContext);
-        if(testDevicesId!=null)
+        /**
+        * Sets the max count of ad blocks per dataset, by default it equals to 3 (according to the Admob's policies and rules)
+        */
+        public Builder setLimitOfAds(int mLimitOfAds) {
+            AdapterCalculator.setLimitOfAds(mLimitOfAds);
+            return this;
+        }
+
+        /**
+        * Sets the number of your data items between ad blocks, by default it equals to 10.
+        * You should set it according to the Admob's policies and rules which says not to
+        * display more than one ad block at the visible part of the screen
+        * so you should choose this parameter carefully and according to your item's height and screen resolution of a target devices
+        */
+        public Builder setNoOfDataBetweenAds(int mNoOfDataBetweenAds) {
+            AdapterCalculator.setNoOfDataBetweenAds(mNoOfDataBetweenAds);
+            return this;
+        }
+
+        /**
+         * Sets the biggest value among all the view types in the underlying source adapter, by default it equals to 0.
+         */
+        public Builder setViewTypeBiggestSource(int viewTypeBiggestSource) {
+            AdmobExpressRecyclerAdapterWrapper.this.viewTypeBiggestSource = viewTypeBiggestSource;
+            return this;
+        }
+
+        /**
+         * Sets a devices ID to test ads interaction.
+         * You could pass null but it's better to set ids for all your test devices
+         * including emulators. for emulator just use the
+         * @see {AdRequest.DEVICE_ID_EMULATOR}
+         */
+        public Builder setTestDeviceIds(@NonNull String[] testDevicesId){
+            adFetcher.getTestDeviceIds().clear();
             for (String testId: testDevicesId)
                 adFetcher.addTestDeviceId(testId);
-        adFetcher.addListener(this);
-        adFetcher.setAdPresets(expressAdPresets);
+            return this;
+        }
 
-        prefetchAds(AdmobFetcherExpress.PREFETCHED_ADS_SIZE);
+        /**
+         * Sets a collection of ad presets ( object which contains unit ID and AdSize for banner).
+         * It works like cycling FIFO (first in = first out, cycling from end to start).
+         * Each ad block will get one from the queue.
+         * If the desired count of ad blocks is greater than this collection size
+         * then it will go again to the first item and iterate as much as it required.
+         * ID should be active, please check it in your Admob's account.
+         * Be careful: don't pass release unit id without setting the testDevicesId if you still haven't deployed a Release.
+         * Otherwise your Admob account could be banned
+         */
+        public Builder setAdPresets(@NonNull Collection<ExpressAdPreset> adPresets){
+            adFetcher.setAdPresets(adPresets);
+            return this;
+        }
+
+        /**
+         * Sets a single unit ID for each ad block.
+         * If you are testing ads please don't set it to the release id
+         */
+        public Builder setSingleAdUnitId(@NonNull String admobUnitId){
+            ExpressAdPreset adPreset = adFetcher.getAdPresetSingleOr(new ExpressAdPreset());
+            adPreset.setAdUnitId(admobUnitId);
+            adFetcher.setAdPresets(Collections.singletonList(adPreset));
+            return this;
+        }
+
+        /**
+         * Sets a single ad size for each ad block. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
+         */
+        public Builder setSingleAdSize(@NonNull AdSize adSize){
+            ExpressAdPreset adPreset = adFetcher.getAdPresetSingleOr(new ExpressAdPreset(null, null));
+            adPreset.setAdSize(adSize);
+            adFetcher.setAdPresets(Collections.singletonList(adPreset));
+            return this;
+        }
+
+        /**
+        * Injects an object which incapsulates transformation of the source and ad blocks indices. You could override calculations
+        * by inheritance from {@link AdmobAdapterCalculator} class
+        */
+        public Builder setAdapterCalculator(@NonNull AdmobAdapterCalculator adapterCalculator){
+            AdapterCalculator = adapterCalculator;
+            return setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS).setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
+        }
+
+        /**
+         * Injects an object which incapsulates a wrapping logic for AdViews. You could inject your own implementation
+         * by inheritance from {@link AdViewWrappingStrategyBase} class
+         */
+        public Builder setAdViewWrappingStrategy(@NonNull AdViewWrappingStrategyBase adViewWrappingStrategy){
+            AdViewWrappingStrategy = adViewWrappingStrategy;
+            return this;
+        }
+
+        /**
+         * Injects an object which incapsulates transformation of the source and ad blocks indices. You could override calculations
+         * by inheritance of {@link AdmobAdapterCalculator} class
+         */
+        public Builder setAdapterCalculator(@NonNull AdmobAdapterCalculator adapterCalculator, int noOfDataBetweenAds, int limitOfAds, int firstAdIndex){
+            AdapterCalculator = adapterCalculator;
+            return setNoOfDataBetweenAds(noOfDataBetweenAds).setLimitOfAds(limitOfAds).setFirstAdIndex(firstAdIndex);
+        }
+
+        /**
+         * Sets underlying adapter with your data collection.
+         * If you want to inject your implementation of {@link AdmobAdapterCalculator} please set it before this call
+         */
+        public Builder setAdapter(RecyclerView.Adapter<RecyclerView.ViewHolder> adapter) {
+            mAdapter = adapter;
+            mAdapter.registerAdapterDataObserver(new AdapterWrapperObserver(AdmobExpressRecyclerAdapterWrapper.this, AdapterCalculator, adFetcher));
+            notifyDataSetChanged();
+            return this;
+        }
+
+        public AdmobExpressRecyclerAdapterWrapper build(){
+            if(adFetcher.getAdPresetsCount() == 0)
+                adFetcher.setAdPresets(null);
+            prefetchAds(AdmobFetcherExpress.PREFETCHED_ADS_SIZE);
+            return AdmobExpressRecyclerAdapterWrapper.this;
+        }
     }
 
     /**
@@ -366,18 +335,17 @@ public class AdmobExpressRecyclerAdapterWrapper
         if (viewHolder == null)
             return;
         if(viewHolder.getItemViewType() == getViewTypeAdExpress()) {
-            NativeHolder nativeExpressHolder =
-                    (NativeHolder) viewHolder;
+            NativeHolder nativeExpressHolder = (NativeHolder) viewHolder;
             ViewGroup wrapper = nativeExpressHolder.getAdViewWrapper();
             int adPos = AdapterCalculator.getAdIndex(position);
             NativeExpressAdView adView = adFetcher.getAdForIndex(adPos);
             if (adView == null)
                 adView = prefetchAds(1);
-            recycleAdViewWrapper(wrapper, adView);
+            AdViewWrappingStrategy.recycleAdViewWrapper(wrapper, adView);
             //make sure the AdView for this position doesn't already have a parent of a different recycled NativeExpressHolder.
             if (adView.getParent() != null)
                 ((ViewGroup) adView.getParent()).removeView(adView);
-            addAdViewToWrapper(wrapper, adView);
+            AdViewWrappingStrategy.addAdViewToWrapper(wrapper, adView);
 
         } else {
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
@@ -386,53 +354,15 @@ public class AdmobExpressRecyclerAdapterWrapper
         }
     }
 
-    /**
-     * Add the Native Express {@param ad} to {@param wrapper}.
-     * See the super's implementation for instance.
-     */
-    protected void addAdViewToWrapper(@NonNull ViewGroup wrapper, @NotNull NativeExpressAdView ad) {
-        wrapper.addView(ad);
-    }
-
-    /**
-     * This method can be overriden to recycle (remove) {@param ad} from {@param wrapper} view before adding to wrap.
-     * By default it will look for {@param ad} in the direct children of {@param wrapper} and remove the first occurence.
-     * See the super's implementation for instance.
-     * The NativeExpressHolder recycled by the RecyclerView may be a different
-     * instance than the one used previously for this position. Clear the
-     * wrapper of any subviews in case it has a different
-     * AdView associated with it
-     */
-    protected void recycleAdViewWrapper(@NonNull ViewGroup wrapper, @NotNull NativeExpressAdView ad) {
-        for (int i = 0; i < wrapper.getChildCount(); i++) {
-            View v = wrapper.getChildAt(i);
-            if (v instanceof NativeExpressAdView) {
-                wrapper.removeViewAt(i);
-                break;
-            }
-        }
-    }
-
     @Override
     public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == getViewTypeAdExpress()) {
-            ViewGroup wrapper = getAdViewWrapper(parent);
+            ViewGroup wrapper = AdViewWrappingStrategy.getAdViewWrapper(parent);
             return new NativeHolder(wrapper);
         }
         else{
             return mAdapter.onCreateViewHolder(parent, viewType);
         }
-    }
-
-    /**
-     * This method can be overriden to wrap the created ad view with a custom {@link ViewGroup}.<br/>
-     * For example if you need to wrap the ad with your custom CardView
-     * @return The wrapper {@link ViewGroup} for ad, by default {@link NativeExpressAdView} ad would be wrapped with a CardView which is returned by this method
-     */
-    @NotNull
-    protected ViewGroup getAdViewWrapper(ViewGroup parent) {
-        return (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.native_express_ad_container,
-                parent, false);
     }
 
     /**
@@ -497,20 +427,33 @@ public class AdmobExpressRecyclerAdapterWrapper
     }
 
     @Override
-    public void onAdChanged(int adIdx) {
+    public void onAdLoaded(int adIdx) {
         //raise ad's neighbour item changed.
         // cheap, quick and dirty solution to avoid ad's redraw and flickering.
         int pos = getAdapterCalculator().translateAdToWrapperPosition(adIdx);
         notifyItemChanged(pos==0? 1: Math.max(0, pos-1));
     }
 
-    /**
-     * Raised when the number of ads have changed. Adapters that implement this class
-     * should notify their data views that the dataset has changed.
-     */
     @Override
-    public void onAdChanged() {
+    public void onAdsCountChanged() {
         notifyDataSetChanged();
+    }
+
+    @Override
+    public void onAdFailed(int adIdx, int errorCode, Object adPayload) {
+        NativeExpressAdView adView = (NativeExpressAdView)adPayload;
+        if (adView != null) {
+            ViewParent parent = adView.getParent();
+            if(parent == null || parent instanceof RecyclerView)
+                adView.setVisibility(View.GONE);
+            else {
+                while (parent.getParent() != null && !(parent.getParent() instanceof RecyclerView))
+                    parent = parent.getParent();
+                ((View) parent).setVisibility(View.GONE);
+            }
+        }
+        int pos = getAdapterCalculator().translateAdToWrapperPosition(Math.max(adIdx,0));
+        notifyItemRangeChanged(pos, pos+15);
     }
 
 }

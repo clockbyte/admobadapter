@@ -1,25 +1,20 @@
 package com.clockbyte.admobadapter.sampleapp.express;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
+import com.clockbyte.admobadapter.expressads.AdViewWrappingStrategyBase;
 import com.clockbyte.admobadapter.expressads.AdmobExpressAdapterWrapper;
 import com.clockbyte.admobadapter.sampleapp.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.NativeExpressAdView;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -54,52 +49,43 @@ public class MainActivity_ListView_Express extends Activity {
         //your test devices' ids
         String[] testDevicesIds = new String[]{getString(R.string.testDeviceID),AdRequest.DEVICE_ID_EMULATOR};
         //when you'll be ready for release please use another ctor with admobReleaseUnitId instead.
-        adapterWrapper = new AdmobExpressAdapterWrapper(this, testDevicesIds){
-            @NonNull
-            @Override
-            protected ViewGroup getAdViewWrapper(ViewGroup parent) {
-                return (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.native_express_ad_container,
-                        parent, false);
-            }
-
-            @Override
-            protected void recycleAdViewWrapper(@NonNull ViewGroup wrapper, @NotNull NativeExpressAdView ad) {
-                //get the view which directly will contain ad
-                ViewGroup container = (ViewGroup) wrapper.findViewById(R.id.ad_container);
-                /**iterating through all children of the container view and remove the first occured {@link NativeExpressAdView}. It could be different with {@param ad}!!!*/
-                for (int i = 0; i < container.getChildCount(); i++) {
-                    View v = container.getChildAt(i);
-                    if (v instanceof NativeExpressAdView) {
-                        container.removeViewAt(i);
-                        break;
+        adapterWrapper = AdmobExpressAdapterWrapper.builder(this)
+                .setLimitOfAds(10)
+                .setFirstAdIndex(2)
+                .setNoOfDataBetweenAds(10)
+                .setTestDeviceIds(testDevicesIds)
+                .setAdapter(adapter)
+                .setAdViewWrappingStrategy(new AdViewWrappingStrategyBase() {
+                    @NonNull
+                    @Override
+                    protected ViewGroup getAdViewWrapper(ViewGroup parent) {
+                        return (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.native_express_ad_container,
+                                parent, false);
                     }
-                }
-            }
 
-            @Override
-            protected void addAdViewToWrapper(@NonNull ViewGroup wrapper, @NotNull NativeExpressAdView ad) {
-                //get the view which directly will contain ad
-                ViewGroup container = (ViewGroup) wrapper.findViewById(R.id.ad_container);
-                /**add the {@param ad} directly to the end of container*/
-                container.addView(ad);
-            }
-        };
-        //By default the ad size is set to FULL_WIDTHx150
-        //To set a custom size you should use an appropriate ctor
-        //adapterWrapper = new AdmobExpressAdapterWrapper(this, testDevicesIds, new AdSize(AdSize.FULL_WIDTH, 150));
+                    @Override
+                    protected void recycleAdViewWrapper(@NonNull ViewGroup wrapper, @NonNull NativeExpressAdView ad) {
+                        //get the view which directly will contain ad
+                        ViewGroup container = (ViewGroup) wrapper.findViewById(R.id.ad_container);
+                        //iterating through all children of the container view and remove the first occured {@link NativeExpressAdView}. It could be different with {@param ad}!!!*//*
+                        for (int i = 0; i < container.getChildCount(); i++) {
+                            View v = container.getChildAt(i);
+                            if (v instanceof NativeExpressAdView) {
+                                container.removeViewAt(i);
+                                break;
+                            }
+                        }
+                    }
 
-        adapterWrapper.setAdapter(adapter); //wrapping your adapter with a AmobExpressAdapterWrapper.
-
-        //Sets the max count of ad blocks per dataset, by default it equals to 3 (according to the Admob's policies and rules)
-        adapterWrapper.setLimitOfAds(10);
-
-        //Sets the number of your data items between ad blocks, by default it equals to 10.
-        //You should set it according to the Admob's policies and rules which says not to
-        //display more than one ad block at the visible part of the screen,
-        // so you should choose this parameter carefully and according to your item's height and screen resolution of a target devices
-        adapterWrapper.setNoOfDataBetweenAds(10);
-
-        adapterWrapper.setFirstAdIndex(2);
+                    @Override
+                    protected void addAdViewToWrapper(@NonNull ViewGroup wrapper, @NonNull NativeExpressAdView ad) {
+                        //get the view which directly will contain ad
+                        ViewGroup container = (ViewGroup) wrapper.findViewById(R.id.ad_container);
+                        //add the {@param ad} directly to the end of container*//*
+                        container.addView(ad);
+                    }
+                })
+                .build();
 
         lvMessages.setAdapter(adapterWrapper); // setting an AdmobAdapterWrapper to a ListView
 

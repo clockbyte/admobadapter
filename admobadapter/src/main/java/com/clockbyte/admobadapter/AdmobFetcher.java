@@ -209,6 +209,7 @@ public class AdmobFetcher extends AdmobFetcherBase{
                         mFetchFailCount++;
                         mFetchingAdsCnt--;
                         ensurePrefetchAmount();
+                        onAdFailed( mPrefetchedAdList.size(), errorCode, null);
                     }
                 })
                 .withNativeAdOptions(new NativeAdOptions.Builder()
@@ -247,6 +248,6 @@ public class AdmobFetcher extends AdmobFetcherBase{
         lockFetch.set(false);
         mFetchFailCount = 0;
         ensurePrefetchAmount();
-        notifyObserversOfAdSizeChange(index);
+        onAdLoaded(index);
     }
 }

@@ -17,11 +17,7 @@ package com.clockbyte.admobadapter.expressads;
 
 import android.content.Context;
 import android.os.Handler;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewParent;
-import android.widget.ListView;
 
 import com.clockbyte.admobadapter.AdPresetCyclingList;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
@@ -46,7 +42,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     /**
      * Maximum number of times to try fetch an ad after failed attempts.
      */
-    private static final int MAX_FETCH_ATTEMPT = 4;
+    public static final int MAX_FETCH_ATTEMPT = 4;
 
     public AdmobFetcherExpress(Context context){
         super();
@@ -86,6 +82,10 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
 
     public int getAdPresetsCount(){
         return this.mAdPresetCyclingList.size();
+    }
+
+    public ExpressAdPreset getAdPresetSingleOr(ExpressAdPreset defaultValue){
+        return this.mAdPresetCyclingList.size() == 1 ? this.mAdPresetCyclingList.get() : defaultValue;
     }
 
     /**
@@ -157,7 +157,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
         Log.i(TAG, "onAdFetched");
         mFetchFailCount = 0;
         mNoOfFetchedAds++;
-        notifyObserversOfAdSizeChange(mNoOfFetchedAds - 1);
+        onAdLoaded(mNoOfFetchedAds - 1);
     }
 
     /**
@@ -167,17 +167,11 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     private synchronized void onFailedToLoad(NativeExpressAdView adView, int errorCode) {
         Log.i(TAG, "onAdFailedToLoad " + errorCode);
         mFetchFailCount++;
-        mNoOfFetchedAds = Math.max(mNoOfFetchedAds - 1, -1);
+        mNoOfFetchedAds = Math.max(mNoOfFetchedAds - 1, 0);
         //Since Fetch Ad is only called once without retries
         //hide ad row / rollback its count if still not added to list
         mPrefetchedAds.remove(adView);
-        notifyObserversOfAdSizeChange(mNoOfFetchedAds - 1);
-        ViewParent parent = adView.getParent();
-        //parent is not empty and not an instance of ListView/RecyclerView
-        if(parent!=null && !(parent instanceof RecyclerView
-                        || parent instanceof ListView))
-            ((View) adView.getParent()).setVisibility(View.GONE);
-        else adView.setVisibility(View.GONE);
+        onAdFailed(mNoOfFetchedAds - 1, errorCode, adView);
     }
 
     @Override

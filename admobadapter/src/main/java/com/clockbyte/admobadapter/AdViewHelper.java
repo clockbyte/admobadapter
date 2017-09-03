@@ -20,6 +20,8 @@ import android.widget.AbsListView;
 import com.clockbyte.admobadapter.expressads.ExpressAdPreset;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.NativeExpressAdView;
+import com.google.android.gms.ads.VideoController;
+import com.google.android.gms.ads.VideoOptions;
 
 public class AdViewHelper {
 
@@ -30,6 +32,11 @@ public class AdViewHelper {
         adView.setAdUnitId(expressAdPreset.getAdUnitId());
         adView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,
                 adSize.getHeightInPixels(context)));
+
+        //set video options
+        if(expressAdPreset.getVideoOptions() != null)
+        adView.setVideoOptions(expressAdPreset.getVideoOptions());
+
         return adView;
     }
 }

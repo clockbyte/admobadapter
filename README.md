@@ -4,7 +4,7 @@ Admob Adapter
 
 ======================
 
-> We've finally released [v1.4.1](https://github.com/clockbyte/admobadapter/releases/tag/v1.4.1)! A recycling of express ads was handled and advanced wrapping of ads was implemented.(includes many changes, so could break your code, please check [Release history](https://github.com/clockbyte/admobadapter/wiki/Release-history)).
+> We've released! [v1.4.5](https://github.com/clockbyte/admobadapter/releases/tag/v1.4.5)! Now you'd use a Builder to build adapter wrappers. (includes changes that could break your actual code).
 
 The reference to the [COOK RECIPES](https://github.com/clockbyte/admobadapter/wiki/Cookbook) for people who are in hurry!
 

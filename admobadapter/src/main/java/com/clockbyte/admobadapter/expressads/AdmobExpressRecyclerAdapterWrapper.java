@@ -444,13 +444,16 @@ public class AdmobExpressRecyclerAdapterWrapper
         NativeExpressAdView adView = (NativeExpressAdView)adPayload;
         if (adView != null) {
             ViewParent parent = adView.getParent();
-            //parent is not empty and not an instance of ListView/RecyclerView
-            if (parent != null && !(parent instanceof RecyclerView))
-                ((View) adView.getParent()).setVisibility(View.GONE);
-            else adView.setVisibility(View.GONE);
+            if(parent == null || parent instanceof RecyclerView)
+                adView.setVisibility(View.GONE);
+            else {
+                while (parent.getParent() != null && !(parent.getParent() instanceof RecyclerView))
+                    parent = parent.getParent();
+                ((View) parent).setVisibility(View.GONE);
+            }
         }
-        int pos = getAdapterCalculator().translateAdToWrapperPosition(adIdx);
-        notifyItemRemoved(pos);
+        int pos = getAdapterCalculator().translateAdToWrapperPosition(Math.max(adIdx,0));
+        notifyItemRangeChanged(pos, pos+15);
     }
 
 }

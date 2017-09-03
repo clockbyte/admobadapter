@@ -42,7 +42,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     /**
      * Maximum number of times to try fetch an ad after failed attempts.
      */
-    private static final int MAX_FETCH_ATTEMPT = 4;
+    public static final int MAX_FETCH_ATTEMPT = 4;
 
     public AdmobFetcherExpress(Context context){
         super();
@@ -167,7 +167,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     private synchronized void onFailedToLoad(NativeExpressAdView adView, int errorCode) {
         Log.i(TAG, "onAdFailedToLoad " + errorCode);
         mFetchFailCount++;
-        mNoOfFetchedAds = Math.max(mNoOfFetchedAds - 1, -1);
+        mNoOfFetchedAds = Math.max(mNoOfFetchedAds - 1, 0);
         //Since Fetch Ad is only called once without retries
         //hide ad row / rollback its count if still not added to list
         mPrefetchedAds.remove(adView);

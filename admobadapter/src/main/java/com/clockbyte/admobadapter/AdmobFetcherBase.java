@@ -75,6 +75,10 @@ public abstract class AdmobFetcherBase {
      */
     public abstract int getFetchingAdsCount();
 
+    public int getFetchFailCount() {
+        return mFetchFailCount;
+    }
+
     /**
      * Fetches a new native ad.
      *
@@ -147,13 +151,8 @@ public abstract class AdmobFetcherBase {
         final Context context = mContext.get();
         //context may be null if activity is destroyed
         if(context != null) {
-            new Handler(context.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    for (AdmobListener listener : mAdNativeListeners)
-                        listener.onAdFailed(adIdx, errorCode, adPayload);
-                }
-            });
+            for (AdmobListener listener : mAdNativeListeners)
+                listener.onAdFailed(adIdx, errorCode, adPayload);
         }
     }
 

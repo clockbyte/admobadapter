@@ -439,10 +439,13 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
         NativeExpressAdView adView = (NativeExpressAdView)adPayload;
         if (adView != null) {
             ViewParent parent = adView.getParent();
-            //parent is not empty and not an instance of ListView/RecyclerView
-            if (parent != null && !(parent instanceof ListView))
-                ((View) adView.getParent()).setVisibility(View.GONE);
-            else adView.setVisibility(View.GONE);
+            if(parent == null || parent instanceof ListView)
+                adView.setVisibility(View.GONE);
+            else {
+                while (parent.getParent() != null && !(parent.getParent() instanceof ListView))
+                    parent = parent.getParent();
+                ((View) parent).setVisibility(View.GONE);
+            }
         }
         notifyDataSetChanged();
     }

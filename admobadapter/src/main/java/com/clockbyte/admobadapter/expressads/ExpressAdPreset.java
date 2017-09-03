@@ -18,6 +18,7 @@ package com.clockbyte.admobadapter.expressads;
 import android.text.TextUtils;
 
 import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.VideoOptions;
 
 import java.util.Locale;
 
@@ -28,6 +29,7 @@ public class ExpressAdPreset {
 
     private String adUnitId;
     private AdSize adSize;
+    private VideoOptions videoOptions;
 
     public ExpressAdPreset(){
         this.adUnitId = UNIT_ID_DEFAULT_EXPRESS;
@@ -49,7 +51,6 @@ public class ExpressAdPreset {
     public String getAdUnitId(){
         return this.adUnitId;
     }
-
     public void setAdUnitId(String adUnitId){
         this.adUnitId = adUnitId;
     }
@@ -57,9 +58,16 @@ public class ExpressAdPreset {
     public AdSize getAdSize(){
         return this.adSize;
     }
-
     public void setAdSize(AdSize adSize){
         this.adSize = adSize;
+    }
+
+
+    public VideoOptions getVideoOptions() {
+        return videoOptions;
+    }
+    public void setVideoOptions(VideoOptions videoOptions) {
+        this.videoOptions = videoOptions;
     }
 
     public boolean isValid(){

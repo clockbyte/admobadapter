@@ -28,10 +28,9 @@ import com.google.android.gms.ads.formats.NativeAppInstallAd;
 import com.google.android.gms.ads.formats.NativeContentAd;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AdmobFetcher extends AdmobFetcherBase{
 
@@ -52,6 +51,8 @@ public class AdmobFetcher extends AdmobFetcherBase{
     private SparseArray adMapAtIndex = new SparseArray();
 
     private EnumSet<EAdType> adTypeToFetch = EnumSet.allOf(EAdType.class);
+    private final List<String> mAdmobReleaseUnitIds = new ArrayList<>();
+
     /**
      * Gets enumset which sets which of ad types this Fetcher should load
      */
@@ -194,11 +195,15 @@ public class AdmobFetcher extends AdmobFetcherBase{
         return mContext.get().getResources().getString(R.string.test_admob_unit_id);
     }
 
+    private String getReleaseUnitId() {
+        return mAdmobReleaseUnitIds.size() > 0 ? mAdmobReleaseUnitIds.get(0) : null;
+    }
+
     /**
      * Subscribing to the native ads events
      */
     protected synchronized void setupAds() {
-        String unitId = getDefaultUnitId();
+        String unitId = getReleaseUnitId() != null ? getReleaseUnitId() : getDefaultUnitId();
         AdLoader.Builder adloaderBuilder = new AdLoader.Builder(mContext.get(), unitId)
                 .withAdListener(new AdListener() {
                     @Override
@@ -249,5 +254,12 @@ public class AdmobFetcher extends AdmobFetcherBase{
         mFetchFailCount = 0;
         ensurePrefetchAmount();
         onAdLoaded(index);
+    }
+
+    public void setReleaseUnitIds(Collection<String> admobReleaseUnitIds) {
+        if(admobReleaseUnitIds.size() > 1)
+            throw new RuntimeException("Currently only supports one unit id.");
+
+        mAdmobReleaseUnitIds.addAll(admobReleaseUnitIds);
     }
 }

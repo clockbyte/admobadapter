@@ -270,6 +270,22 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         init(context, admobReleaseUnitIds, null, adTypesToShow);
     }
 
+    /**
+     * @param admobReleaseUnitId sets a release unit ID for admob banners.
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobAdapterWrapper(Context, String[]) or supply a
+     * test ID here.
+     * ID should be active, please check it in your Admob's account.
+     * Be careful: don't set it or set to null if you still haven't deployed a Release.
+     * Otherwise your Admob account could be banned
+     * @param adTypesToShow sets the types of ads to show in the list.
+     * By default all types are loaded by wrapper.
+     * i.e. pass EnumSet.of(EAdType.ADVANCED_INSTALLAPP) to show only install app ads
+     */
+    public AdmobAdapterWrapper(Context context, String admobReleaseUnitId, String[] testDevicesId, EnumSet<EAdType> adTypesToShow) {
+        init(context, Collections.singletonList(admobReleaseUnitId), testDevicesId, adTypesToShow);
+    }
+
     private void init(Context context, Collection<String> admobReleaseUnitIds, String[] testDevicesId, EnumSet<EAdType> adTypesToShow){
         setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
         setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
@@ -281,6 +297,8 @@ public class AdmobAdapterWrapper extends BaseAdapter implements AdmobFetcherBase
         if(testDevicesId!=null)
             for (String testId: testDevicesId)
                 adFetcher.addTestDeviceId(testId);
+        if(admobReleaseUnitIds!=null)
+            adFetcher.setReleaseUnitIds(admobReleaseUnitIds);
         adFetcher.setAdTypeToFetch(adTypesToShow == null || adTypesToShow.isEmpty()
                 ?  EnumSet.allOf(EAdType.class): adTypesToShow);
         adFetcher.addListener(this);

@@ -322,7 +322,9 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
                 ad = prefetchAds(1);
             if(convertView == null) {
                 ViewGroup wrapper = AdViewWrappingStrategy.getAdViewWrapper(parent);
-                wrapper.addView(ad);
+                //make sure the AdView for this position doesn't already have a parent of a different recycled NativeExpressHolder.
+                if (ad.getParent() == null)
+                    wrapper.addView(ad);
                 return wrapper;
             }
             else{

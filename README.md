@@ -1,6 +1,6 @@
 Admob Adapter                               
 
-[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)  [![Build Status](https://travis-ci.org/clockbyte/admobadapter.svg?branch=master)](https://travis-ci.org/clockbyte/admobadapter)  [![Gitter](https://badges.gitter.im/clockbyte/admobadapter.svg)](https://gitter.im/clockbyte/admobadapter?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.clockbyte/admobadapter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.clockbyte/admobadapter)
+[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)  [![Build Status](https://travis-ci.org/clockbyte/admobadapter.svg?branch=master)](https://travis-ci.org/clockbyte/admobadapter)  [![Gitter](https://badges.gitter.im/clockbyte/admobadapter.svg)](https://gitter.im/clockbyte/admobadapter?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.clockbyte/admobadapter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.clockbyte/admobadapter)  [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Admobadapter-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/5706)  [![](https://img.shields.io/badge/API-9%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=14) 
 
 ======================
 
@@ -34,3 +34,6 @@ dependencies {
 
 # Contributions
 Contributions are very welcome. If you find a bug in the library or want an improvement and feel you can work on it yourself, fork + pull request and i'll appreciate it much!
+
+# Advanced help and consulting
+If you absolutely have no time for integration of Admobadapter to your app yourself you could [contact us](https://www.upwork.com/o/profiles/users/_~0106c6a2330c48a622/) for consultation. Also we could do this routine stuff for you accurately like a clockwork!

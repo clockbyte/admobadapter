@@ -36,4 +36,4 @@ dependencies {
 Contributions are very welcome. If you find a bug in the library or want an improvement and feel you can work on it yourself, fork + pull request and i'll appreciate it much!
 
 # Advanced help and consulting
-If you absolutely have no time for integration of Admobadapter to your app yourself you could [contact us](https://www.upwork.com/o/profiles/users/_~0106c6a2330c48a622/) for consultation. Also we could do this routine stuff for you accurately like a clockwork!
+If you absolutely have no time for integration of Admobadapter to your app yourself you could [contact us](clockbyte.ru) for consultation. Also we could do this routine stuff for you accurately like a clockwork!

@@ -1,9 +1,9 @@
-*Admobadapter version or commit:*
+**Admobadapter version or commit:**
 
-*Android compileSdkVersion:*
+**Android compileSdkVersion:**
 
-*Issue description briefly:*
+**Issue description briefly:**
 
-*Steps to reproduce:*
+**Steps to reproduce:**
 
-*All the code which you want to share*
+**All the code which you want to share**

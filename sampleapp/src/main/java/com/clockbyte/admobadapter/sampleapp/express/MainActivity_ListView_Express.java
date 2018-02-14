@@ -59,7 +59,7 @@ public class MainActivity_ListView_Express extends Activity {
                     @NonNull
                     @Override
                     protected ViewGroup getAdViewWrapper(ViewGroup parent) {
-                        return (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.native_express_ad_container,
+                        return (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.web_ad_container,
                                 parent, false);
                     }
 

@@ -1,62 +1,64 @@
-package com.clockbyte.admobadapter.sampleapp.express;
+package com.clockbyte.admobadapter.sampleapp.banner;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
-import com.clockbyte.admobadapter.expressads.AdViewWrappingStrategyBase;
-import com.clockbyte.admobadapter.expressads.AdmobExpressRecyclerAdapterWrapper;
+import com.clockbyte.admobadapter.bannerads.AdmobBannerAdapterWrapper;
+import com.clockbyte.admobadapter.bannerads.BannerAdViewWrappingStrategyBase;
 import com.clockbyte.admobadapter.sampleapp.R;
-import com.clockbyte.admobadapter.sampleapp.RecyclerExampleAdapter;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.NativeExpressAdView;
 
 import java.util.ArrayList;
 
-public class MainActivity_RecyclerView_Express extends Activity {
+public class MainActivity_ListView_Banner extends Activity {
 
-    RecyclerView rvMessages;
-    AdmobExpressRecyclerAdapterWrapper adapterWrapper;
+    ListView lvMessages;
+    AdmobBannerAdapterWrapper adapterWrapper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_recycleview);
+        setContentView(R.layout.activity_main_listview);
 
         //highly-recommended in Firebase docs to initialize things early as possible
         //test_admob_app_id is different with unit_id! you could get it in your Admob console
         MobileAds.initialize(getApplicationContext(), getString(R.string.test_admob_app_id));
 
-        initRecyclerViewItems();
+        initListViewItems();
     }
 
     /**
-     * Inits an adapter with items, wrapping your adapter with a {@link AdmobExpressRecyclerAdapterWrapper} and setting the recyclerview to this wrapper
+     * Inits an adapter with items, wrapping your adapter with a {@link AdmobBannerAdapterWrapper} and setting the listview to this wrapper
      * FIRST OF ALL Please notice that the following code will work on a real devices but emulator!
      */
-    private void initRecyclerViewItems() {
-        rvMessages = (RecyclerView) findViewById(R.id.rvMessages);
-        rvMessages.setLayoutManager(new LinearLayoutManager(this));
+    private void initListViewItems() {
+        lvMessages = (ListView) findViewById(R.id.lvMessages);
 
         //creating your adapter, it could be a custom adapter as well
-        RecyclerExampleAdapter adapter  = new RecyclerExampleAdapter(this);
+        ArrayAdapter<String> adapter  = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1);
 
         //your test devices' ids
-        String[] testDevicesIds = new String[]{getString(R.string.testDeviceID),AdRequest.DEVICE_ID_EMULATOR};
+        String[] testDevicesIds = new String[]{getString(R.string.testDeviceID), AdRequest.DEVICE_ID_EMULATOR};
         //when you'll be ready for release please use another ctor with admobReleaseUnitId instead.
-        adapterWrapper = AdmobExpressRecyclerAdapterWrapper.builder(this)
+        adapterWrapper = AdmobBannerAdapterWrapper.builder(this)
                 .setLimitOfAds(10)
                 .setFirstAdIndex(2)
                 .setNoOfDataBetweenAds(10)
                 .setTestDeviceIds(testDevicesIds)
                 .setAdapter(adapter)
-                .setAdViewWrappingStrategy(new AdViewWrappingStrategyBase() {
+                //Use the following for the default Wrapping behaviour
+//                .setAdViewWrappingStrategy(new BannerAdViewWrappingStrategy())
+                // Or implement your own custom wrapping behaviour:
+                .setAdViewWrappingStrategy(new BannerAdViewWrappingStrategyBase() {
                     @NonNull
                     @Override
                     protected ViewGroup getAdViewWrapper(ViewGroup parent) {
@@ -65,13 +67,13 @@ public class MainActivity_RecyclerView_Express extends Activity {
                     }
 
                     @Override
-                    protected void recycleAdViewWrapper(@NonNull ViewGroup wrapper, @NonNull NativeExpressAdView ad) {
+                    protected void recycleAdViewWrapper(@NonNull ViewGroup wrapper, @NonNull AdView ad) {
                         //get the view which directly will contain ad
                         ViewGroup container = (ViewGroup) wrapper.findViewById(R.id.ad_container);
                         //iterating through all children of the container view and remove the first occured {@link NativeExpressAdView}. It could be different with {@param ad}!!!*//*
                         for (int i = 0; i < container.getChildCount(); i++) {
                             View v = container.getChildAt(i);
-                            if (v instanceof NativeExpressAdView) {
+                            if (v instanceof AdView) {
                                 container.removeViewAt(i);
                                 break;
                             }
@@ -79,7 +81,7 @@ public class MainActivity_RecyclerView_Express extends Activity {
                     }
 
                     @Override
-                    protected void addAdViewToWrapper(@NonNull ViewGroup wrapper, @NonNull NativeExpressAdView ad) {
+                    protected void addAdViewToWrapper(@NonNull ViewGroup wrapper, @NonNull AdView ad) {
                         //get the view which directly will contain ad
                         ViewGroup container = (ViewGroup) wrapper.findViewById(R.id.ad_container);
                         //add the {@param ad} directly to the end of container*//*
@@ -88,18 +90,7 @@ public class MainActivity_RecyclerView_Express extends Activity {
                 })
                 .build();
 
-        rvMessages.setAdapter(adapterWrapper); // setting an AdmobBannerRecyclerAdapterWrapper to a RecyclerView
-        //use the following commented block to use a grid layout with spanning ad blocks
-       /* GridLayoutManager mLayoutManager = new GridLayoutManager(this, 2);
-        mLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                if(adapterWrapper.getItemViewType(position) == adapterWrapper.getViewTypeAdExpress())
-                    return 2;
-                else return 1;
-            }
-        });
-        rvMessages.setLayoutManager(mLayoutManager);*/
+        lvMessages.setAdapter(adapterWrapper); // setting an AdmobAdapterWrapper to a ListView
 
         //preparing the collection of data
         final String sItem = "item #";

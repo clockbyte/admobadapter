@@ -178,6 +178,18 @@ public class AdmobFetcherBanner extends AdmobFetcherBase {
         return mPrefetchedAds.size();
     }
 
+    public synchronized void pauseAll(){
+        for(AdView ad:mPrefetchedAds){
+            ad.pause();
+        }
+    }
+
+    public synchronized void resumeAll(){
+        for(AdView ad:mPrefetchedAds){
+            ad.resume();
+        }
+    }
+
     @Override
     public synchronized void destroyAllAds() {
         super.destroyAllAds();

@@ -62,7 +62,7 @@ public class MainActivity_ListView_Banner extends Activity {
                     @NonNull
                     @Override
                     protected ViewGroup getAdViewWrapper(ViewGroup parent) {
-                        return (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.web_ad_container,
+                        return (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.native_express_ad_container,
                                 parent, false);
                     }
 
@@ -110,5 +110,17 @@ public class MainActivity_ListView_Banner extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         adapterWrapper.release();
+    }
+
+    @Override
+    protected void onPause() {
+        adapterWrapper.pauseAll();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        adapterWrapper.resumeAll();
     }
 }

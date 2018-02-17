@@ -7,7 +7,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either Banner or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -62,7 +62,7 @@ public class AdmobBannerRecyclerAdapterWrapper
     */
     public BannerAdViewWrappingStrategyBase getAdViewWrappingStrategy(){return AdViewWrappingStrategy;}
 
-    private static final int VIEW_TYPE_AD_EXPRESS = 0;
+    private static final int VIEW_TYPE_AD_BANNER = 0;
 
     private final static int DEFAULT_NO_OF_DATA_BETWEEN_ADS = 10;
     private final static int DEFAULT_LIMIT_OF_ADS = 3;
@@ -95,8 +95,8 @@ public class AdmobBannerRecyclerAdapterWrapper
         return adFetcher.getFetchingAdsCount();
     }
 
-    public int getViewTypeAdExpress(){
-        return getViewTypeBiggestSource() + VIEW_TYPE_AD_EXPRESS + 1;
+    public int getViewTypeAdBanner(){
+        return getViewTypeBiggestSource() + VIEW_TYPE_AD_BANNER + 1;
     }
 
     /*
@@ -334,7 +334,7 @@ public class AdmobBannerRecyclerAdapterWrapper
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         if (viewHolder == null)
             return;
-        if(viewHolder.getItemViewType() == getViewTypeAdExpress()) {
+        if(viewHolder.getItemViewType() == getViewTypeAdBanner()) {
             BannerHolder bannerHolder = (BannerHolder) viewHolder;
             ViewGroup wrapper = bannerHolder.getAdViewWrapper();
             int adPos = AdapterCalculator.getAdIndex(position);
@@ -356,7 +356,7 @@ public class AdmobBannerRecyclerAdapterWrapper
 
     @Override
     public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == getViewTypeAdExpress()) {
+        if (viewType == getViewTypeAdBanner()) {
             ViewGroup wrapper = AdViewWrappingStrategy.getAdViewWrapper(parent);
             return new BannerHolder(wrapper);
         }
@@ -397,7 +397,7 @@ public class AdmobBannerRecyclerAdapterWrapper
     public int getItemViewType(int position) {
         checkNeedFetchAd(position);
         if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchingAdsCount())) {
-            return getViewTypeAdExpress();
+            return getViewTypeAdBanner();
         } else {
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
                     adFetcher.getFetchingAdsCount(), mAdapter.getItemCount());
@@ -424,6 +424,19 @@ public class AdmobBannerRecyclerAdapterWrapper
      */
     public void release(){
         adFetcher.release();
+    }
+
+    /**
+     * pause all ads
+     */
+    public void pauseAll(){
+        adFetcher.pauseAll();
+    }
+    /**
+     * resume all ads
+     */
+    public void resumeAll(){
+        adFetcher.resumeAll();
     }
 
     @Override

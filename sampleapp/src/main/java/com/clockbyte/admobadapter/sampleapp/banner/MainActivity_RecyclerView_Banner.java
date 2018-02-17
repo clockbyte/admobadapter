@@ -3,6 +3,7 @@ package com.clockbyte.admobadapter.sampleapp.banner;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import com.clockbyte.admobadapter.bannerads.BannerAdViewWrappingStrategyBase;
 import com.clockbyte.admobadapter.sampleapp.R;
 import com.clockbyte.admobadapter.sampleapp.RecyclerExampleAdapter;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
@@ -64,7 +66,7 @@ public class MainActivity_RecyclerView_Banner extends Activity {
                     @NonNull
                     @Override
                     protected ViewGroup getAdViewWrapper(ViewGroup parent) {
-                        return (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.web_ad_container,
+                        return (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(R.layout.native_express_ad_container,
                                 parent, false);
                     }
 
@@ -94,11 +96,11 @@ public class MainActivity_RecyclerView_Banner extends Activity {
 
         rvMessages.setAdapter(adapterWrapper); // setting an AdmobBannerRecyclerAdapterWrapper to a RecyclerView
         //use the following commented block to use a grid layout with spanning ad blocks
-       /* GridLayoutManager mLayoutManager = new GridLayoutManager(this, 2);
+        /*GridLayoutManager mLayoutManager = new GridLayoutManager(this, 2);
         mLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                if(adapterWrapper.getItemViewType(position) == adapterWrapper.getViewTypeAdExpress())
+                if(adapterWrapper.getItemViewType(position) == adapterWrapper.getViewTypeAdBanner())
                     return 2;
                 else return 1;
             }
@@ -123,5 +125,18 @@ public class MainActivity_RecyclerView_Banner extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         adapterWrapper.release();
+    }
+
+
+    @Override
+    protected void onPause() {
+        adapterWrapper.pauseAll();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        adapterWrapper.resumeAll();
     }
 }

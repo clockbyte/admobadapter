@@ -7,7 +7,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either Banner or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -96,7 +96,7 @@ public class AdmobBannerAdapterWrapper extends BaseAdapter implements AdmobFetch
         return adFetcher.getFetchingAdsCount();
     }
 
-    public int getViewTypeAdExpress(){
+    public int getViewTypeAdBanner(){
         return mAdapter.getViewTypeCount() + VIEW_TYPE_AD_BANNER;
     }
 
@@ -315,7 +315,7 @@ public class AdmobBannerAdapterWrapper extends BaseAdapter implements AdmobFetch
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if(getItemViewType(position) == getViewTypeAdExpress()) {
+        if(getItemViewType(position) == getViewTypeAdBanner()) {
             int adPos = AdapterCalculator.getAdIndex(position);
             AdView ad = adFetcher.getAdForIndex(adPos);
             if (ad == null)
@@ -398,7 +398,7 @@ public class AdmobBannerAdapterWrapper extends BaseAdapter implements AdmobFetch
     public int getItemViewType(int position) {
         checkNeedFetchAd(position);
         if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchingAdsCount())) {
-            return getViewTypeAdExpress();
+            return getViewTypeAdBanner();
         } else {
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
                     adFetcher.getFetchingAdsCount(), mAdapter.getCount());
@@ -415,6 +415,19 @@ public class AdmobBannerAdapterWrapper extends BaseAdapter implements AdmobFetch
         adFetcher.destroyAllAds();
         prefetchAds(AdmobFetcherBanner.PREFETCHED_ADS_SIZE);
         notifyDataSetChanged();
+    }
+
+    /**
+     * pause all ads
+     */
+    public void pauseAll(){
+        adFetcher.pauseAll();
+    }
+    /**
+     * resume all ads
+     */
+    public void resumeAll(){
+        adFetcher.resumeAll();
     }
 
     /**

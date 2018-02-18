@@ -19,6 +19,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import com.clockbyte.admobadapter.AdPreset;
 import com.clockbyte.admobadapter.AdPresetCyclingList;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
 import com.google.android.gms.ads.AdListener;
@@ -30,6 +31,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @deprecated Use banners instead
+ */
+@Deprecated
 public class AdmobFetcherExpress extends AdmobFetcherBase {
 
     private final String TAG = AdmobFetcherExpress.class.getCanonicalName();
@@ -60,7 +65,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
 * then it will go again to the first item and iterate as much as it required.
 * ID should be active, please check it in your Admob's account.
  */
-    public ExpressAdPreset takeNextAdPreset() {
+    public AdPreset takeNextAdPreset() {
         return this.mAdPresetCyclingList.get();
     }
 
@@ -72,9 +77,9 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
 * then it will go again to the first item and iterate as much as it required.
 * ID should be active, please check it in your Admob's account.
  */
-    public void setAdPresets(Collection<ExpressAdPreset> adPresets) {
-        Collection<ExpressAdPreset> mAdPresets = adPresets==null||adPresets.size() == 0
-                ? Collections.singletonList(ExpressAdPreset.DEFAULT)
+    public void setAdPresets(Collection<AdPreset> adPresets) {
+        Collection<AdPreset> mAdPresets = adPresets==null||adPresets.size() == 0
+                ? Collections.singletonList(AdPreset.DEFAULT)
                 :adPresets;
         mAdPresetCyclingList.clear();
         mAdPresetCyclingList.addAll(mAdPresets);
@@ -84,7 +89,7 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
         return this.mAdPresetCyclingList.size();
     }
 
-    public ExpressAdPreset getAdPresetSingleOr(ExpressAdPreset defaultValue){
+    public AdPreset getAdPresetSingleOr(AdPreset defaultValue){
         return this.mAdPresetCyclingList.size() == 1 ? this.mAdPresetCyclingList.get() : defaultValue;
     }
 

@@ -7,9 +7,10 @@ import android.view.ViewGroup;
 import com.google.android.gms.ads.NativeExpressAdView;
 
 /**
- * Created by fim on 31.08.2017.
+ * Created by fim on 31.08.2017
+ * @deprecated Use banners instead
  */
-
+@Deprecated
 public abstract class AdViewWrappingStrategyBase {
     /**
      * Add the Native Express {@param ad} to {@param wrapper}.

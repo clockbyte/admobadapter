@@ -14,8 +14,6 @@
 
 package com.clockbyte.admobadapter;
 
-import com.clockbyte.admobadapter.expressads.ExpressAdPreset;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -23,7 +21,7 @@ import java.util.Collection;
  * Created by FILM on 02.10.2016.
  */
 
-public class AdPresetCyclingList extends ArrayList<ExpressAdPreset> {
+public class AdPresetCyclingList extends ArrayList<AdPreset> {
 
     private int currentIdx = -1;
 
@@ -43,7 +41,7 @@ public class AdPresetCyclingList extends ArrayList<ExpressAdPreset> {
      * then it will go again to the first item and iterate as much as it required.
      * ID should be active, please check it in your Admob's account.
      */
-    public ExpressAdPreset get() {
+    public AdPreset get() {
         if(size() == 0) return null;
         if (size() == 1) return get(0);
         currentIdx = ++currentIdx % size();
@@ -51,23 +49,23 @@ public class AdPresetCyclingList extends ArrayList<ExpressAdPreset> {
     }
 
     /**
-     * Tries to add an item to collection if it is valid {@link ExpressAdPreset#isValid()}
+     * Tries to add an item to collection if it is valid {@link AdPreset#isValid()}
      * @return true if item was added, false - otherwise
      */
     @Override
-    public boolean add(ExpressAdPreset expressAdPreset) {
-        return !(expressAdPreset == null || !expressAdPreset.isValid())
-                && super.add(expressAdPreset);
+    public boolean add(AdPreset adPreset) {
+        return !(adPreset == null || !adPreset.isValid())
+                && super.add(adPreset);
     }
 
     /**
-     * Tries to add items to collection if valid {@link ExpressAdPreset#isValid()}
+     * Tries to add items to collection if valid {@link AdPreset#isValid()}
      * @return true if items were added, false - otherwise
      */
     @Override
-    public boolean addAll(Collection<? extends ExpressAdPreset> c) {
-        ArrayList<ExpressAdPreset> lst = new ArrayList<ExpressAdPreset>();
-        for (ExpressAdPreset eap : c) {
+    public boolean addAll(Collection<? extends AdPreset> c) {
+        ArrayList<AdPreset> lst = new ArrayList<AdPreset>();
+        for (AdPreset eap : c) {
             if(eap!=null && eap.isValid())
                 lst.add(eap);
         }

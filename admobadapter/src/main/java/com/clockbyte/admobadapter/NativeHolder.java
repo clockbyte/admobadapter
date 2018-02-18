@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package com.clockbyte.admobadapter.expressads;
+package com.clockbyte.admobadapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 /**
  * Created by FILM on 28.10.2016.
  */
-
 public class NativeHolder extends RecyclerView.ViewHolder {
 
     public NativeHolder(ViewGroup adViewWrapper){

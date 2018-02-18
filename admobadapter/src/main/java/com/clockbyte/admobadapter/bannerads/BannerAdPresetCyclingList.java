@@ -14,8 +14,6 @@
 
 package com.clockbyte.admobadapter.bannerads;
 
-import com.clockbyte.admobadapter.expressads.ExpressAdPreset;
-
 import java.util.ArrayList;
 import java.util.Collection;
 

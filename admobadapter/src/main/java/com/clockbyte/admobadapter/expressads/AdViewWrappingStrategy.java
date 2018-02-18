@@ -10,8 +10,9 @@ import com.google.android.gms.ads.NativeExpressAdView;
 
 /**
  * Created by fim on 31.08.2017.
+ * @deprecated Use banners instead
  */
-
+@Deprecated
 public class AdViewWrappingStrategy extends AdViewWrappingStrategyBase {
     /**
      * Add the Native Express {@param ad} to {@param wrapper}.

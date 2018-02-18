@@ -24,6 +24,7 @@ import android.view.ViewParent;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
+import com.clockbyte.admobadapter.AdPreset;
 import com.clockbyte.admobadapter.AdViewHelper;
 import com.clockbyte.admobadapter.AdmobAdapterCalculator;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
@@ -36,7 +37,9 @@ import java.util.Collections;
 /**
  * Adapter that has common functionality for any adapters that need to show ads in-between
  * other data.
+ * @deprecated Use banners instead
  */
+@Deprecated
 public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetcherBase.AdmobListener {
 
     private final String TAG = AdmobExpressAdapterWrapper.class.getCanonicalName();
@@ -210,7 +213,7 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
          * Be careful: don't pass release unit id without setting the testDevicesId if you still haven't deployed a Release.
          * Otherwise your Admob account could be banned
          */
-        public Builder setAdPresets(@NonNull Collection<ExpressAdPreset> adPresets){
+        public Builder setAdPresets(@NonNull Collection<AdPreset> adPresets){
             adFetcher.setAdPresets(adPresets);
             return this;
         }
@@ -220,7 +223,7 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
          * If you are testing ads please don't set it to the release id
          */
         public Builder setSingleAdUnitId(@NonNull String admobUnitId){
-            ExpressAdPreset adPreset = adFetcher.getAdPresetSingleOr(new ExpressAdPreset());
+            AdPreset adPreset = adFetcher.getAdPresetSingleOr(new AdPreset());
             adPreset.setAdUnitId(admobUnitId);
             adFetcher.setAdPresets(Collections.singletonList(adPreset));
             return this;
@@ -230,7 +233,7 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
          * Sets a single ad size for each ad block. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
          */
         public Builder setSingleAdSize(@NonNull AdSize adSize){
-            ExpressAdPreset adPreset = adFetcher.getAdPresetSingleOr(new ExpressAdPreset(null, null));
+            AdPreset adPreset = adFetcher.getAdPresetSingleOr(new AdPreset(null, null));
             adPreset.setAdSize(adSize);
             adFetcher.setAdPresets(Collections.singletonList(adPreset));
             return this;
@@ -292,7 +295,7 @@ public class AdmobExpressAdapterWrapper extends BaseAdapter implements AdmobFetc
     }
 
     /**
-     * Creates N instances {@link NativeExpressAdView} from the next N taken instances {@link ExpressAdPreset}
+     * Creates N instances {@link NativeExpressAdView} from the next N taken instances {@link AdPreset}
      * Will start async prefetch of ad blocks to use its further
      * @return last created NativeExpressAdView
      */

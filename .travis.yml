@@ -11,6 +11,7 @@ addons:
 
 before_install:
  - chmod +x gradlew
+ - yes | sdkmanager "platforms;android-27"
  
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock

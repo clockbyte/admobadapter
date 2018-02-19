@@ -1,4 +1,4 @@
-package com.clockbyte.admobadapter.expressads;
+package com.clockbyte.admobadapter.bannerads;
 
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -6,26 +6,25 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.clockbyte.admobadapter.R;
-import com.google.android.gms.ads.NativeExpressAdView;
+import com.google.android.gms.ads.AdView;
 
 /**
- * Created by fim on 31.08.2017.
- * @deprecated Use banners instead
+ * Created by L4grange on 14/02/2018
  */
-@Deprecated
-public class AdViewWrappingStrategy extends AdViewWrappingStrategyBase {
+
+public class BannerAdViewWrappingStrategy extends BannerAdViewWrappingStrategyBase {
     /**
-     * Add the Native Express {@param ad} to {@param wrapper}.
+     * Add the Banner {@param ad} to {@param wrapper}.
      * See the super's implementation for instance.
      */
     @Override
-    protected void addAdViewToWrapper(@NonNull ViewGroup wrapper, @NonNull NativeExpressAdView ad) {
+    protected void addAdViewToWrapper(@NonNull ViewGroup wrapper, @NonNull AdView ad) {
         wrapper.addView(ad);
     }
 
     /**
-     * This method can be overriden to recycle (remove) {@param ad} from {@param wrapper} view before adding to wrap.
-     * By default it will look for {@param ad} in the direct children of {@param wrapper} and remove the first occurence.
+     * This method can be overridden to recycle (remove) {@param ad} from {@param wrapper} view before adding to wrap.
+     * By default it will look for {@param ad} in the direct children of {@param wrapper} and remove the first occurrence.
      * See the super's implementation for instance.
      * The NativeExpressHolder recycled by the RecyclerView may be a different
      * instance than the one used previously for this position. Clear the
@@ -33,10 +32,10 @@ public class AdViewWrappingStrategy extends AdViewWrappingStrategyBase {
      * AdView associated with it
      */
     @Override
-    protected void recycleAdViewWrapper(@NonNull ViewGroup wrapper, @NonNull NativeExpressAdView ad) {
+    protected void recycleAdViewWrapper(@NonNull ViewGroup wrapper, @NonNull AdView ad) {
         for (int i = 0; i < wrapper.getChildCount(); i++) {
             View v = wrapper.getChildAt(i);
-            if (v instanceof NativeExpressAdView) {
+            if (v instanceof AdView) {
                 wrapper.removeViewAt(i);
                 break;
             }
@@ -44,9 +43,9 @@ public class AdViewWrappingStrategy extends AdViewWrappingStrategyBase {
     }
 
     /**
-     * This method can be overriden to wrap the created ad view with a custom {@link ViewGroup}.<br/>
+     * This method can be overridden to wrap the created ad view with a custom {@link ViewGroup}.<br/>
      * For example if you need to wrap the ad with your custom CardView
-     * @return The wrapper {@link ViewGroup} for ad, by default {@link NativeExpressAdView} ad would be wrapped with a CardView which is returned by this method
+     * @return The wrapper {@link ViewGroup} for ad, by default {@link AdView} ad would be wrapped with a CardView which is returned by this method
      */
     @Override
     @NonNull

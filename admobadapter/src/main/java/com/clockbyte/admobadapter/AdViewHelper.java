@@ -17,26 +17,43 @@ package com.clockbyte.admobadapter;
 import android.content.Context;
 import android.widget.AbsListView;
 
-import com.clockbyte.admobadapter.expressads.ExpressAdPreset;
+import com.clockbyte.admobadapter.bannerads.BannerAdPreset;
 import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.NativeExpressAdView;
-import com.google.android.gms.ads.VideoController;
-import com.google.android.gms.ads.VideoOptions;
 
 public class AdViewHelper {
 
-    public static NativeExpressAdView getExpressAdView(Context context, ExpressAdPreset expressAdPreset) {
+    public static NativeExpressAdView getExpressAdView(Context context, AdPreset adPreset) {
         NativeExpressAdView adView = new NativeExpressAdView(context);
-        AdSize adSize = expressAdPreset.getAdSize();
+        AdSize adSize = adPreset.getAdSize();
         adView.setAdSize(adSize);
-        adView.setAdUnitId(expressAdPreset.getAdUnitId());
+        adView.setAdUnitId(adPreset.getAdUnitId());
         adView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,
                 adSize.getHeightInPixels(context)));
 
         //set video options
-        if(expressAdPreset.getVideoOptions() != null)
-        adView.setVideoOptions(expressAdPreset.getVideoOptions());
+        if(adPreset.getVideoOptions() != null)
+        adView.setVideoOptions(adPreset.getVideoOptions());
 
         return adView;
     }
+
+    public static AdView getBannerAdView(Context context, BannerAdPreset bannerAdPreset) {
+        AdView adView = new AdView(context);
+        AdSize adSize = bannerAdPreset.getAdSize();
+        adView.setAdSize(adSize);
+        adView.setAdUnitId(bannerAdPreset.getAdUnitId());
+        adView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT,
+                adSize.getHeightInPixels(context)));
+
+        //Banners do not have video options
+        /*
+        if(bannerAdPreset.getVideoOptions() != null)
+        adView.setVideoOptions(bannerAdPreset.getVideoOptions());
+        */
+
+        return adView;
+    }
+
 }

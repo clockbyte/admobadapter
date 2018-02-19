@@ -12,37 +12,34 @@
  * limitations under the License.
  */
 
-package com.clockbyte.admobadapter.expressads;
-
+package com.clockbyte.admobadapter.bannerads;
 
 import android.text.TextUtils;
 
 import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.VideoOptions;
 
 import java.util.Locale;
 
-public class ExpressAdPreset {
-    private static final String UNIT_ID_DEFAULT_EXPRESS = "ca-app-pub-3940256099942544/1072772517";
-    private static final AdSize SIZE_DEFAULT_EXPRESS = new AdSize(AdSize.FULL_WIDTH, 150);
-    public static final ExpressAdPreset DEFAULT = new ExpressAdPreset(UNIT_ID_DEFAULT_EXPRESS, SIZE_DEFAULT_EXPRESS);
+public class BannerAdPreset {
+    private static final String UNIT_ID_DEFAULT_BANNER = "ca-app-pub-3940256099942544/6300978111"; // Google's Test unit ID
+    private static final AdSize SIZE_DEFAULT_BANNER = AdSize.SMART_BANNER;
+    public static final BannerAdPreset DEFAULT = new BannerAdPreset(UNIT_ID_DEFAULT_BANNER, SIZE_DEFAULT_BANNER);
 
     private String adUnitId;
     private AdSize adSize;
-    private VideoOptions videoOptions;
 
-    public ExpressAdPreset(){
-        this.adUnitId = UNIT_ID_DEFAULT_EXPRESS;
-        this.adSize = SIZE_DEFAULT_EXPRESS;
+    public BannerAdPreset(){
+        this.adUnitId = UNIT_ID_DEFAULT_BANNER;
+        this.adSize = SIZE_DEFAULT_BANNER;
     }
 
-    public ExpressAdPreset(String adUnitId){
+    public BannerAdPreset(String adUnitId){
         this();
         if(!TextUtils.isEmpty(adUnitId))
             this.adUnitId = adUnitId;
     }
 
-    public ExpressAdPreset(String adUnitId, AdSize adSize){
+    public BannerAdPreset(String adUnitId, AdSize adSize){
         this(adUnitId);
         if(adSize != null)
             this.adSize = adSize;
@@ -62,22 +59,14 @@ public class ExpressAdPreset {
         this.adSize = adSize;
     }
 
-
-    public VideoOptions getVideoOptions() {
-        return videoOptions;
-    }
-    public void setVideoOptions(VideoOptions videoOptions) {
-        this.videoOptions = videoOptions;
-    }
-
     public boolean isValid(){
         return !TextUtils.isEmpty(this.adUnitId);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof ExpressAdPreset) {
-            ExpressAdPreset other = (ExpressAdPreset) o;
+        if (o instanceof BannerAdPreset) {
+            BannerAdPreset other = (BannerAdPreset) o;
             return (this.adUnitId.equals(other.adUnitId)
                     && this.adSize.getHeight() == other.adSize.getHeight()
                     && this.adSize.getWidth() == other.adSize.getWidth());

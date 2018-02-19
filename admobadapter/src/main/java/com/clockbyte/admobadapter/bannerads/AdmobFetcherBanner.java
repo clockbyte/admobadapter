@@ -13,17 +13,15 @@
  * limitations under the License.
  */
 
-package com.clockbyte.admobadapter.expressads;
+package com.clockbyte.admobadapter.bannerads;
 
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import com.clockbyte.admobadapter.AdPreset;
-import com.clockbyte.admobadapter.AdPresetCyclingList;
 import com.clockbyte.admobadapter.AdmobFetcherBase;
 import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.NativeExpressAdView;
+import com.google.android.gms.ads.AdView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -31,13 +29,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @deprecated Use banners instead
- */
-@Deprecated
-public class AdmobFetcherExpress extends AdmobFetcherBase {
+public class AdmobFetcherBanner extends AdmobFetcherBase {
 
-    private final String TAG = AdmobFetcherExpress.class.getCanonicalName();
+    private final String TAG = AdmobFetcherBanner.class.getCanonicalName();
 
     /**
      * Maximum number of ads to prefetch.
@@ -49,37 +43,37 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
      */
     public static final int MAX_FETCH_ATTEMPT = 4;
 
-    public AdmobFetcherExpress(Context context){
+    public AdmobFetcherBanner(Context context){
         super();
         mContext = new WeakReference<>(context);
     }
 
-    private List<NativeExpressAdView> mPrefetchedAds = new ArrayList<>();
-    private AdPresetCyclingList mAdPresetCyclingList = new AdPresetCyclingList();
+    private List<AdView> mPrefetchedAds = new ArrayList<>();
+    private BannerAdPresetCyclingList mAdPresetCyclingList = new BannerAdPresetCyclingList();
 
-    /*
-* Gets next ad preset for Admob banners from FIFO .
-* It works like cycling FIFO (first in = first out, cycling from end to start).
-* Each ad block will get one from the queue.
-* If the desired count of ad blocks is greater than this collection size
-* then it will go again to the first item and iterate as much as it required.
-* ID should be active, please check it in your Admob's account.
- */
-    public AdPreset takeNextAdPreset() {
+    /**
+     * Gets next ad preset for Admob banners from FIFO .
+     * It works like cycling FIFO (first in = first out, cycling from end to start).
+     * Each ad block will get one from the queue.
+     * If the desired count of ad blocks is greater than this collection size
+     * then it will go again to the first item and iterate as much as it required.
+     * ID should be active, please check it in your Admob's account.
+     */
+    public BannerAdPreset takeNextAdPreset() {
         return this.mAdPresetCyclingList.get();
     }
 
-    /*
-   * Sets an unit IDs for admob banners.
-* It works like cycling FIFO (first in = first out, cycling from end to start).
-* Each ad block will get one from the queue.
-* If the desired count of ad blocks is greater than this collection size
-* then it will go again to the first item and iterate as much as it required.
-* ID should be active, please check it in your Admob's account.
- */
-    public void setAdPresets(Collection<AdPreset> adPresets) {
-        Collection<AdPreset> mAdPresets = adPresets==null||adPresets.size() == 0
-                ? Collections.singletonList(AdPreset.DEFAULT)
+    /**
+     * Sets an unit IDs for admob banners.
+     * It works like cycling FIFO (first in = first out, cycling from end to start).
+     * Each ad block will get one from the queue.
+     * If the desired count of ad blocks is greater than this collection size
+     * then it will go again to the first item and iterate as much as it required.
+     * ID should be active, please check it in your Admob's account.
+     */
+    public void setAdPresets(Collection<BannerAdPreset> adPresets) {
+        Collection<BannerAdPreset> mAdPresets = adPresets==null||adPresets.size() == 0
+                ? Collections.singletonList(BannerAdPreset.DEFAULT)
                 :adPresets;
         mAdPresetCyclingList.clear();
         mAdPresetCyclingList.addAll(mAdPresets);
@@ -89,27 +83,27 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
         return this.mAdPresetCyclingList.size();
     }
 
-    public AdPreset getAdPresetSingleOr(AdPreset defaultValue){
+    public BannerAdPreset getAdPresetSingleOr(BannerAdPreset defaultValue){
         return this.mAdPresetCyclingList.size() == 1 ? this.mAdPresetCyclingList.get() : defaultValue;
     }
 
     /**
-     * Gets native ad at a particular index in the fetched ads list.
+     * Gets banner ad at a particular index in the fetched ads list.
      *
      * @param adPos the index of ad in the fetched ads list
-     * @return the native ad in the list
+     * @return the banner ad in the list
      * @see #getFetchedAdsCount()
      */
-    public synchronized NativeExpressAdView getAdForIndex(int adPos) {
+    public synchronized AdView getAdForIndex(int adPos) {
         if(adPos >= 0 && mPrefetchedAds.size() > adPos)
             return mPrefetchedAds.get(adPos);
         return null;
     }
 
     /**
-     * Fetches a new native ad.
+     * Fetches a new banner ad.
      */
-    protected synchronized void fetchAd(final NativeExpressAdView adView) {
+    protected synchronized void fetchAd(final AdView adView) {
         if(mFetchFailCount > MAX_FETCH_ATTEMPT)
             return;
 
@@ -130,10 +124,10 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     }
 
     /**
-     * Subscribing to the native ads events
+     * Subscribing to the banner ads events
      * @param adView
      */
-    protected synchronized void setupAd(final NativeExpressAdView adView) {
+    protected synchronized void setupAd(final AdView adView) {
         if(mFetchFailCount > MAX_FETCH_ATTEMPT)
             return;
 
@@ -155,10 +149,10 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     }
 
     /**
-     * A handler for received native ads
+     * A handler for received banner ads
      * @param adView
      */
-    private synchronized void onFetched(NativeExpressAdView adView) {
+    private synchronized void onFetched(AdView adView) {
         Log.i(TAG, "onAdFetched");
         mFetchFailCount = 0;
         mNoOfFetchedAds++;
@@ -166,10 +160,10 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
     }
 
     /**
-     * A handler for failed native ads
+     * A handler for failed banner ads
      * @param adView
      */
-    private synchronized void onFailedToLoad(NativeExpressAdView adView, int errorCode) {
+    private synchronized void onFailedToLoad(AdView adView, int errorCode) {
         Log.i(TAG, "onAdFailedToLoad " + errorCode);
         mFetchFailCount++;
         mNoOfFetchedAds = Math.max(mNoOfFetchedAds - 1, 0);
@@ -184,10 +178,22 @@ public class AdmobFetcherExpress extends AdmobFetcherBase {
         return mPrefetchedAds.size();
     }
 
+    public synchronized void pauseAll(){
+        for(AdView ad:mPrefetchedAds){
+            ad.pause();
+        }
+    }
+
+    public synchronized void resumeAll(){
+        for(AdView ad:mPrefetchedAds){
+            ad.resume();
+        }
+    }
+
     @Override
     public synchronized void destroyAllAds() {
         super.destroyAllAds();
-        for(NativeExpressAdView ad:mPrefetchedAds){
+        for(AdView ad:mPrefetchedAds){
             ad.destroy();
         }
         mPrefetchedAds.clear();

@@ -19,6 +19,11 @@ import com.google.android.gms.ads.NativeExpressAdView;
 
 import java.util.ArrayList;
 
+/**
+ *
+ * @deprecated Use banners instead
+ */
+@Deprecated
 public class MainActivity_RecyclerView_Express extends Activity {
 
     RecyclerView rvMessages;

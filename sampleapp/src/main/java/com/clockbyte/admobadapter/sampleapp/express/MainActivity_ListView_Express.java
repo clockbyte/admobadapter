@@ -18,6 +18,11 @@ import com.google.android.gms.ads.NativeExpressAdView;
 
 import java.util.ArrayList;
 
+/**
+ *
+ * @deprecated Use banners instead
+ */
+@Deprecated
 public class MainActivity_ListView_Express extends Activity {
 
     ListView lvMessages;

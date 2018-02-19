@@ -96,7 +96,7 @@ public class MainActivity_RecyclerView_Banner extends Activity {
 
         rvMessages.setAdapter(adapterWrapper); // setting an AdmobBannerRecyclerAdapterWrapper to a RecyclerView
         //use the following commented block to use a grid layout with spanning ad blocks
-        /*GridLayoutManager mLayoutManager = new GridLayoutManager(this, 2);
+        GridLayoutManager mLayoutManager = new GridLayoutManager(this, 2);
         mLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
@@ -105,7 +105,7 @@ public class MainActivity_RecyclerView_Banner extends Activity {
                 else return 1;
             }
         });
-        rvMessages.setLayoutManager(mLayoutManager);*/
+        rvMessages.setLayoutManager(mLayoutManager);
 
         //preparing the collection of data
         final String sItem = "item #";

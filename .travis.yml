@@ -6,8 +6,6 @@ sudo: false
 
 addons:
   apt:
-    sources:
-      - google
     packages:
       - oracle-java8-installer
 

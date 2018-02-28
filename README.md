@@ -4,7 +4,7 @@ Admob Adapter
 
 ======================
 
-> We've released! [v1.4.5](https://github.com/clockbyte/admobadapter/releases/tag/v1.4.5)! Now you'd use a Builder to build adapter wrappers. (includes changes that could break your actual code, [see](https://github.com/clockbyte/admobadapter/wiki/Cookbook#the-recipe-3-for-a-recyclerview-scrolling-with-express-ads)).
+> We've released! [v1.4.6](https://github.com/clockbyte/admobadapter/releases/tag/v1.4.6)! The support of express ads has been dropped, please use banners instead ([see details](https://github.com/clockbyte/admobadapter/issues/105)).
 
 The reference to the [COOK RECIPES](https://github.com/clockbyte/admobadapter/wiki/Cookbook) for people who are in hurry!
 
@@ -19,7 +19,7 @@ Now you are able to link Admobadapter via Gradle like this
 ```shell
 dependencies {
 //link other libs
-    compile 'com.github.clockbyte:admobadapter:1.4.5'
+    compile 'com.github.clockbyte:admobadapter:1.4.6'
 }
 ```
 [Here](https://github.com/clockbyte/admobadapter/wiki/Installation) you could find more ways.

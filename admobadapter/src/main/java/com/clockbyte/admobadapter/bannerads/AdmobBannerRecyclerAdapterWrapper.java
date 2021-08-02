@@ -14,13 +14,15 @@
 
 package com.clockbyte.admobadapter.bannerads;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.clockbyte.admobadapter.AdViewHelper;
 import com.clockbyte.admobadapter.AdapterWrapperObserver;
@@ -255,8 +257,9 @@ public class AdmobBannerRecyclerAdapterWrapper
         /**
          * Sets a single ad size for each ad block. By default it equals to AdSize(AdSize.FULL_WIDTH, 150);
          */
-        public Builder setSingleAdSize(@NonNull AdSize adSize){
-            BannerAdPreset adPreset = adFetcher.getAdPresetSingleOr(new BannerAdPreset(null, null));
+        public Builder setSingleAdSize(@NonNull AdSize adSize) {
+            BannerAdPreset adPreset = adFetcher.getAdPresetSingleOr(
+                    new BannerAdPreset(null, null));
             adPreset.setAdSize(adSize);
             adFetcher.setAdPresets(Collections.singletonList(adPreset));
             return this;
@@ -266,7 +269,7 @@ public class AdmobBannerRecyclerAdapterWrapper
         * Injects an object which incapsulates transformation of the source and ad blocks indices. You could override calculations
         * by inheritance from {@link AdmobAdapterCalculator} class
         */
-        public Builder setAdapterCalculator(@NonNull AdmobAdapterCalculator adapterCalculator){
+        public Builder setAdapterCalculator(@NonNull AdmobAdapterCalculator adapterCalculator) {
             AdapterCalculator = adapterCalculator;
             return setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS).setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
         }
@@ -275,7 +278,9 @@ public class AdmobBannerRecyclerAdapterWrapper
          * Injects an object which incapsulates a wrapping logic for AdViews. You could inject your own implementation
          * by inheritance from {@link BannerAdViewWrappingStrategyBase} class
          */
-        public Builder setAdViewWrappingStrategy(@NonNull BannerAdViewWrappingStrategyBase adViewWrappingStrategy){
+        public Builder setAdViewWrappingStrategy(
+                @NonNull BannerAdViewWrappingStrategyBase adViewWrappingStrategy
+        ) {
             AdViewWrappingStrategy = adViewWrappingStrategy;
             return this;
         }
@@ -284,7 +289,11 @@ public class AdmobBannerRecyclerAdapterWrapper
          * Injects an object which incapsulates transformation of the source and ad blocks indices. You could override calculations
          * by inheritance of {@link AdmobAdapterCalculator} class
          */
-        public Builder setAdapterCalculator(@NonNull AdmobAdapterCalculator adapterCalculator, int noOfDataBetweenAds, int limitOfAds, int firstAdIndex){
+        public Builder setAdapterCalculator(
+                @NonNull AdmobAdapterCalculator adapterCalculator,
+                int noOfDataBetweenAds,
+                int limitOfAds,
+                int firstAdIndex) {
             AdapterCalculator = adapterCalculator;
             return setNoOfDataBetweenAds(noOfDataBetweenAds).setLimitOfAds(limitOfAds).setFirstAdIndex(firstAdIndex);
         }
@@ -293,9 +302,13 @@ public class AdmobBannerRecyclerAdapterWrapper
          * Sets underlying adapter with your data collection.
          * If you want to inject your implementation of {@link AdmobAdapterCalculator} please set it before this call
          */
+        @SuppressLint("NotifyDataSetChanged")
         public Builder setAdapter(RecyclerView.Adapter<RecyclerView.ViewHolder> adapter) {
             mAdapter = adapter;
-            mAdapter.registerAdapterDataObserver(new AdapterWrapperObserver(AdmobBannerRecyclerAdapterWrapper.this, AdapterCalculator, adFetcher));
+            mAdapter.registerAdapterDataObserver(new AdapterWrapperObserver(
+                    AdmobBannerRecyclerAdapterWrapper.this,
+                    AdapterCalculator,
+                    adFetcher));
             notifyDataSetChanged();
             return this;
         }
@@ -324,16 +337,14 @@ public class AdmobBannerRecyclerAdapterWrapper
                 public void run() {
                     adFetcher.fetchAd(item);
                 }
-            }, 50 * i);
+            }, 50L * i);
             last = item;
         }
         return last;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        if (viewHolder == null)
-            return;
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         if(viewHolder.getItemViewType() == getViewTypeAdBanner()) {
             BannerHolder bannerHolder = (BannerHolder) viewHolder;
             ViewGroup wrapper = bannerHolder.getAdViewWrapper();
@@ -413,6 +424,7 @@ public class AdmobBannerRecyclerAdapterWrapper
     /**
      * Clears all currently displaying ads and reinits the list
      */
+    @SuppressLint("NotifyDataSetChanged")
     public void reinitialize() {
         adFetcher.destroyAllAds();
         prefetchAds(AdmobFetcherBanner.PREFETCHED_ADS_SIZE);
@@ -447,6 +459,7 @@ public class AdmobBannerRecyclerAdapterWrapper
         notifyItemChanged(pos==0? 1: Math.max(0, pos-1));
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onAdsCountChanged() {
         notifyDataSetChanged();

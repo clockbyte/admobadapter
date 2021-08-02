@@ -19,9 +19,12 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.clockbyte.admobadapter.AdmobFetcherBase;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.LoadAdError;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -48,8 +51,8 @@ public class AdmobFetcherBanner extends AdmobFetcherBase {
         mContext = new WeakReference<>(context);
     }
 
-    private List<AdView> mPrefetchedAds = new ArrayList<>();
-    private BannerAdPresetCyclingList mAdPresetCyclingList = new BannerAdPresetCyclingList();
+    private final List<AdView> mPrefetchedAds = new ArrayList<>();
+    private final BannerAdPresetCyclingList mAdPresetCyclingList = new BannerAdPresetCyclingList();
 
     /**
      * Gets next ad preset for Admob banners from FIFO .
@@ -135,10 +138,10 @@ public class AdmobFetcherBanner extends AdmobFetcherBase {
             mPrefetchedAds.add(adView);
         adView.setAdListener(new AdListener() {
             @Override
-            public void onAdFailedToLoad(int errorCode) {
-                super.onAdFailedToLoad(errorCode);
+            public void onAdFailedToLoad(@NonNull LoadAdError error) {
+                super.onAdFailedToLoad(error);
                 // Handle the failure by logging, altering the UI, etc.
-                onFailedToLoad(adView, errorCode);
+                onFailedToLoad(adView, error.getCode());
             }
             @Override
             public void onAdLoaded() {

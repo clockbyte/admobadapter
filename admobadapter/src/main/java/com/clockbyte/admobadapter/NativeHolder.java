@@ -14,8 +14,9 @@
 
 package com.clockbyte.admobadapter;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by FILM on 28.10.2016.

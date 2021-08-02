@@ -1,8 +1,10 @@
 package com.clockbyte.admobadapter.sampleapp;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.clockbyte.admobadapter.sampleapp.express.ViewWrapper;
 
@@ -14,17 +16,20 @@ import java.util.List;
  */
 public class RecyclerExampleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<String> items = new ArrayList<String>();
+    private final List<String> items = new ArrayList<>();
 
-    private Context mContext;
+    private final Context mContext;
 
     public RecyclerExampleAdapter(Context context){
         mContext = context;
     }
 
     @Override
-    public ViewWrapper<RecyclerViewExampleItem> onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewWrapper<RecyclerViewExampleItem>(new RecyclerViewExampleItem(mContext));
+    public ViewWrapper<RecyclerViewExampleItem> onCreateViewHolder(
+            @NonNull ViewGroup parent,
+            int viewType
+    ) {
+        return new ViewWrapper<>(new RecyclerViewExampleItem(mContext));
     }
 
     @Override

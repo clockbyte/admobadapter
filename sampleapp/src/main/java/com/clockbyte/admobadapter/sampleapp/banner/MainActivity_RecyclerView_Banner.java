@@ -2,23 +2,19 @@ package com.clockbyte.admobadapter.sampleapp.banner;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.clockbyte.admobadapter.bannerads.AdmobBannerRecyclerAdapterWrapper;
-import com.clockbyte.admobadapter.bannerads.BannerAdViewWrappingStrategy;
 import com.clockbyte.admobadapter.bannerads.BannerAdViewWrappingStrategyBase;
 import com.clockbyte.admobadapter.sampleapp.R;
 import com.clockbyte.admobadapter.sampleapp.RecyclerExampleAdapter;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 

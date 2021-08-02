@@ -2,19 +2,13 @@ package com.clockbyte.admobadapter.sampleapp;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.widget.ArrayAdapter;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.clockbyte.admobadapter.AdmobRecyclerAdapterWrapper;
-import com.clockbyte.admobadapter.ContentAdLayoutContext;
-import com.clockbyte.admobadapter.EAdType;
-import com.clockbyte.admobadapter.InstallAppAdLayoutContext;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.Timer;
 import java.util.TimerTask;
 

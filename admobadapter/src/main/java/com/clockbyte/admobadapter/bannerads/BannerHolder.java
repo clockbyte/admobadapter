@@ -14,8 +14,9 @@
 
 package com.clockbyte.admobadapter.bannerads;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by L4grange on 14/02/2018

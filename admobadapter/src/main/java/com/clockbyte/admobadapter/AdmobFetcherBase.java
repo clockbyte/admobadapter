@@ -19,7 +19,6 @@ import android.content.Context;
 import android.os.Handler;
 
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.NativeExpressAdView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -28,15 +27,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class AdmobFetcherBase {
 
-    private final String TAG = AdmobFetcherBase.class.getCanonicalName();
-
-    protected List<AdmobListener> mAdNativeListeners = new ArrayList<AdmobListener>();
+    protected List<AdmobListener> mAdNativeListeners = new ArrayList<>();
     protected int mNoOfFetchedAds;
     protected int mFetchFailCount;
-    protected WeakReference<Context> mContext = new WeakReference<Context>(null);
+    protected WeakReference<Context> mContext = new WeakReference<>(null);
     protected AtomicBoolean lockFetch = new AtomicBoolean();
 
-    protected ArrayList<String> testDeviceId = new ArrayList<String>();
+    protected ArrayList<String> testDeviceId = new ArrayList<>();
     /*
     *Gets a test device ID. Normally you don't have to set it
      */
@@ -86,13 +83,13 @@ public abstract class AdmobFetcherBase {
      * @see #destroyAllAds()
      */
     public synchronized void prefetchAds(Context context) {
-        mContext = new WeakReference<Context>(context);
+        mContext = new WeakReference<>(context);
     }
 
     /**
      * Destroys ads that have been fetched, that are still being fetched and removes all resource
      * references that this instance still has. This should only be called when the Activity that
-     * is showing ads is closing, preferably from the {@link android.app.Activity#onDestroy()}.
+     * is showing ads is closing.
      * </p>
      * The converse of this call is {@link #prefetchAds(Context)}.
      */
@@ -160,11 +157,7 @@ public abstract class AdmobFetcherBase {
      * Setup and get an ads request
      */
     protected synchronized AdRequest getAdRequest() {
-        AdRequest.Builder adBldr = new AdRequest.Builder();
-        for (String id : getTestDeviceIds()) {
-            adBldr.addTestDevice(id);
-        }
-        return adBldr.build();
+        return new AdRequest.Builder().build();
     }
 
     /**
@@ -188,7 +181,6 @@ public abstract class AdmobFetcherBase {
          * Raised when the ad has failed to load.
          * @param adIdx the index of ad block which state was changed.
          * @param adPayload filled with some specific for current platform payload
-         * (for Admob Native Express it is {@link NativeExpressAdView})
          * See {@link AdmobAdapterCalculator} for methods to transform {@param adIdx} to adapter wrapper's indices
          */
         void onAdFailed(int adIdx, int errorCode, Object adPayload);

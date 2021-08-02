@@ -22,7 +22,7 @@ import java.util.Locale;
 
 public class BannerAdPreset {
     private static final String UNIT_ID_DEFAULT_BANNER = "ca-app-pub-3940256099942544/6300978111"; // Google's Test unit ID
-    private static final AdSize SIZE_DEFAULT_BANNER = AdSize.SMART_BANNER;
+    private static final AdSize SIZE_DEFAULT_BANNER = AdSize.FLUID;
     public static final BannerAdPreset DEFAULT = new BannerAdPreset(UNIT_ID_DEFAULT_BANNER, SIZE_DEFAULT_BANNER);
 
     private String adUnitId;

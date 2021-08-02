@@ -2,19 +2,17 @@ package com.clockbyte.admobadapter.sampleapp.banner;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
+
 import com.clockbyte.admobadapter.bannerads.AdmobBannerAdapterWrapper;
 import com.clockbyte.admobadapter.bannerads.BannerAdViewWrappingStrategyBase;
 import com.clockbyte.admobadapter.sampleapp.R;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 

@@ -27,7 +27,7 @@ dependencies {
 **If you use/going to use the Admobadapter for your application and also you want your application's logo to be here please let us know with a new issue.**
 
 # Contributions
-Contributions are very welcome. If you find a bug in the library or want an improvement and feel you can work on it yourself, fork + pull request to the **EXPERIMENTAL** branch and i'll appreciate it much!
+Contributions are very welcome. If you find a bug in the library or want an improvement and feel you can work on it yourself, fork + pull request to the **MAIN** branch and i'll appreciate it much!
 
 # Advanced help and consulting
 If you absolutely have no time for integration of Admobadapter to your app yourself you could [contact us](http://www.clockbyte.ru) for consultation. Also we could do this routine stuff for you accurately like a clockwork!

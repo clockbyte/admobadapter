@@ -53,8 +53,10 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.google.firebase:firebase-ads:20.2.0'
+
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
+
+    implementation 'com.google.android.gms:play-services-ads:20.2.0'
 
     testImplementation 'junit:junit:4.13.1'
     testImplementation 'org.mockito:mockito-core:3.3.3'

@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.clockbyte.admobadapter.AdmobRecyclerAdapterWrapper;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -23,9 +25,8 @@ public class MainActivity_RecyclerView extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_recycleview);
 
-        //highly-recommended in Firebase docs to initialize things early as possible
-        //test_admob_app_id is different with unit_id! you could get it in your Admob console
-        MobileAds.initialize(getApplicationContext(), getString(R.string.test_admob_app_id));
+        // they suggest to initialize things early as possible in Firebase docs
+        MobileAds.initialize(getApplicationContext());
 
         initRecyclerViewItems();
         initUpdateAdsTimer();
@@ -43,7 +44,7 @@ public class MainActivity_RecyclerView extends Activity {
         RecyclerExampleAdapter adapter  = new RecyclerExampleAdapter(this);
 
         //your test devices' ids
-        String[] testDevicesIds = new String[]{getString(R.string.testDeviceID),AdRequest.DEVICE_ID_EMULATOR};
+        String[] testDevicesIds = new String[]{getString(R.string.testDeviceID), AdRequest.DEVICE_ID_EMULATOR};
         //when you'll be ready for release please use another ctor with admobReleaseUnitId instead.
         adapterWrapper = new AdmobRecyclerAdapterWrapper(this, testDevicesIds);
         //By default both types of ads are loaded by wrapper.
@@ -76,7 +77,7 @@ public class MainActivity_RecyclerView extends Activity {
 
         //preparing the collection of data
         final String sItem = "item #";
-        ArrayList<String> lst = new ArrayList<String>(100);
+        ArrayList<String> lst = new ArrayList<>(100);
         for(int i=1;i<=100;i++)
             lst.add(sItem.concat(Integer.toString(i)));
 

@@ -7,6 +7,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
+        <!-- Set an android:name for a views (RecyclerView / ListView) and for a type of ads
+            (native / banner) which you want to test -->
         <activity
             android:name=".banner.MainActivity_RecyclerView_Banner"
             android:label="@string/app_name" >
@@ -16,6 +19,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- See res in string.xml to set a correct admob ID here
+            (for banners or regular native ads)-->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="@string/test_admob_app_id"/>
     </application>
 
 </manifest>

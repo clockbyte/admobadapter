@@ -13,6 +13,9 @@ import androidx.annotation.NonNull;
 import com.clockbyte.admobadapter.bannerads.AdmobBannerAdapterWrapper;
 import com.clockbyte.admobadapter.bannerads.BannerAdViewWrappingStrategyBase;
 import com.clockbyte.admobadapter.sampleapp.R;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 
@@ -26,9 +29,8 @@ public class MainActivity_ListView_Banner extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_listview);
 
-        //highly-recommended in Firebase docs to initialize things early as possible
-        //test_admob_app_id is different with unit_id! you could get it in your Admob console
-        MobileAds.initialize(getApplicationContext(), getString(R.string.test_admob_app_id));
+        // they suggest to initialize things early as possible in Firebase docs
+        MobileAds.initialize(getApplicationContext());
 
         initListViewItems();
     }
@@ -41,11 +43,12 @@ public class MainActivity_ListView_Banner extends Activity {
         lvMessages = (ListView) findViewById(R.id.lvMessages);
 
         //creating your adapter, it could be a custom adapter as well
-        ArrayAdapter<String> adapter  = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> adapter  = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1);
 
         //your test devices' ids
-        String[] testDevicesIds = new String[]{getString(R.string.testDeviceID), AdRequest.DEVICE_ID_EMULATOR};
+        String[] testDevicesIds = new String[]{getString(R.string.testDeviceID),
+                AdRequest.DEVICE_ID_EMULATOR};
         //when you'll be ready for release please use another ctor with admobReleaseUnitId instead.
         adapterWrapper = AdmobBannerAdapterWrapper.builder(this)
                 .setLimitOfAds(10)
@@ -68,7 +71,9 @@ public class MainActivity_ListView_Banner extends Activity {
                     protected void recycleAdViewWrapper(@NonNull ViewGroup wrapper, @NonNull AdView ad) {
                         //get the view which directly will contain ad
                         ViewGroup container = (ViewGroup) wrapper.findViewById(R.id.ad_container);
-                        //iterating through all children of the container view and remove the first occured {@link NativeExpressAdView}. It could be different with {@param ad}!!!*//*
+                        //iterating through all children of the container view and remove the first
+                        // occured {@link NativeExpressAdView}. It could be different with
+                        // {@param ad}!!!*//*
                         for (int i = 0; i < container.getChildCount(); i++) {
                             View v = container.getChildAt(i);
                             if (v instanceof AdView) {
@@ -92,7 +97,7 @@ public class MainActivity_ListView_Banner extends Activity {
 
         //preparing the collection of data
         final String sItem = "item #";
-        ArrayList<String> lst = new ArrayList<String>(100);
+        ArrayList<String> lst = new ArrayList<>(100);
         for(int i=1;i<=100;i++)
             lst.add(sItem.concat(Integer.toString(i)));
 

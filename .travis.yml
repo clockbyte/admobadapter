@@ -24,7 +24,6 @@ cache:
 android:
   components:
         - tools # to get the new `repository-11.xml`
-        #- tools # to install Android SDK tools 25.1.x
         - build-tools-30.0.2
         - android-30
         - android-22
@@ -36,7 +35,6 @@ android:
         # Specify at least one system image,
         # if you need to run emulator(s) during your tests
         - sys-img-armeabi-v7a-android-22
-        # - sys-img-x86-android-24
         
 env:
   global:
@@ -55,7 +53,6 @@ script:
   - ./gradlew clean build
   - ./gradlew test
   - ./gradlew build check
-  # - ./gradlew build connectedCheck
 
 notifications:
   webhooks:

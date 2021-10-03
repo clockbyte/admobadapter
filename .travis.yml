@@ -34,7 +34,7 @@ android:
         - extra-google-google_play_services
         # Specify at least one system image,
         # if you need to run emulator(s) during your tests
-        - sys-img-armeabi-v7a-android-30
+        - sys-img-armeabi-v7a-android-24
         # - sys-img-x86-android-24
         
 env:
@@ -45,7 +45,7 @@ env:
 # Emulator Management: Create, Start and Wait
 before_script:
   - android list target
-  - echo no | android create avd --force -n test -t android-30 --abi armeabi-v7a -c 100M
+  - echo no | android create avd --force -n test -t android-24 --abi armeabi-v7a -c 100M
   - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &

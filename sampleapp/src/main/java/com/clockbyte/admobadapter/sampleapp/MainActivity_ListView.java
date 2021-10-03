@@ -28,9 +28,8 @@ public class MainActivity_ListView extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_listview);
 
-        //highly-recommended in Firebase docs to initialize things early as possible
-        //test_admob_app_id is different with unit_id! you could get it in your Admob console
-        MobileAds.initialize(getApplicationContext(), getString(R.string.test_admob_app_id));
+        // they suggest to initialize things early as possible in Firebase docs
+        MobileAds.initialize(getApplicationContext());
 
         initListViewItems();
         initUpdateAdsTimer();
@@ -41,14 +40,14 @@ public class MainActivity_ListView extends Activity {
      * FIRST OF ALL Please notice that the following code will work on a real devices but emulator!
      */
     private void initListViewItems() {
-        lvMessages = (ListView) findViewById(R.id.lvMessages);
+        lvMessages = findViewById(R.id.lvMessages);
 
         //creating your adapter, it could be a custom adapter as well
-        ArrayAdapter<String> adapter  = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> adapter  = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1);
 
         //your test devices' ids
-        String[] testDevicesIds = new String[]{getString(R.string.testDeviceID),AdRequest.DEVICE_ID_EMULATOR};
+        String[] testDevicesIds = new String[]{getString(R.string.testDeviceID), AdRequest.DEVICE_ID_EMULATOR};
         //when you'll be ready for release please use another ctor with admobReleaseUnitId instead.
         adapterWrapper = new AdmobAdapterWrapper(this, testDevicesIds);
         //By default both types of ads are loaded by wrapper.
@@ -84,14 +83,14 @@ public class MainActivity_ListView extends Activity {
                 int sourceCnt = adapterWrapper.getAdapter().getCount();
                 int originalPos = adapterCalc.getOriginalContentPosition(position, fetchedAdsCnt, sourceCnt);
                 Toast.makeText(getApplicationContext(),
-                        "Click: " + String.valueOf(originalPos),
+                        "Click: " + originalPos,
                         Toast.LENGTH_SHORT).show();
             }
         });
 
         //preparing the collection of data
         final String sItem = "item #";
-        ArrayList<String> lst = new ArrayList<String>(100);
+        ArrayList<String> lst = new ArrayList<>(100);
         for(int i=1;i<=100;i++)
             lst.add(sItem.concat(Integer.toString(i)));
 

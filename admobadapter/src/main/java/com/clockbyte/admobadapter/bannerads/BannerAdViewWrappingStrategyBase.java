@@ -1,7 +1,8 @@
 package com.clockbyte.admobadapter.bannerads;
 
-import android.support.annotation.NonNull;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.gms.ads.AdView;
 

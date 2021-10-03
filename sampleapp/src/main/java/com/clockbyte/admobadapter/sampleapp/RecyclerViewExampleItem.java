@@ -11,7 +11,7 @@ public class RecyclerViewExampleItem extends FrameLayout {
     public RecyclerViewExampleItem(Context context) {
         super(context);
         inflate(context, R.layout.recyclerview_item, this);
-        tvText = ((TextView) findViewById(R.id.tvText));
+        tvText = findViewById(R.id.tvText);
     }
 
     public void bind(String str){

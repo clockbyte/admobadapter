@@ -15,16 +15,15 @@
 
 package com.clockbyte.admobadapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
-import com.google.android.gms.ads.formats.NativeAd;
-import com.google.android.gms.ads.formats.NativeAdView;
-import com.google.android.gms.ads.formats.NativeAppInstallAd;
-import com.google.android.gms.ads.formats.NativeAppInstallAdView;
-import com.google.android.gms.ads.formats.NativeContentAd;
-import com.google.android.gms.ads.formats.NativeContentAdView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.gms.ads.nativead.NativeAd;
+import com.google.android.gms.ads.nativead.NativeAdView;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -46,6 +45,7 @@ public class AdmobRecyclerAdapterWrapper
         return mAdapter;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setAdapter(RecyclerView.Adapter<RecyclerView.ViewHolder> adapter) {
         mAdapter = adapter;
         mAdapter.registerAdapterDataObserver(new AdapterWrapperObserver(this, getAdapterCalculator(), adFetcher));
@@ -53,20 +53,18 @@ public class AdmobRecyclerAdapterWrapper
     }
 
     private AdmobFetcher adFetcher;
-    private Context mContext;
     private AdmobAdapterCalculator AdapterCalculator = new AdmobAdapterCalculator();
-    /*
+    /**
     * Gets an object which incapsulates transformation of the source and ad blocks indices
     */
     public AdmobAdapterCalculator getAdapterCalculator(){return AdapterCalculator;}
-    /*
-* Injects an object which incapsulates transformation of the source and ad blocks indices. You could override calculations
-* by inheritance of AdmobAdapterCalculator class
-*/
+    /**
+    * Injects an object which incapsulates transformation of the source and ad blocks indices. You could override calculations
+    * by inheritance of AdmobAdapterCalculator class
+    */
     public void setAdapterCalculator(AdmobAdapterCalculator adapterCalculatordmob){AdapterCalculator = adapterCalculatordmob;}
 
-    private static final int VIEW_TYPE_AD_CONTENT = 0;
-    private static final int VIEW_TYPE_AD_INSTALL = 1;
+    private static final int VIEW_TYPE_AD = 0;
 
     private final static int DEFAULT_NO_OF_DATA_BETWEEN_ADS = 10;
     private final static int DEFAULT_LIMIT_OF_ADS = 3;
@@ -90,12 +88,8 @@ public class AdmobRecyclerAdapterWrapper
         return adFetcher.getFetchingAdsCount();
     }
 
-    private int getViewTypeAdContent(){
-        return getViewTypeBiggestSource() + VIEW_TYPE_AD_CONTENT + 1;
-    }
-
-    private int getViewTypeAdInstall(){
-        return getViewTypeBiggestSource() + VIEW_TYPE_AD_INSTALL + 1;
+    private int getViewTypeAd(){
+        return getViewTypeBiggestSource() + VIEW_TYPE_AD + 1;
     }
 
     /*
@@ -156,36 +150,22 @@ public class AdmobRecyclerAdapterWrapper
         this.viewTypeBiggestSource = viewTypeBiggestSource;
     }
 
-    private NativeAdLayoutContext mContentAdsLayoutContext;
+    private NativeAdLayoutContext mAdsLayoutContext;
 
-    /*
-    * Gets the context (the res layout id and a strategy of inflating and binding) for published content ads {@link https://support.google.com/admob/answer/6240809}
+    /**
+    * Gets the context (the res layout id and a strategy of inflating and binding) for published
+    * app ads
     */
-    public NativeAdLayoutContext getContentAdsLayoutContext() {
-        return mContentAdsLayoutContext;
+    public NativeAdLayoutContext getAdsLayoutContext() {
+        return mAdsLayoutContext;
     }
 
-    /*
-    * Sets the context (the res layout id and a strategy of inflating and binding) for published content ads {@link https://support.google.com/admob/answer/6240809}
+    /**
+    * Sets the context (the res layout id and a strategy of inflating and binding) for published
+    * app ads
     */
-    public void setContentAdsLayoutContext(NativeAdLayoutContext mContentAdsLayoutContext) {
-        this.mContentAdsLayoutContext = mContentAdsLayoutContext;
-    }
-
-    private NativeAdLayoutContext mInstallAdsLayoutContext;
-
-    /*
-    * Gets the context (the res layout id and a strategy of inflating and binding) for published install app ads {@link https://support.google.com/admob/answer/6240809}
-    */
-    public NativeAdLayoutContext getInstallAdsLayoutContext() {
-        return mInstallAdsLayoutContext;
-    }
-
-    /*
-    * Sets the context (the res layout id and a strategy of inflating and binding) for published install app ads {@link https://support.google.com/admob/answer/6240809}
-    */
-    public void setInstallAdsLayoutContext(NativeAdLayoutContext mInstallAdsLayoutContext) {
-        this.mInstallAdsLayoutContext = mInstallAdsLayoutContext;
+    public void setAdsLayoutContext(NativeAdLayoutContext mAdsLayoutContext) {
+        this.mAdsLayoutContext = mAdsLayoutContext;
     }
 
     /**
@@ -198,66 +178,22 @@ public class AdmobRecyclerAdapterWrapper
      * @see {AdRequest.DEVICE_ID_EMULATOR}
      */
     public AdmobRecyclerAdapterWrapper(Context context, String[] testDevicesId) {
-        this(context, testDevicesId, EnumSet.allOf(EAdType.class));
+        init(context, null, testDevicesId);
     }
+
     /**
      * @param admobReleaseUnitId sets a release unit ID for admob banners.
-     * If you are testing the ads please pass null
+     * If you are testing the ads please use constructor for tests
+     * @see #AdmobRecyclerAdapterWrapper(Context, String[])
      * ID should be active, please check it in your Admob's account.
      * Be careful: don't set it or set to null if you still haven't deployed a Release.
      * Otherwise your Admob account could be banned
      */
     public AdmobRecyclerAdapterWrapper(Context context, String admobReleaseUnitId) {
-        this(context, admobReleaseUnitId, EnumSet.allOf(EAdType.class));
-    }
-
-    /**
-     * @param admobReleaseUnitIds sets a release unit IDs for admob banners.
-     * It works like FIFO (first in = first out). Each ad block will get one from the queue.
-     * If the desired count of ad blocks is greater than this collection size
-     * then the last entry will be duplicated to remaining ad blocks.
-     * If you are testing the ads please use constructor for tests
-     * @see #AdmobRecyclerAdapterWrapper(Context, String[])
-     * ID should be active, please check it in your Admob's account.
-     * Be careful: don't set it or set to null if you still haven't deployed a Release.
-     * Otherwise your Admob account could be banned
-     */
-    public AdmobRecyclerAdapterWrapper(Context context, Collection<String> admobReleaseUnitIds) {
-        this(context, admobReleaseUnitIds, EnumSet.allOf(EAdType.class));
-    }
-
-    /**
-     * Use this constructor for test purposes. if you are going to release the live version
-     * please use the appropriate constructor
-     * @see #AdmobRecyclerAdapterWrapper(Context, String)
-     * @param testDevicesId sets a devices ID to test ads interaction.
-     * You could pass null but it's better to set ids for all your test devices
-     * including emulators. for emulator just use the
-     * @see {AdRequest.DEVICE_ID_EMULATOR}
-     * @param adTypesToShow sets the types of ads to show in the list.
-     * By default all types are loaded by wrapper.
-     * i.e. pass EnumSet.of(EAdType.ADVANCED_INSTALLAPP) to show only install app ads
-     */
-    public AdmobRecyclerAdapterWrapper(Context context, String[] testDevicesId, EnumSet<EAdType> adTypesToShow) {
-        init(context, null, testDevicesId, adTypesToShow);
-    }
-
-    /**
-     * @param admobReleaseUnitId sets a release unit ID for admob banners.
-     * If you are testing the ads please use constructor for tests
-     * @see #AdmobRecyclerAdapterWrapper(Context, String[])
-     * ID should be active, please check it in your Admob's account.
-     * Be careful: don't set it or set to null if you still haven't deployed a Release.
-     * Otherwise your Admob account could be banned
-     * @param adTypesToShow sets the types of ads to show in the list.
-     * By default all types are loaded by wrapper.
-     * i.e. pass EnumSet.of(EAdType.ADVANCED_INSTALLAPP) to show only install app ads
-     */
-    public AdmobRecyclerAdapterWrapper(Context context, String admobReleaseUnitId, EnumSet<EAdType> adTypesToShow) {
         Collection<String> releaseUnitIds = admobReleaseUnitId==null
                 ? null
                 : Collections.singletonList(admobReleaseUnitId);
-        init(context, releaseUnitIds, null, adTypesToShow);
+        init(context, releaseUnitIds, null);
     }
 
     /**
@@ -270,12 +206,9 @@ public class AdmobRecyclerAdapterWrapper
      * ID should be active, please check it in your Admob's account.
      * Be careful: don't set it or set to null if you still haven't deployed a Release.
      * Otherwise your Admob account could be banned
-     * @param adTypesToShow sets the types of ads to show in the list.
-     * By default all types are loaded by wrapper.
-     * i.e. pass EnumSet.of(EAdType.ADVANCED_INSTALLAPP) to show only install app ads
      */
-    public AdmobRecyclerAdapterWrapper(Context context, Collection<String> admobReleaseUnitIds, EnumSet<EAdType> adTypesToShow) {
-        init(context, admobReleaseUnitIds, null, adTypesToShow);
+    public AdmobRecyclerAdapterWrapper(Context context, Collection<String> admobReleaseUnitIds) {
+        init(context, admobReleaseUnitIds, null);
     }
 
     /**
@@ -286,21 +219,16 @@ public class AdmobRecyclerAdapterWrapper
      * ID should be active, please check it in your Admob's account.
      * Be careful: don't set it or set to null if you still haven't deployed a Release.
      * Otherwise your Admob account could be banned
-     * @param adTypesToShow sets the types of ads to show in the list.
-     * By default all types are loaded by wrapper.
-     * i.e. pass EnumSet.of(EAdType.ADVANCED_INSTALLAPP) to show only install app ads
      */
-    public AdmobRecyclerAdapterWrapper(Context context, String admobReleaseUnitId, String[] testDevicesId, EnumSet<EAdType> adTypesToShow) {
-        init(context, Collections.singletonList(admobReleaseUnitId), testDevicesId, adTypesToShow);
+    public AdmobRecyclerAdapterWrapper(Context context, String admobReleaseUnitId, String[] testDevicesId) {
+        init(context, Collections.singletonList(admobReleaseUnitId), testDevicesId);
     }
 
-    private void init(Context context, Collection<String> admobReleaseUnitIds, String[] testDevicesId, EnumSet<EAdType> adTypesToShow){
+    private void init(Context context, Collection<String> admobReleaseUnitIds, String[] testDevicesId){
         setViewTypeBiggestSource(DEFAULT_VIEWTYPE_SOURCE_MAX);
         setNoOfDataBetweenAds(DEFAULT_NO_OF_DATA_BETWEEN_ADS);
         setLimitOfAds(DEFAULT_LIMIT_OF_ADS);
-        setContentAdsLayoutContext(ContentAdLayoutContext.getDefault());
-        setInstallAdsLayoutContext(InstallAppAdLayoutContext.getDefault());
-        mContext = context;
+        setAdsLayoutContext(AdLayoutContext.getDefault());
 
         adFetcher = new AdmobFetcher();
         if(testDevicesId!=null)
@@ -308,29 +236,19 @@ public class AdmobRecyclerAdapterWrapper
                 adFetcher.addTestDeviceId(testId);
         if(admobReleaseUnitIds!=null)
             adFetcher.setReleaseUnitIds(admobReleaseUnitIds);
-        adFetcher.setAdTypeToFetch(adTypesToShow == null || adTypesToShow.isEmpty()
-                ?  EnumSet.allOf(EAdType.class): adTypesToShow);
         adFetcher.addListener(this);
         // Start prefetching ads
         adFetcher.prefetchAds(context.getApplicationContext());
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        if (viewHolder==null)
-            return;
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         int itemViewType = viewHolder.getItemViewType();
-        if(itemViewType == getViewTypeAdInstall()) {
-            NativeAppInstallAdView lvi1 = (NativeAppInstallAdView) viewHolder.itemView;
-            NativeAppInstallAd ad1 = (NativeAppInstallAd) getItem(position);
-            getInstallAdsLayoutContext().bind(lvi1, ad1);
-        }
-        else if(itemViewType == getViewTypeAdContent()) {
-            NativeContentAdView lvi2 = (NativeContentAdView) viewHolder.itemView;
-            NativeContentAd ad2 = (NativeContentAd) getItem(position);
-            getContentAdsLayoutContext().bind(lvi2, ad2);
-        }
-        else{
+        if (itemViewType == getViewTypeAd()) {
+            NativeAdView lvi1 = (NativeAdView) viewHolder.itemView;
+            NativeAd ad1 = (NativeAd) getItem(position);
+            getAdsLayoutContext().bind(lvi1, ad1);
+        } else {
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
                     adFetcher.getFetchedAdsCount(), mAdapter.getItemCount());
             mAdapter.onBindViewHolder(viewHolder, origPos);
@@ -338,8 +256,8 @@ public class AdmobRecyclerAdapterWrapper
     }
 
     @Override
-    public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == getViewTypeAdContent() || viewType == getViewTypeAdInstall()) {
+    public final RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == getViewTypeAd()) {
             return new NativeHolder(onCreateItemView(parent, viewType));
         }
         else{
@@ -348,18 +266,16 @@ public class AdmobRecyclerAdapterWrapper
     }
 
     private NativeAdView onCreateItemView(ViewGroup parent, int viewType) {
-        if (viewType == getViewTypeAdInstall())
-                return getInstallAdsLayoutContext().inflateView(parent);
-        else if (viewType == getViewTypeAdContent())
-                return getContentAdsLayoutContext().inflateView(parent);
+        if (viewType == getViewTypeAd())
+                return getAdsLayoutContext().inflateView(parent);
         else return null;
     }
 
     /**
      * <p>Gets the count of all data, including interspersed ads.</p>
      * <p/>
-     * <p>If data size is 10 and an ad is to be showed after every 5 items starting at the index 0, this method
-     * will return 12.</p>
+     * <p>If data size is 10 and an ad is to be showed after every 5 items starting at the index 0,
+     * this method will return 12.</p>
      *
      * @return the total number of items this adapter can show, including ads.
      * @see AdmobRecyclerAdapterWrapper#setNoOfDataBetweenAds(int)
@@ -373,7 +289,8 @@ public class AdmobRecyclerAdapterWrapper
             No of currently fetched ads, as long as it isn't more than no of max ads that can
             fit dataset.
              */
-            int noOfAds = AdapterCalculator.getAdsCountToPublish(adFetcher.getFetchedAdsCount(), mAdapter.getItemCount());
+            int noOfAds = AdapterCalculator.getAdsCountToPublish(adFetcher.getFetchedAdsCount(),
+                    mAdapter.getItemCount());
             return mAdapter.getItemCount() > 0 ? mAdapter.getItemCount() + noOfAds : 0;
         } else {
             return 0;
@@ -404,9 +321,7 @@ public class AdmobRecyclerAdapterWrapper
     @Override
     public int getItemViewType(int position) {
         if (AdapterCalculator.canShowAdAtPosition(position, adFetcher.getFetchedAdsCount())) {
-            int adPos = AdapterCalculator.getAdIndex(position);
-            NativeAd ad = adFetcher.getAdForIndex(adPos);
-            return ad instanceof NativeAppInstallAd ? getViewTypeAdInstall() : getViewTypeAdContent();
+            return getViewTypeAd();
         } else {
             int origPos = AdapterCalculator.getOriginalContentPosition(position,
                     adFetcher.getFetchedAdsCount(), mAdapter.getItemCount());
@@ -428,16 +343,19 @@ public class AdmobRecyclerAdapterWrapper
         adFetcher.clearMapAds();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onAdLoaded(int adIdx) {
         notifyDataSetChanged();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onAdsCountChanged() {
         notifyDataSetChanged();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onAdFailed(int adIdx, int errorCode, Object adPayload) {
         notifyDataSetChanged();

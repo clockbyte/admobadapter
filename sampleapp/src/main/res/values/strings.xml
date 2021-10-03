@@ -3,6 +3,5 @@
     <string name="banner_admob_unit_id">ca-app-pub-xxx/xxx</string>
     <string name="testDeviceID">FC62C6A7EBC75CFD8D14092BA1325173</string>
     <string name="test_admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
-    <string name="test_admob_express_unit_id">ca-app-pub-3940256099942544/1072772517</string>
     <string name="test_admob_banner_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 </resources>

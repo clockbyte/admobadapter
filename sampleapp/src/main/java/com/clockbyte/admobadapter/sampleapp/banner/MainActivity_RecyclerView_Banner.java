@@ -2,21 +2,20 @@ package com.clockbyte.admobadapter.sampleapp.banner;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.clockbyte.admobadapter.bannerads.AdmobBannerRecyclerAdapterWrapper;
-import com.clockbyte.admobadapter.bannerads.BannerAdViewWrappingStrategy;
 import com.clockbyte.admobadapter.bannerads.BannerAdViewWrappingStrategyBase;
 import com.clockbyte.admobadapter.sampleapp.R;
 import com.clockbyte.admobadapter.sampleapp.RecyclerExampleAdapter;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
@@ -32,9 +31,8 @@ public class MainActivity_RecyclerView_Banner extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_recycleview);
 
-        //highly-recommended in Firebase docs to initialize things early as possible
-        //test_admob_app_id is different with unit_id! you could get it in your Admob console
-        MobileAds.initialize(getApplicationContext(), getString(R.string.test_admob_app_id));
+        // they suggest to initialize things early as possible in Firebase docs
+        MobileAds.initialize(getApplicationContext());
 
         initRecyclerViewItems();
     }
@@ -109,7 +107,7 @@ public class MainActivity_RecyclerView_Banner extends Activity {
 
         //preparing the collection of data
         final String sItem = "item #";
-        ArrayList<String> lst = new ArrayList<String>(100);
+        ArrayList<String> lst = new ArrayList<>(100);
         for(int i=1;i<=100;i++)
             lst.add(sItem.concat(Integer.toString(i)));
 

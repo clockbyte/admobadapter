@@ -17,12 +17,13 @@ package com.clockbyte.admobadapter.bannerads;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+
+import androidx.annotation.NonNull;
 
 import com.clockbyte.admobadapter.AdViewHelper;
 import com.clockbyte.admobadapter.AdmobAdapterCalculator;

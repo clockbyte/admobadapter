@@ -8,9 +8,9 @@ dist: trusty
 #     packages:
 #       - oracle-java8-installer
 
-# before_install:
-#  - chmod +x gradlew
-#  - yes | sdkmanager "platforms;android-27"
+before_install:
+ - chmod +x gradlew
+ - yes | sdkmanager "platforms;android-30"
  
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock

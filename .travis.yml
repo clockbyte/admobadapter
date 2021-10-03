@@ -1,4 +1,5 @@
 language: android
+dist: trusty
 jdk: 
   - oraclejdk8
 
@@ -22,11 +23,11 @@ cache:
 
 android:
   components:
-        - tools # to get the new `repository-11.xml`
-        - tools # to install Android SDK tools 25.1.x (x = 6 right now)
-        - build-tools-27.0.3
-        - android-24
-        - android-27
+        # - tools # to get the new `repository-11.xml`
+        # - tools # to install Android SDK tools 25.1.x (x = 6 right now)
+        - build-tools-30.0.2
+        # - android-24
+        - android-31
         - platform-tools
         - extra-android-support
         - extra-android-m2repository
@@ -34,7 +35,7 @@ android:
         - extra-google-google_play_services
         # Specify at least one system image,
         # if you need to run emulator(s) during your tests
-        - sys-img-armeabi-v7a-android-24
+        - sys-img-armeabi-v7a-android-30
         # - sys-img-x86-android-24
         
 env:
@@ -45,7 +46,7 @@ env:
 # Emulator Management: Create, Start and Wait
 before_script:
   - android list target
-  - echo no | android create avd --force -n test -t android-24 --abi armeabi-v7a
+  - echo no | android create avd --force -n test -t android-30 --abi armeabi-v7a
   - emulator -avd test -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &

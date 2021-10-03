@@ -1,8 +1,7 @@
 language: android
+dist: trusty
 jdk: 
   - oraclejdk8
-
-sudo: false
 
 addons:
   apt:
@@ -11,22 +10,23 @@ addons:
 
 before_install:
  - chmod +x gradlew
- - yes | sdkmanager "platforms;android-27"
+ - yes | sdkmanager "platforms;android-30"
  
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache
 
 android:
   components:
         - tools # to get the new `repository-11.xml`
-        - tools # to install Android SDK tools 25.1.x (x = 6 right now)
-        - build-tools-27.0.3
-        - android-24
-        - android-27
+        - build-tools-30.0.2
+        - android-30
+        - android-22
         - platform-tools
         - extra-android-support
         - extra-android-m2repository
@@ -34,8 +34,7 @@ android:
         - extra-google-google_play_services
         # Specify at least one system image,
         # if you need to run emulator(s) during your tests
-        - sys-img-armeabi-v7a-android-24
-        # - sys-img-x86-android-24
+        - sys-img-armeabi-v7a-android-22
         
 env:
   global:
@@ -45,13 +44,15 @@ env:
 # Emulator Management: Create, Start and Wait
 before_script:
   - android list target
-  - echo no | android create avd --force -n test -t android-24 --abi armeabi-v7a
-  - emulator -avd test -no-window &
+  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
+  - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
 
-script: 
-  - ./gradlew build connectedCheck
+script:
+  - ./gradlew clean build
+  - ./gradlew test
+  - ./gradlew build check
 
 notifications:
   webhooks:

@@ -4,7 +4,7 @@ Admob Adapter
 
 ======================
 
-> We've released! [v1.4.6](https://github.com/clockbyte/admobadapter/releases/tag/v1.4.6)! The support of express ads has been dropped, please use banners instead ([see details](https://github.com/clockbyte/admobadapter/issues/105)).
+> We've released! [v1.5.0](https://github.com/clockbyte/admobadapter/releases/tag/v1.5.0)! And we moved to the later dependencies.
 
 The reference to the [COOK RECIPES](https://github.com/clockbyte/admobadapter/wiki/Cookbook) for people who are in hurry!
 
@@ -19,10 +19,10 @@ Now you are able to link Admobadapter via Gradle like this
 ```shell
 dependencies {
 //link other libs
-    compile 'com.github.clockbyte:admobadapter:1.4.6'
+    compile 'com.github.clockbyte:admobadapter:1.5.0'
 }
 ```
 [Here](https://github.com/clockbyte/admobadapter/wiki/Installation) you could find more ways.
 
 # Advanced help and consulting
-If you absolutely have no time for integration of Admobadapter to your app yourself you could [contact us](http://www.clockbyte.ru) for consultation. Also we could do this routine stuff for you accurately like a clockwork!
+If you have no free cycles for integration of Admobadapter to your app yourself you could [contact us](http://www.clockbyte.ru) for consultation. Also we could do this routine stuff for you accurately like a clockwork!

@@ -23,6 +23,3 @@ dependencies {
 }
 ```
 [Here](https://github.com/clockbyte/admobadapter/wiki/Installation) you could find more ways.
-
-# Advanced help and consulting
-If you have no free cycles for integration of Admobadapter to your app yourself you could [contact us](http://www.clockbyte.ru) for consultation. Also we could do this routine stuff for you accurately like a clockwork!
